@@ -7,6 +7,8 @@ import { MapSettingsCard } from "@/components/admin/settings/MapSettingsCard";
 import { NotificationsCard } from "@/components/admin/settings/NotificationsCard";
 import { AIPackagesCard } from "@/components/admin/settings/AIPackagesCard";
 import { DatabaseCard } from "@/components/admin/settings/DatabaseCard";
+import { Separator } from "@/components/ui/separator";
+import { Settings, Map, Bell, CreditCard, Database } from "lucide-react";
 
 const SettingsPage = () => {
   const { currentUser } = useAuth();
@@ -33,29 +35,57 @@ const SettingsPage = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Impostazioni Amministratore</h1>
-      <p className="text-gray-600">
-        Configura le impostazioni globali della piattaforma.
-      </p>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <GeneralSettingsCard onSubmit={handleSaveSettings} />
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Impostazioni Amministratore</h1>
+        <p className="text-muted-foreground">
+          Configura le impostazioni globali della piattaforma.
+        </p>
+      </div>
+      
+      <Separator className="my-6" />
+      
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-6">
+          <div className="flex items-center gap-2 text-lg font-semibold">
+            <Settings className="h-5 w-5 text-primary" />
+            <h2>Configurazione Generale</h2>
+          </div>
+          <GeneralSettingsCard onSubmit={handleSaveSettings} />
+          
+          <div className="flex items-center gap-2 text-lg font-semibold mt-8">
+            <Map className="h-5 w-5 text-primary" />
+            <h2>Configurazione Mappe e Pagamenti</h2>
+          </div>
+          <MapSettingsCard 
+            mapApiKey={mapApiKey}
+            setMapApiKey={setMapApiKey}
+            enableMapFeature={enableMapFeature}
+            setEnableMapFeature={setEnableMapFeature}
+            enablePayments={enablePayments}
+            setEnablePayments={setEnablePayments}
+            onSubmit={handleSaveSettings}
+          />
+        </div>
         
-        <MapSettingsCard 
-          mapApiKey={mapApiKey}
-          setMapApiKey={setMapApiKey}
-          enableMapFeature={enableMapFeature}
-          setEnableMapFeature={setEnableMapFeature}
-          enablePayments={enablePayments}
-          setEnablePayments={setEnablePayments}
-          onSubmit={handleSaveSettings}
-        />
-        
-        <NotificationsCard />
-        
-        <AIPackagesCard />
-        
-        <DatabaseCard />
+        <div className="space-y-6">
+          <div className="flex items-center gap-2 text-lg font-semibold">
+            <Bell className="h-5 w-5 text-primary" />
+            <h2>Sistema di Notifiche</h2>
+          </div>
+          <NotificationsCard />
+          
+          <div className="flex items-center gap-2 text-lg font-semibold mt-8">
+            <CreditCard className="h-5 w-5 text-primary" />
+            <h2>Pacchetti e Crediti</h2>
+          </div>
+          <AIPackagesCard />
+          
+          <div className="flex items-center gap-2 text-lg font-semibold mt-8">
+            <Database className="h-5 w-5 text-primary" />
+            <h2>Gestione Database</h2>
+          </div>
+          <DatabaseCard />
+        </div>
       </div>
     </div>
   );

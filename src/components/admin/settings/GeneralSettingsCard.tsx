@@ -19,9 +19,9 @@ interface GeneralSettingsCardProps {
 
 export function GeneralSettingsCard({ onSubmit }: GeneralSettingsCardProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className="shadow-sm">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center text-xl gap-2">
           <Settings className="h-5 w-5 text-primary" />
           Impostazioni Generali
         </CardTitle>
@@ -36,6 +36,7 @@ export function GeneralSettingsCard({ onSubmit }: GeneralSettingsCardProps) {
             <Input
               id="platform-name"
               defaultValue="ShopHubConnect"
+              className="focus:border-primary"
             />
           </div>
           
@@ -45,6 +46,7 @@ export function GeneralSettingsCard({ onSubmit }: GeneralSettingsCardProps) {
               id="contact-email"
               type="email"
               defaultValue="admin@shophubconnect.com"
+              className="focus:border-primary"
             />
           </div>
           
@@ -53,15 +55,16 @@ export function GeneralSettingsCard({ onSubmit }: GeneralSettingsCardProps) {
             <Input
               id="support-phone"
               defaultValue="+39 02 1234567"
+              className="focus:border-primary"
             />
           </div>
 
-          <div className="flex items-center justify-between space-x-2">
+          <div className="flex items-center justify-between space-x-2 py-2 border-t border-gray-100 mt-4 pt-4">
             <Label htmlFor="maintenance-mode">Modalità Manutenzione</Label>
             <Switch id="maintenance-mode" />
           </div>
           
-          <Button type="submit" className="w-full">Salva Impostazioni</Button>
+          <Button type="submit" className="w-full mt-4">Salva Impostazioni</Button>
         </form>
       </CardContent>
     </Card>

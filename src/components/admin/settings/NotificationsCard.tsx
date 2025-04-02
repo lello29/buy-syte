@@ -11,12 +11,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 
 export function NotificationsCard() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className="shadow-sm">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center text-xl gap-2">
           <Bell className="h-5 w-5 text-primary" />
           Notifiche
         </CardTitle>
@@ -26,27 +27,33 @@ export function NotificationsCard() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="notify-new-users">Notifica Nuovi Utenti</Label>
+          <div className="flex items-center justify-between space-x-2 py-2">
+            <Label htmlFor="notify-new-users" className="font-medium">Notifica Nuovi Utenti</Label>
             <Switch id="notify-new-users" defaultChecked />
           </div>
           
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="notify-new-shops">Notifica Nuovi Negozi</Label>
+          <Separator />
+          
+          <div className="flex items-center justify-between space-x-2 py-2">
+            <Label htmlFor="notify-new-shops" className="font-medium">Notifica Nuovi Negozi</Label>
             <Switch id="notify-new-shops" defaultChecked />
           </div>
           
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="notify-inactive-shops">Notifica Negozi Inattivi</Label>
+          <Separator />
+          
+          <div className="flex items-center justify-between space-x-2 py-2">
+            <Label htmlFor="notify-inactive-shops" className="font-medium">Notifica Negozi Inattivi</Label>
             <Switch id="notify-inactive-shops" />
           </div>
           
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="weekly-report">Report Settimanale</Label>
+          <Separator />
+          
+          <div className="flex items-center justify-between space-x-2 py-2">
+            <Label htmlFor="weekly-report" className="font-medium">Report Settimanale</Label>
             <Switch id="weekly-report" defaultChecked />
           </div>
           
-          <Button variant="outline" className="w-full">Invia Notifiche di Test</Button>
+          <Button variant="outline" className="w-full mt-2">Invia Notifiche di Test</Button>
         </div>
       </CardContent>
     </Card>
