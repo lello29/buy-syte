@@ -89,7 +89,9 @@ const AdminShopsPage = () => {
       isApproved: false,
       createdAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
-      imageUrl: 'https://placehold.co/400x300',
+      // Remove the imageUrl property as it's not in the Shop type
+      logoImage: 'https://placehold.co/400x300', // Use logoImage instead which is in the Shop type
+      bannerImage: 'https://placehold.co/400x300',
     };
     
     setShopsList([...shopsList, newShopWithId]);
