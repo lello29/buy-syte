@@ -1,4 +1,4 @@
-import { User, Shop, Product, Offer, Collaborator, Task } from "@/types";
+import { User, Shop, Product, Offer, Collaborator, Task, Order, OrderItem } from "@/types";
 
 // Mock data for users
 export const users: User[] = [
@@ -128,7 +128,6 @@ export const shops: Shop[] = [
     aiCredits: 100,
     lastUpdated: "2023-01-15T10:30:00.000Z",
     createdAt: "2022-09-10T14:20:00.000Z",
-    // New fields
     logoImage: "https://images.unsplash.com/photo-1506399558188-acca6f8cbf41?w=500&h=500&fit=crop",
     bannerImage: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=400&fit=crop",
     websiteUrl: "https://elettronicamoderna.it",
@@ -154,7 +153,6 @@ export const shops: Shop[] = [
     aiCredits: 85,
     lastUpdated: "2023-02-20T16:45:00.000Z",
     createdAt: "2022-07-15T11:30:00.000Z",
-    // New fields
     logoImage: "https://images.unsplash.com/photo-1589363460779-cbd8008e459d?w=500&h=500&fit=crop",
     bannerImage: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=400&fit=crop",
     openingHours: "Lun-Sab: 10:00-20:00\nDom: 15:00-19:00",
@@ -284,7 +282,6 @@ export const shops: Shop[] = [
   },
 ];
 
-// Mock data for products
 export const products: Product[] = [
   {
     id: "prod1",
@@ -450,7 +447,6 @@ export const products: Product[] = [
   },
 ];
 
-// Mock data for offers
 export const offers: Offer[] = [
   {
     id: "offer1",
@@ -567,27 +563,140 @@ export const tasks: Task[] = [
   },
 ];
 
-// Helper function to get products by shop ID
+export const orders: Order[] = [
+  {
+    id: "order1",
+    userId: "user1",
+    shopId: "shop1",
+    products: [
+      {
+        productId: "prod1",
+        productName: "Smart TV 55 pollici",
+        quantity: 1,
+        price: 599.99
+      }
+    ],
+    status: "delivered",
+    totalPrice: 599.99,
+    shippingAddress: "Via Roma 123, Milano",
+    paymentMethod: "Carta di Credito",
+    createdAt: "2023-04-15T10:30:00.000Z",
+    updatedAt: "2023-04-16T15:00:00.000Z"
+  },
+  {
+    id: "order2",
+    userId: "user1",
+    shopId: "shop2",
+    products: [
+      {
+        productId: "prod3",
+        productName: "Abito Elegante",
+        quantity: 1,
+        price: 199.50
+      }
+    ],
+    status: "processing",
+    totalPrice: 199.50,
+    shippingAddress: "Via Roma 123, Milano",
+    paymentMethod: "PayPal",
+    createdAt: "2023-05-20T14:45:00.000Z",
+    updatedAt: "2023-05-20T14:45:00.000Z"
+  },
+  {
+    id: "order3",
+    userId: "user7",
+    shopId: "shop3",
+    products: [
+      {
+        productId: "prod5",
+        productName: "Pizza Margherita",
+        quantity: 2,
+        price: 15.00
+      },
+      {
+        productId: "prod6",
+        productName: "Spaghetti alle Vongole",
+        quantity: 1,
+        price: 12.00
+      }
+    ],
+    status: "delivered",
+    totalPrice: 27.00,
+    shippingAddress: "Via Garibaldi 45, Roma",
+    paymentMethod: "Contanti alla consegna",
+    createdAt: "2023-06-10T19:20:00.000Z",
+    updatedAt: "2023-06-10T20:15:00.000Z"
+  },
+  {
+    id: "order4",
+    userId: "user8",
+    shopId: "shop1",
+    products: [
+      {
+        productId: "prod2",
+        productName: "Notebook Ultraleggero",
+        quantity: 1,
+        price: 1299.00
+      }
+    ],
+    status: "shipped",
+    totalPrice: 1299.00,
+    shippingAddress: "Corso Vittorio Emanuele 80, Torino",
+    paymentMethod: "Bonifico Bancario",
+    createdAt: "2023-07-05T11:10:00.000Z",
+    updatedAt: "2023-07-06T09:30:00.000Z"
+  },
+  {
+    id: "order5",
+    userId: "user1",
+    shopId: "shop4",
+    products: [
+      {
+        productId: "prod7",
+        productName: "Il Signore degli Anelli",
+        quantity: 1,
+        price: 19.90
+      },
+      {
+        productId: "prod8",
+        productName: "1984",
+        quantity: 1,
+        price: 15.50
+      }
+    ],
+    status: "delivered",
+    totalPrice: 35.40,
+    shippingAddress: "Via Roma 123, Milano",
+    paymentMethod: "Carta di Credito",
+    createdAt: "2023-08-18T16:40:00.000Z",
+    updatedAt: "2023-08-20T12:00:00.000Z"
+  }
+];
+
 export const getProductsByShopId = (shopId: string): Product[] => {
   return products.filter(product => product.shopId === shopId);
 };
 
-// Helper function to get offers by shop ID
 export const getOffersByShopId = (shopId: string): Offer[] => {
   return offers.filter(offer => offer.shopId === shopId);
 };
 
-// Helper function to get tasks by collaborator ID
 export const getTasksByCollaboratorId = (collaboratorId: string): Task[] => {
   return tasks.filter(task => task.collaboratorId === collaboratorId);
 };
 
-// Helper function to get users by role
 export const getUsersByRole = (role: string): User[] => {
   return users.filter(user => user.role === role);
 };
 
-// Helper function to get a shop by ID
 export const getShopById = (shopId: string): Shop | undefined => {
   return shops.find(shop => shop.id === shopId);
+};
+
+export const getOrdersByUserId = (userId: string): Order[] => {
+  return orders.filter(order => order.userId === userId);
+};
+
+export const getOrdersByShopId = (shopId: string): Order[] => {
+  return orders.filter(order => order.shopId === shopId);
 };

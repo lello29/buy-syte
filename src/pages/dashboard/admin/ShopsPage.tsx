@@ -1,375 +1,334 @@
 
 import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useAuth } from "@/contexts/AuthContext";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Store, Package, Check, X, Sparkles, Eye, Trash2, Edit } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { Check, X, Store, PenLine, Trash2, Eye } from "lucide-react";
 import { shops, getProductsByShopId } from "@/data/mockData";
 import { Shop } from "@/types";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { toast } from "@/components/ui/use-toast";
 
-const ShopsPage = () => {
-  const { currentUser } = useAuth();
-  const [approvalFilters, setApprovalFilters] = useState<"all" | "approved" | "pending">("all");
-  const [shopsData, setShopsData] = useState(shops);
+const AdminShopsPage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
-  if (!currentUser || currentUser.role !== "admin") {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p>Non sei autorizzato a visualizzare questa pagina.</p>
-      </div>
-    );
-  }
-
-  const handleApproveShop = (shopId: string) => {
-    // In a real application, this would be an API call
-    const updatedShops = shopsData.map(shop => 
-      shop.id === shopId ? { ...shop, isApproved: true } : shop
-    );
-    setShopsData(updatedShops);
-    toast.success("Negozio approvato con successo");
-  };
   
-  const handleRejectShop = (shopId: string) => {
-    // In a real application, this would be an API call
-    const updatedShops = shopsData.map(shop => 
-      shop.id === shopId ? { ...shop, isApproved: false } : shop
-    );
-    setShopsData(updatedShops);
-    toast.success("Negozio rifiutato");
-  };
-  
-  const handleAssignPromotion = (shopId: string) => {
-    // In a real application, this would be an API call
-    toast.success("Pacchetto promozionale assegnato con successo");
-  };
+  const filteredShops = shops.filter(shop => 
+    shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    shop.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const handleDeleteShop = (shopId: string) => {
-    // In a real application, this would be an API call
-    const updatedShops = shopsData.filter(shop => shop.id !== shopId);
-    setShopsData(updatedShops);
-    setIsDeleteDialogOpen(false);
-    setSelectedShop(null);
-    toast.success("Negozio eliminato con successo");
-  };
-
-  const openViewDialog = (shop: Shop) => {
+  const handleViewShop = (shop: Shop) => {
     setSelectedShop(shop);
     setIsViewDialogOpen(true);
   };
 
-  const openDeleteDialog = (shop: Shop) => {
-    setSelectedShop(shop);
+  const handleDeleteConfirmation = (shopId: string) => {
+    setConfirmDeleteId(shopId);
     setIsDeleteDialogOpen(true);
   };
 
-  const filteredShops = approvalFilters === "all" 
-    ? shopsData 
-    : shopsData.filter(shop => 
-        approvalFilters === "approved" ? shop.isApproved : !shop.isApproved
-      );
+  const handleDelete = () => {
+    if (confirmDeleteId) {
+      // In a real app, this would call an API to delete the shop
+      toast({
+        title: "Negozio eliminato",
+        description: "Il negozio è stato eliminato con successo.",
+      });
+      setIsDeleteDialogOpen(false);
+      setConfirmDeleteId(null);
+    }
+  };
+
+  const toggleApprovalStatus = (shop: Shop) => {
+    // In a real app, this would call an API to update the shop
+    toast({
+      title: shop.isApproved ? "Approvazione revocata" : "Negozio approvato",
+      description: shop.isApproved 
+        ? "Il negozio non è più approvato." 
+        : "Il negozio è ora approvato.",
+    });
+  };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Gestione Negozi</h1>
-      <p className="text-gray-600">
-        Visualizza e gestisci i negozi registrati sulla piattaforma.
-      </p>
-
-      <div className="flex flex-wrap gap-3 mb-6">
-        <Button 
-          variant={approvalFilters === "all" ? "default" : "outline"} 
-          onClick={() => setApprovalFilters("all")}
-        >
-          Tutti
-        </Button>
-        <Button 
-          variant={approvalFilters === "approved" ? "default" : "outline"} 
-          onClick={() => setApprovalFilters("approved")}
-        >
-          Approvati
-        </Button>
-        <Button 
-          variant={approvalFilters === "pending" ? "default" : "outline"} 
-          onClick={() => setApprovalFilters("pending")}
-        >
-          In attesa
-        </Button>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Gestione Negozi</h1>
+          <p className="text-gray-600">
+            Gestione e controllo dei negozi sulla piattaforma.
+          </p>
+        </div>
       </div>
-
+      
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-1">
+          <Input
+            placeholder="Cerca per nome, email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-sm"
+          />
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline">
+            Esporta dati
+          </Button>
+        </div>
+      </div>
+      
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Store className="h-5 w-5 text-primary" />
-            Lista Negozi
-          </CardTitle>
-          <CardDescription>
-            Elenco di tutti i negozi registrati sulla piattaforma
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Indirizzo</TableHead>
-                  <TableHead>Prodotti</TableHead>
-                  <TableHead>Creato</TableHead>
-                  <TableHead>Stato</TableHead>
-                  <TableHead>Promozione</TableHead>
-                  <TableHead className="text-right">Azioni</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredShops.map((shop) => (
-                  <TableRow key={shop.id}>
-                    <TableCell>
-                      <div className="font-medium">{shop.name}</div>
-                      <div className="text-xs text-muted-foreground">{shop.email}</div>
-                    </TableCell>
-                    <TableCell>{shop.address}</TableCell>
-                    <TableCell>
-                      {getProductsByShopId(shop.id).length}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(shop.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={shop.isApproved ? "success" : "warning"}>
-                        {shop.isApproved ? "Approvato" : "In Attesa"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {parseInt(shop.id) < 3 ? (
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                          <Sparkles className="h-3 w-3 mr-1" /> Attiva
+        <CardContent className="pt-6">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="border-b">
+                <tr>
+                  <th className="text-left p-3 font-medium">Nome</th>
+                  <th className="text-left p-3 font-medium">Email</th>
+                  <th className="text-left p-3 font-medium">Prodotti</th>
+                  <th className="text-center p-3 font-medium">Stato</th>
+                  <th className="text-right p-3 font-medium">Azioni</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {filteredShops.map((shop) => {
+                  const productCount = getProductsByShopId(shop.id).length;
+                  return (
+                    <tr key={shop.id} className="hover:bg-gray-50">
+                      <td className="p-3">
+                        <div className="flex items-center gap-3">
+                          {shop.logoImage ? (
+                            <img 
+                              src={shop.logoImage} 
+                              alt={shop.name} 
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                              <Store className="w-4 h-4 text-gray-500" />
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-medium">{shop.name}</p>
+                            <p className="text-xs text-gray-500">
+                              ID: {shop.id}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-3">{shop.email}</td>
+                      <td className="p-3">{productCount}</td>
+                      <td className="p-3 text-center">
+                        <Badge 
+                          variant={shop.isApproved ? "success" : "secondary"}
+                          className={shop.isApproved 
+                            ? "bg-green-100 text-green-800 hover:bg-green-100" 
+                            : "bg-gray-100 text-gray-800 hover:bg-gray-100"
+                          }
+                        >
+                          {shop.isApproved ? "Approvato" : "In attesa"}
                         </Badge>
-                      ) : (
-                        <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200">
-                          Nessuna
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        {!shop.isApproved && (
-                          <>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleApproveShop(shop.id)}
-                            >
-                              <Check className="mr-1 h-4 w-4" /> Approva
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              className="text-destructive border-destructive hover:bg-destructive/10"
-                              onClick={() => handleRejectShop(shop.id)}
-                            >
-                              <X className="mr-1 h-4 w-4" /> Rifiuta
-                            </Button>
-                          </>
-                        )}
-                        {shop.isApproved && parseInt(shop.id) >= 3 && (
+                      </td>
+                      <td className="p-3 text-right">
+                        <div className="flex justify-end gap-2">
                           <Button 
                             size="sm" 
-                            variant="outline"
-                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                            onClick={() => handleAssignPromotion(shop.id)}
+                            variant="ghost"
+                            onClick={() => handleViewShop(shop)}
                           >
-                            <Sparkles className="mr-1 h-4 w-4" /> Promuovi
+                            <Eye className="w-4 h-4" />
                           </Button>
-                        )}
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => openViewDialog(shop)}
-                        >
-                          <Eye className="mr-1 h-4 w-4" /> Dettagli
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          className="text-red-600 hover:bg-red-100"
-                          onClick={() => openDeleteDialog(shop)}
-                        >
-                          <Trash2 className="mr-1 h-4 w-4" /> Elimina
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={() => toggleApprovalStatus(shop)}
+                          >
+                            {shop.isApproved ? (
+                              <X className="w-4 h-4 text-red-500" />
+                            ) : (
+                              <Check className="w-4 h-4 text-green-500" />
+                            )}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={() => handleDeleteConfirmation(shop.id)}
+                          >
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {filteredShops.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="p-3 text-center text-gray-500">
+                      Nessun negozio trovato
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </CardContent>
       </Card>
 
       {/* View Shop Details Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="sm:max-w-xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Store className="h-5 w-5" /> Dettagli Negozio
-            </DialogTitle>
-            <DialogDescription>
-              Informazioni dettagliate sul negozio
-            </DialogDescription>
+            <DialogTitle>Dettagli Negozio</DialogTitle>
           </DialogHeader>
           {selectedShop && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">ID</p>
-                  <p className="font-mono">{selectedShop.id}</p>
+              {selectedShop.bannerImage && (
+                <div className="h-40 rounded-md overflow-hidden">
+                  <img 
+                    src={selectedShop.bannerImage} 
+                    alt={`${selectedShop.name} banner`} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Stato</p>
-                  <Badge variant={selectedShop.isApproved ? "success" : "warning"}>
-                    {selectedShop.isApproved ? "Approvato" : "In Attesa"}
+              )}
+              <div className="flex gap-4 items-center">
+                {selectedShop.logoImage ? (
+                  <img 
+                    src={selectedShop.logoImage} 
+                    alt={selectedShop.name} 
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                    <Store className="w-8 h-8 text-gray-500" />
+                  </div>
+                )}
+                <div>
+                  <h2 className="text-xl font-bold">{selectedShop.name}</h2>
+                  <p className="text-gray-500">{selectedShop.email}</p>
+                </div>
+                <div className="ml-auto">
+                  <Badge variant={selectedShop.isApproved ? "success" : "secondary"}>
+                    {selectedShop.isApproved ? "Approvato" : "In attesa"}
                   </Badge>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Nome</p>
-                  <p>{selectedShop.name}</p>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Indirizzo</Label>
+                  <p className="text-sm">{selectedShop.address}</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Email</p>
-                  <p>{selectedShop.email}</p>
+                <div className="space-y-2">
+                  <Label>Telefono</Label>
+                  <p className="text-sm">{selectedShop.phone}</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Telefono</p>
-                  <p>{selectedShop.phone}</p>
+                <div className="space-y-2">
+                  <Label>Crediti AI</Label>
+                  <p className="text-sm">{selectedShop.aiCredits}</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Indirizzo</p>
-                  <p>{selectedShop.address}</p>
+                <div className="space-y-2">
+                  <Label>Data Creazione</Label>
+                  <p className="text-sm">{new Date(selectedShop.createdAt).toLocaleDateString()}</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Creato il</p>
-                  <p>{new Date(selectedShop.createdAt).toLocaleDateString()}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Ultimo aggiornamento</p>
-                  <p>{new Date(selectedShop.lastUpdated).toLocaleDateString()}</p>
-                </div>
-                <div className="space-y-1 col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Descrizione</p>
-                  <p className="text-sm">{selectedShop.description}</p>
+                <div className="space-y-2">
+                  <Label>Data Ultimo Aggiornamento</Label>
+                  <p className="text-sm">{new Date(selectedShop.lastUpdated).toLocaleDateString()}</p>
                 </div>
               </div>
 
-              <div className="pt-4">
-                <p className="text-sm font-medium text-gray-500 mb-2">Statistiche</p>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-gray-50 p-3 rounded-md text-center">
-                    <p className="text-2xl font-bold">{getProductsByShopId(selectedShop.id).length}</p>
-                    <p className="text-xs text-gray-500">Prodotti</p>
-                  </div>
-                  <div className="bg-gray-50 p-3 rounded-md text-center">
-                    <p className="text-2xl font-bold">{selectedShop.offers.length}</p>
-                    <p className="text-xs text-gray-500">Offerte</p>
-                  </div>
-                  <div className="bg-gray-50 p-3 rounded-md text-center">
-                    <p className="text-2xl font-bold">{selectedShop.aiCredits}</p>
-                    <p className="text-xs text-gray-500">Crediti AI</p>
-                  </div>
-                </div>
+              <div className="space-y-2">
+                <Label>Descrizione</Label>
+                <p className="text-sm border p-3 rounded-md">{selectedShop.description}</p>
               </div>
 
-              <div className="flex justify-end gap-2 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsViewDialogOpen(false)}
-                >
-                  Chiudi
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="text-blue-600 hover:bg-blue-50"
-                >
-                  <Edit className="mr-1 h-4 w-4" /> Modifica
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="text-red-600 hover:bg-red-100"
-                  onClick={() => {
-                    setIsViewDialogOpen(false);
-                    openDeleteDialog(selectedShop);
-                  }}
-                >
-                  <Trash2 className="mr-1 h-4 w-4" /> Elimina
-                </Button>
+              {selectedShop.aboutUs && (
+                <div className="space-y-2">
+                  <Label>Chi Siamo</Label>
+                  <p className="text-sm border p-3 rounded-md">{selectedShop.aboutUs}</p>
+                </div>
+              )}
+
+              {selectedShop.openingHours && (
+                <div className="space-y-2">
+                  <Label>Orari di Apertura</Label>
+                  <p className="text-sm border p-3 rounded-md whitespace-pre-line">{selectedShop.openingHours}</p>
+                </div>
+              )}
+
+              {selectedShop.categories && selectedShop.categories.length > 0 && (
+                <div className="space-y-2">
+                  <Label>Categorie</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedShop.categories.map((category, index) => (
+                      <Badge key={index} variant="outline">{category}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedShop.socialLinks && (
+                <div className="space-y-2">
+                  <Label>Social Media</Label>
+                  <div className="flex gap-3">
+                    {selectedShop.socialLinks.facebook && (
+                      <a href={selectedShop.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Facebook</a>
+                    )}
+                    {selectedShop.socialLinks.instagram && (
+                      <a href={selectedShop.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-pink-600 hover:underline">Instagram</a>
+                    )}
+                    {selectedShop.socialLinks.twitter && (
+                      <a href={selectedShop.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Twitter</a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-4 pt-4">
+                <div className="flex items-center gap-2">
+                  <Switch id="approved-status" checked={!!selectedShop.isApproved} />
+                  <Label htmlFor="approved-status">Approvato</Label>
+                </div>
               </div>
             </div>
           )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsViewDialogOpen(false)}>
+              Chiudi
+            </Button>
+            <Button>
+              <PenLine className="w-4 h-4 mr-2" />
+              Modifica
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Shop Confirmation Dialog */}
+      {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-red-600">Conferma Eliminazione</DialogTitle>
+            <DialogTitle>Conferma eliminazione</DialogTitle>
             <DialogDescription>
               Sei sicuro di voler eliminare questo negozio? Questa azione non può essere annullata.
             </DialogDescription>
           </DialogHeader>
-          {selectedShop && (
-            <div className="space-y-4">
-              <div className="bg-red-50 p-4 rounded-md">
-                <p className="text-sm"><strong>Nome:</strong> {selectedShop.name}</p>
-                <p className="text-sm"><strong>Email:</strong> {selectedShop.email}</p>
-                <p className="text-sm"><strong>ID:</strong> {selectedShop.id}</p>
-                <p className="text-sm"><strong>Prodotti:</strong> {getProductsByShopId(selectedShop.id).length}</p>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsDeleteDialogOpen(false)}
-                >
-                  Annulla
-                </Button>
-                <Button 
-                  variant="destructive"
-                  onClick={() => handleDeleteShop(selectedShop.id)}
-                >
-                  Elimina Negozio
-                </Button>
-              </div>
-            </div>
-          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Annulla</Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              <Trash2 className="w-4 h-4 mr-2" /> Elimina
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   );
 };
 
-export default ShopsPage;
+export default AdminShopsPage;
