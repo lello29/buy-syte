@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ShopsPage from "./pages/shops/ShopsPage";
+import NearestShopsPage from "./pages/shops/NearestShopsPage";
 import OffersPage from "./pages/offers/OffersPage";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import DashboardIndex from "./pages/dashboard/DashboardIndex";
@@ -101,6 +102,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/shops" element={<ShopsPage />} />
+        <Route path="/nearest-shops" element={<NearestShopsPage />} />
         <Route path="/offers" element={<OffersPage />} />
         
         {/* Protected dashboard routes */}

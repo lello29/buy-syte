@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { User, UserRole } from "../types";
-import { users } from "../data/mockData";
+import { User, UserRole, Shop } from "../types";
+import { users, shops } from "../data/mockData";
 import { toast } from "sonner";
 
 interface AuthContextType {
@@ -11,6 +11,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<boolean>;
   updateUserRole: (role: UserRole) => void;
   updateUserFavorites: (favorites: string[]) => void;
+  getNearestShops: (lat: number, lng: number, radius?: number) => Shop[];
   isLoading: boolean;
 }
 
@@ -106,7 +107,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem("currentUser", JSON.stringify(updatedUser));
     }
   };
+  
+  // Function to calculate distance between coordinates using Haversine formula
+  const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+    const R = 6371; // Earth radius in km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
 
+  // Get nearest shops based on location
+  const getNearestShops = (lat: number, lng: number, radius = 10): Shop[] => {
+    // In a real app, shops would have lat/lng coordinates in the database
+    // For this mock, we'll generate random coordinates near the user's location
+    return shops
+      .map(shop => {
+        // Generate random coordinates within ~5km of user location
+        const randomLat = lat + (Math.random() - 0.5) * 0.1;
+        const randomLng = lng + (Math.random() - 0.5) * 0.1;
+        const distance = calculateDistance(lat, lng, randomLat, randomLng);
+        
+        return {
+          ...shop,
+          distance, // Add distance property
+          lat: randomLat, // Add latitude
+          lng: randomLng  // Add longitude
+        };
+      })
+      .filter(shop => shop.distance <= radius) // Only show shops within radius
+      .sort((a, b) => a.distance - b.distance); // Sort by distance
+  };
+  
   const contextValue: AuthContextType = {
     currentUser,
     login,
@@ -114,6 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     register,
     updateUserRole,
     updateUserFavorites,
+    getNearestShops,
     isLoading
   };
 
