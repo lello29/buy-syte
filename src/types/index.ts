@@ -1,4 +1,3 @@
-
 export type UserRole = 'user' | 'shop' | 'collaborator' | 'admin';
 
 export interface User {
@@ -8,7 +7,7 @@ export interface User {
   role: UserRole;
   favorites: string[]; // IDs of favorite shops
   loyaltyPoints: number;
-  isActive?: boolean; // Added property
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -24,11 +23,22 @@ export interface Shop {
   products: Product[];
   offers: Offer[];
   aiCredits: number;
-  isApproved?: boolean; // Added property
-  promotionPackage?: PromotionPackage; // Added property
-  promotionExpiryDate?: string; // Added property
+  isApproved?: boolean;
+  promotionPackage?: PromotionPackage;
+  promotionExpiryDate?: string;
   lastUpdated: string;
   createdAt: string;
+  logoImage?: string;
+  bannerImage?: string;
+  websiteUrl?: string;
+  openingHours?: string;
+  aboutUs?: string;
+  categories?: string[];
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+  };
 }
 
 export interface PromotionPackage {
@@ -51,7 +61,7 @@ export interface Collaborator {
   availability: string;
   rating: number;
   completedTasks: number;
-  isActive?: boolean; // Added property
+  isActive?: boolean;
   createdAt: string;
 }
 

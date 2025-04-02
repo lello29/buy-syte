@@ -1,96 +1,102 @@
-
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { shops, getShopById } from "@/data/mockData";
+import { Store, Search, Heart, MapPin } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import { useAuth } from "@/contexts/AuthContext";
-import { shops } from "@/data/mockData";
-import { Heart, MapPin, Phone, Mail, Store } from "lucide-react";
-import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
-const ShopsPage = () => {
-  const { currentUser, updateUserFavorites } = useAuth();
-  const userFavorites = currentUser?.favorites || [];
+const ShopsPage = ({ isAdmin = false }: { isAdmin?: boolean }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredShops, setFilteredShops] = useState(shops);
 
-  const handleToggleFavorite = (shopId: string) => {
-    if (!currentUser) {
-      toast.error("Effettua il login per aggiungere ai preferiti");
-      return;
-    }
-
-    let newFavorites;
-    if (userFavorites.includes(shopId)) {
-      newFavorites = userFavorites.filter(id => id !== shopId);
-      toast.success("Rimosso dai preferiti");
-    } else {
-      newFavorites = [...userFavorites, shopId];
-      toast.success("Aggiunto ai preferiti");
-    }
-    
-    updateUserFavorites(newFavorites);
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    const filtered = shops.filter(shop =>
+      shop.name.toLowerCase().includes(term.toLowerCase()) ||
+      shop.description.toLowerCase().includes(term.toLowerCase()) ||
+      shop.categories?.some(category => category.toLowerCase().includes(term.toLowerCase()))
+    );
+    setFilteredShops(filtered);
   };
 
   return (
-    <>
-      <Navbar />
-      <div className="container mx-auto py-8 px-4 pt-16">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Esplora i Negozi</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Scopri i negozi disponibili nella piattaforma e aggiungi ai preferiti quelli che ti interessano per ricevere offerte e aggiornamenti.
-          </p>
-        </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold tracking-tight">Negozi</h1>
+      <p className="text-muted-foreground">
+        Esplora i negozi disponibili e scopri i loro prodotti.
+      </p>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {shops.map(shop => (
-            <Card key={shop.id} className="overflow-hidden">
-              <div className="h-40 bg-gray-100 flex items-center justify-center">
-                <Store className="h-20 w-20 text-gray-400" />
-              </div>
-              <CardHeader>
-                <CardTitle className="flex justify-between items-start">
-                  <span>{shop.name}</span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={userFavorites.includes(shop.id) ? "text-red-500" : "text-gray-400"}
-                    onClick={() => handleToggleFavorite(shop.id)}
-                  >
-                    <Heart className="h-5 w-5" fill={userFavorites.includes(shop.id) ? "currentColor" : "none"} />
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600">{shop.description}</p>
-                  
-                  <div className="flex items-center text-sm text-gray-600">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    {shop.address}
-                  </div>
-                  
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Phone className="h-4 w-4 mr-2" />
-                    {shop.phone}
-                  </div>
-                  
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Mail className="h-4 w-4 mr-2" />
-                    {shop.email}
-                  </div>
-                  
-                  <div className="pt-4">
-                    <Button className="w-full">Visita Negozio</Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="mt-4">
+        <Input
+          type="search"
+          placeholder="Cerca negozi..."
+          value={searchTerm}
+          onChange={handleSearch}
+        />
       </div>
-      <Footer />
-    </>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        {filteredShops.map((shop) => (
+          <Card key={shop.id} className="overflow-hidden h-full flex flex-col">
+            <div className="h-40 bg-gray-100 relative">
+              {shop.bannerImage ? (
+                <img
+                  src={shop.bannerImage}
+                  alt={shop.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-primary/5">
+                  <Store className="h-12 w-12 text-primary/40" />
+                </div>
+              )}
+              
+              {shop.logoImage && (
+                <div className="absolute -bottom-6 left-4 w-12 h-12 rounded-md bg-white shadow-md overflow-hidden border-2 border-white">
+                  <img
+                    src={shop.logoImage}
+                    alt={`${shop.name} logo`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+            </div>
+            
+            <CardContent className="flex-grow flex flex-col p-4 pt-8">
+              <h3 className="text-xl font-semibold">{shop.name}</h3>
+              <p className="text-muted-foreground mt-1 line-clamp-2 text-sm flex-grow">
+                {shop.description}
+              </p>
+              
+              <div className="flex items-center mt-2 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4 mr-1" />
+                <span className="truncate">{shop.address}</span>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between">
+                <Button asChild size="sm">
+                  <Link to={`/shops/${shop.id}`}>Visita Negozio</Link>
+                </Button>
+                
+                {/* Favorite Button (Placeholder) */}
+                {/* <Button variant="ghost" size="sm">
+                  <Heart className="h-4 w-4 mr-1" />
+                  Preferiti
+                </Button> */}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {filteredShops.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Nessun negozio trovato.</p>
+        </div>
+      )}
+    </div>
   );
 };
 
