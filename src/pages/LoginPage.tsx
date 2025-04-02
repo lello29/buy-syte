@@ -76,6 +76,7 @@ const LoginPage = () => {
               <p className="font-semibold mb-1">Account demo funzionanti:</p>
               <p>- Cliente: cliente@test.com</p>
               <p>- Negozio: negozio@test.com</p>
+              <p>- Gelateria: info@gelateriaartigianale.it</p>
               <p>- Admin: admin@test.com</p>
               <p className="mt-1 text-xs italic">Usa qualsiasi password</p>
             </div>
