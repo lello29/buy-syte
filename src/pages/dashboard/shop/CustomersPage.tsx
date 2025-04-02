@@ -1,322 +1,193 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/contexts/AuthContext";
-import { users, orders, shops } from "@/data/mockData";
-import { Search, Mail, MessageSquare, UserCheck, UserX, Users, Award, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Filter, Mail, Send } from "lucide-react";
+import { shops, users, orders } from "@/data/mockData";
 
 const CustomersPage = () => {
   const { currentUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [sortField, setSortField] = useState<string>("orders");
-  
+
   if (!currentUser || currentUser.role !== "shop") {
-    return <div>Accesso non autorizzato</div>;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>Non sei autorizzato a visualizzare questa pagina.</p>
+      </div>
+    );
   }
 
-  // Trova il negozio dell'utente corrente
-  const shop = shops.find(shop => shop.userId === currentUser.id);
-  
+  const shop = shops.find((s) => s.userId === currentUser.id);
+
   if (!shop) {
-    return <div>Negozio non trovato</div>;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>Negozio non trovato.</p>
+      </div>
+    );
   }
-  
-  // Trova gli ordini del negozio
-  const shopOrders = orders.filter(order => order.shopId === shop.id);
-  
-  // Trova i clienti unici che hanno effettuato ordini
-  const customerIds = [...new Set(shopOrders.map(order => order.userId))];
-  
-  // Ottieni i dati completi dei clienti
-  const customers = customerIds.map(customerId => {
-    const customer = users.find(user => user.id === customerId);
-    const customerOrders = shopOrders.filter(order => order.userId === customerId);
-    const totalSpent = customerOrders.reduce((sum, order) => sum + order.total, 0);
-    
+
+  // Get customers who have ordered from this shop
+  const shopOrders = orders.filter((order) => order.shopId === shop.id);
+  const customerIds = Array.from(new Set(shopOrders.map((order) => order.userId)));
+  const customers = users.filter((user) => customerIds.includes(user.id));
+
+  // Calculate total spent by each customer
+  const customerStats = customers.map((customer) => {
+    const customerOrders = shopOrders.filter((order) => order.userId === customer.id);
+    const orderCount = customerOrders.length;
+    const totalSpent = customerOrders.reduce((sum, order) => sum + order.totalPrice, 0);
+    const lastOrderDate = new Date(
+      Math.max(...customerOrders.map((o) => new Date(o.createdAt).getTime()))
+    );
+
     return {
-      id: customerId,
-      name: customer?.name || "Cliente sconosciuto",
-      email: customer?.email || "email@sconosciuta.it",
-      orders: customerOrders.length,
-      lastOrder: new Date(Math.max(...customerOrders.map(order => new Date(order.createdAt).getTime()))),
+      ...customer,
+      orderCount,
       totalSpent,
-      loyaltyPoints: customer?.loyaltyPoints || 0,
-      status: customerOrders.length > 3 ? "loyal" : "regular"
+      lastOrderDate,
     };
   });
 
-  // Filtra i clienti in base al termine di ricerca
-  const filteredCustomers = customers.filter(
-    customer => 
-      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCustomers = customerStats.filter((customer) =>
+    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Ordina i clienti
-  const sortedCustomers = [...filteredCustomers].sort((a, b) => {
-    let comparison = 0;
-
-    if (sortField === "name") {
-      comparison = a.name.localeCompare(b.name);
-    } else if (sortField === "lastOrder") {
-      comparison = b.lastOrder.getTime() - a.lastOrder.getTime();
-    } else if (sortField === "orders") {
-      comparison = b.orders - a.orders;
-    } else if (sortField === "spent") {
-      comparison = b.totalSpent - a.totalSpent;
-    } else if (sortField === "loyalty") {
-      comparison = b.loyaltyPoints - a.loyaltyPoints;
-    }
-
-    return sortOrder === "asc" ? -comparison : comparison;
-  });
-
-  // Calcola i clienti attivi (che hanno effettuato ordini negli ultimi 30 giorni)
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  
-  const activeCustomers = customers.filter(
-    customer => customer.lastOrder > thirtyDaysAgo
-  ).length;
-  
-  // Calcola la spesa media dei clienti
-  const averageSpent = customers.length > 0 
-    ? customers.reduce((sum, customer) => sum + customer.totalSpent, 0) / customers.length
-    : 0;
-  
-  const handleSort = (field: string) => {
-    if (field === sortField) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("desc");
-    }
-  };
-  
-  const renderSortIcon = (field: string) => {
-    if (sortField !== field) return null;
-    return sortOrder === "asc" ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />;
-  };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Clienti</h1>
+        <h1 className="text-3xl font-bold">I tuoi clienti</h1>
         <p className="text-gray-600">
-          Gestisci e analizza i clienti del tuo negozio.
+          Gestisci e visualizza informazioni sui clienti del tuo negozio
         </p>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex items-center gap-2 bg-white p-2 rounded-lg border flex-1">
+          <Search className="h-5 w-5 text-gray-400" />
+          <Input
+            placeholder="Cerca cliente per nome o email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border-0 focus-visible:ring-0"
+          />
+        </div>
+        <Button variant="outline" className="flex gap-2">
+          <Filter className="h-4 w-4" />
+          Filtri
+        </Button>
+        <Button className="flex gap-2">
+          <Mail className="h-4 w-4" />
+          Marketing Email
+        </Button>
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Clienti totali</p>
-                <p className="text-2xl font-bold">{customers.length}</p>
-              </div>
-              <Users className="h-8 w-8 text-primary" />
+          <CardContent className="p-6">
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm">Totale clienti</span>
+              <span className="text-3xl font-bold">{customers.length}</span>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Clienti attivi</p>
-                <p className="text-2xl font-bold">{activeCustomers}</p>
-              </div>
-              <UserCheck className="h-8 w-8 text-green-500" />
+          <CardContent className="p-6">
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm">Totale ordini</span>
+              <span className="text-3xl font-bold">{shopOrders.length}</span>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Spesa media</p>
-                <p className="text-2xl font-bold">€{averageSpent.toFixed(2)}</p>
-              </div>
-              <Award className="h-8 w-8 text-amber-500" />
+          <CardContent className="p-6">
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm">Ordine medio</span>
+              <span className="text-3xl font-bold">
+                €{shopOrders.length > 0
+                  ? (
+                      shopOrders.reduce((sum, order) => sum + order.totalPrice, 0) /
+                      shopOrders.length
+                    ).toFixed(2)
+                  : "0.00"}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm">Nuovi clienti (30gg)</span>
+              <span className="text-3xl font-bold">
+                {
+                  customers.filter(
+                    (c) =>
+                      new Date(c.createdAt).getTime() >
+                      Date.now() - 30 * 24 * 60 * 60 * 1000
+                  ).length
+                }
+              </span>
             </div>
           </CardContent>
         </Card>
       </div>
-      
-      <Tabs defaultValue="all">
-        <TabsList>
-          <TabsTrigger value="all">Tutti i clienti</TabsTrigger>
-          <TabsTrigger value="loyal">Clienti fedeli</TabsTrigger>
-          <TabsTrigger value="regular">Clienti regolari</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="all" className="space-y-4">
-          <div className="flex items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-              <Input
-                type="search"
-                placeholder="Cerca cliente per nome o email..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Lista Clienti</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Nome</th>
+                    <th className="px-4 py-3 text-left">Email</th>
+                    <th className="px-4 py-3 text-right">Ordini</th>
+                    <th className="px-4 py-3 text-right">Spesa totale</th>
+                    <th className="px-4 py-3 text-left">Ultimo ordine</th>
+                    <th className="px-4 py-3 text-right">Azioni</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {filteredCustomers.map((customer) => (
+                    <tr key={customer.id}>
+                      <td className="px-4 py-3">{customer.name}</td>
+                      <td className="px-4 py-3 text-gray-600">{customer.email}</td>
+                      <td className="px-4 py-3 text-right">{customer.orderCount}</td>
+                      <td className="px-4 py-3 text-right">
+                        €{customer.totalSpent.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-3">
+                        {customer.lastOrderDate.toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <Button size="sm" variant="ghost" className="flex gap-1">
+                          <Send className="h-4 w-4" />
+                          Contatta
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {filteredCustomers.length === 0 && (
+                <div className="px-4 py-8 text-center">
+                  <p className="text-gray-500">Nessun cliente trovato</p>
+                </div>
+              )}
             </div>
           </div>
-          
-          <Card>
-            <CardHeader className="pb-0">
-              <CardTitle>Elenco clienti</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <div className="relative w-full overflow-auto">
-                  <table className="w-full caption-bottom text-sm">
-                    <thead>
-                      <tr className="border-b transition-colors hover:bg-gray-50">
-                        <th 
-                          className="h-12 px-4 text-left align-middle font-medium cursor-pointer"
-                          onClick={() => handleSort("name")}
-                        >
-                          <div className="flex items-center gap-1">
-                            Cliente 
-                            {renderSortIcon("name")}
-                          </div>
-                        </th>
-                        <th 
-                          className="h-12 px-4 text-left align-middle font-medium cursor-pointer"
-                          onClick={() => handleSort("orders")}
-                        >
-                          <div className="flex items-center gap-1">
-                            Ordini 
-                            {renderSortIcon("orders")}
-                          </div>
-                        </th>
-                        <th 
-                          className="h-12 px-4 text-left align-middle font-medium cursor-pointer"
-                          onClick={() => handleSort("spent")}
-                        >
-                          <div className="flex items-center gap-1">
-                            Spesa totale 
-                            {renderSortIcon("spent")}
-                          </div>
-                        </th>
-                        <th 
-                          className="h-12 px-4 text-left align-middle font-medium cursor-pointer"
-                          onClick={() => handleSort("lastOrder")}
-                        >
-                          <div className="flex items-center gap-1">
-                            Ultimo ordine 
-                            {renderSortIcon("lastOrder")}
-                          </div>
-                        </th>
-                        <th 
-                          className="h-12 px-4 text-left align-middle font-medium cursor-pointer"
-                          onClick={() => handleSort("loyalty")}
-                        >
-                          <div className="flex items-center gap-1">
-                            Punti fedeltà 
-                            {renderSortIcon("loyalty")}
-                          </div>
-                        </th>
-                        <th className="h-12 px-4 text-right align-middle font-medium">Azioni</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedCustomers.map((customer) => (
-                        <tr key={customer.id} className="border-b transition-colors hover:bg-gray-50">
-                          <td className="p-4 align-middle">
-                            <div className="flex flex-col">
-                              <span className="font-medium">{customer.name}</span>
-                              <span className="text-xs text-gray-500">{customer.email}</span>
-                            </div>
-                          </td>
-                          <td className="p-4 align-middle">{customer.orders}</td>
-                          <td className="p-4 align-middle">€{customer.totalSpent.toFixed(2)}</td>
-                          <td className="p-4 align-middle">{customer.lastOrder.toLocaleDateString()}</td>
-                          <td className="p-4 align-middle">
-                            <div className="flex items-center">
-                              <Award className="h-4 w-4 text-amber-500 mr-1" />
-                              {customer.loyaltyPoints}
-                            </div>
-                          </td>
-                          <td className="p-4 align-middle text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button size="sm" variant="ghost">
-                                <Mail className="h-4 w-4" />
-                              </Button>
-                              <Button size="sm" variant="ghost">
-                                <MessageSquare className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  
-                  {sortedCustomers.length === 0 && (
-                    <div className="flex flex-col items-center justify-center p-4 text-center">
-                      <UserX className="h-10 w-10 text-gray-400 mb-2" />
-                      <h3 className="font-medium">Nessun cliente trovato</h3>
-                      <p className="text-sm text-gray-500">
-                        {searchTerm ? 'Prova con un altro termine di ricerca.' : 'Non ci sono clienti registrati.'}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="loyal">
-          {/* Contenuto simile per i clienti fedeli */}
-          <Card>
-            <CardContent className="py-6">
-              <div className="flex items-center justify-center">
-                <div className="text-center">
-                  <UserCheck className="h-10 w-10 text-primary mx-auto mb-2" />
-                  <h3 className="text-lg font-medium mb-2">Clienti fedeli</h3>
-                  <p className="text-sm text-gray-500 max-w-md">
-                    Qui vedrai un elenco dei clienti che hanno effettuato più di 3 ordini nel tuo negozio.
-                  </p>
-                  <Badge className="mt-4" variant="outline">
-                    {customers.filter(c => c.status === "loyal").length} Clienti fedeli
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="regular">
-          {/* Contenuto simile per i clienti regolari */}
-          <Card>
-            <CardContent className="py-6">
-              <div className="flex items-center justify-center">
-                <div className="text-center">
-                  <Users className="h-10 w-10 text-primary mx-auto mb-2" />
-                  <h3 className="text-lg font-medium mb-2">Clienti regolari</h3>
-                  <p className="text-sm text-gray-500 max-w-md">
-                    Qui vedrai un elenco dei clienti che hanno effettuato meno di 3 ordini nel tuo negozio.
-                  </p>
-                  <Badge className="mt-4" variant="outline">
-                    {customers.filter(c => c.status === "regular").length} Clienti regolari
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };
