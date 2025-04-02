@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User, UserRole, Shop } from "../types";
 import { users, shops } from "../data/mockData";
@@ -12,6 +13,7 @@ interface AuthContextType {
   updateUserFavorites: (favorites: string[]) => void;
   getNearestShops: (lat: number, lng: number, radius?: number) => Shop[];
   isLoading: boolean;
+  getUserShop: () => Shop | undefined;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -87,7 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (email === "info@gelateriaartigianale.it") {
       const testUser: User = {
-        id: "gelateria-shop",
+        id: "gelateria-user",
         name: "Gelateria Artigianale",
         email: "info@gelateriaartigianale.it",
         role: "shop",
@@ -196,6 +198,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .sort((a, b) => a.distance - b.distance);
   };
 
+  // Function to get the current user's shop if they are a shop user
+  const getUserShop = (): Shop | undefined => {
+    if (!currentUser || currentUser.role !== 'shop') {
+      return undefined;
+    }
+
+    // For the Gelateria test account
+    if (currentUser.email === 'info@gelateriaartigianale.it') {
+      return shops.find(shop => shop.id === 'shop5');
+    }
+
+    // For the negozio@test.com test account
+    if (currentUser.email === 'negozio@test.com') {
+      return shops.find(shop => shop.name === 'Negozio Test') || shops[0];
+    }
+
+    // For other shop users, try to find by userId
+    return shops.find(shop => shop.userId === currentUser.id);
+  };
+
   const contextValue: AuthContextType = {
     currentUser,
     login,
@@ -204,7 +226,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateUserRole,
     updateUserFavorites,
     getNearestShops,
-    isLoading
+    isLoading,
+    getUserShop
   };
 
   return (

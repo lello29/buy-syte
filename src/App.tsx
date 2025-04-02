@@ -29,7 +29,7 @@ import SettingsPage from "@/pages/dashboard/admin/SettingsPage";
 import UsersPage from "@/pages/dashboard/admin/UsersPage";
 import AdminShopsPage from "@/pages/dashboard/admin/AdminShopsPage";
 import CollaboratorsPage from "@/pages/dashboard/admin/CollaboratorsPage";
-import AdminProductsPage from "@/pages/dashboard/admin/ProductsPage";
+import AdminProductsPage from "@/pages/dashboard/admin/AdminProductsPage";
 
 const queryClient = new QueryClient();
 
@@ -109,12 +109,14 @@ const AppRoutes = () => {
         }>
           <Route index element={<DashboardIndex />} />
           
+          {/* User routes */}
           <Route path="favorites" element={<FavoritesPage />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="loyalty" element={<LoyaltyPage />} />
-          <Route path="convert-to-shop" element={<ConvertToShopPage />} />
-          <Route path="convert-to-collaborator" element={<ConvertToCollaboratorPage />} />
+          <Route path="convert-shop" element={<ConvertToShopPage />} />
+          <Route path="convert-collaborator" element={<ConvertToCollaboratorPage />} />
           
+          {/* Shop routes */}
           <Route path="products" element={
             <ShopRoute>
               <ProductsPage />
@@ -125,14 +127,30 @@ const AppRoutes = () => {
               <CustomersPage />
             </ShopRoute>
           } />
-          <Route path="shop-settings" element={<ShopSettingsPage />} />
+          <Route path="shop-orders" element={
+            <ShopRoute>
+              <OrdersPage />
+            </ShopRoute>
+          } />
+          <Route path="offers" element={
+            <ShopRoute>
+              <OffersPage />
+            </ShopRoute>
+          } />
+          <Route path="shop-settings" element={
+            <ShopRoute>
+              <ShopSettingsPage />
+            </ShopRoute>
+          } />
           
+          {/* Collaborator routes */}
           <Route path="tasks" element={
             <CollaboratorRoute>
               <TasksPage />
             </CollaboratorRoute>
           } />
           
+          {/* Admin routes */}
           <Route path="admin" element={
             <AdminRoute>
               <AdminDashboardPage />

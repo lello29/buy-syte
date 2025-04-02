@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { getProductsByShopId, shops } from "@/data/mockData";
+import { getProductsByShopId } from "@/data/mockData";
 import { toast } from "sonner";
 
 import ProductsHeader from "@/components/products/ProductsHeader";
@@ -12,7 +12,7 @@ import ProductsMetrics from "@/components/products/ProductsMetrics";
 import ProductsSalesHints from "@/components/products/ProductsSalesHints";
 
 const ProductsPage = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, getUserShop } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   
@@ -20,10 +20,18 @@ const ProductsPage = () => {
     return <div>Accesso non autorizzato</div>;
   }
   
-  const shop = shops.find(shop => shop.userId === currentUser.id);
+  const shop = getUserShop();
   
   if (!shop) {
-    return <div>Negozio non trovato</div>;
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold mb-2">Negozio non configurato</h2>
+        <p className="text-muted-foreground mb-6">
+          Il tuo account negozio non è ancora associato a un profilo negozio. 
+          Contatta l'amministratore per configurare il tuo profilo.
+        </p>
+      </div>
+    );
   }
   
   const products = getProductsByShopId(shop.id);

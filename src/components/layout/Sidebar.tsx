@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, setMobileMenuOpen }) => {
           { icon: Calendar, label: "Offerte", path: "/dashboard/offers" },
           { icon: Bell, label: "Notifiche", path: "/dashboard/notifications" },
           { icon: Users, label: "Collaboratori", path: "/dashboard/collaborators" },
-          { icon: Settings, label: "Impostazioni", path: "/dashboard/settings" }
+          { icon: Settings, label: "Impostazioni", path: "/dashboard/shop-settings" }
         ];
       case "collaborator":
         return [
@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, setMobileMenuOpen }) => {
           { icon: Store, label: "Negozi", path: "/dashboard/admin-shops" },
           { icon: Briefcase, label: "Collaboratori", path: "/dashboard/admin-collaborators" },
           { icon: Package, label: "Prodotti", path: "/dashboard/admin-products" },
-          { icon: UserCog, label: "Impostazioni", path: "/dashboard/admin-settings" }
+          { icon: UserCog, label: "Impostazioni", path: "/dashboard/admin/settings" }
         ];
       default:
         return [];
