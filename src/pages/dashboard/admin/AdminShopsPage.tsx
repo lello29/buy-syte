@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { shops } from '@/data/shops';
 import { Button } from '@/components/ui/button';
@@ -64,7 +65,7 @@ const AdminShopsPage = () => {
         [name]: name === 'aiCredits' 
           ? parseInt(value as string) 
           : name === 'isApproved'
-          ? value === true || value === 'true'
+          ? (value === 'true' || value === true)
           : value 
       });
     } else if (addDialogOpen) {
