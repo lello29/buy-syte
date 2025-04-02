@@ -1,11 +1,10 @@
-
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { getOrdersByUserId, getProductsByShopId, getUsersByRole, shops, products, getTasksByCollaboratorId, collaborators } from "@/data/mockData";
-import { BarChart3, Package, Users, Heart, ShoppingBag, Store, User, Award, Calendar } from "lucide-react";
+import { BarChart3, Package, Users, Heart, ShoppingBag, Store, User, Award, Calendar, Star } from "lucide-react";
 
 const DashboardIndex = () => {
   const { currentUser } = useAuth();
@@ -181,7 +180,6 @@ const UserDashboard = ({ userId }: { userId: string }) => {
 };
 
 const ShopDashboard = ({ userId }: { userId: string }) => {
-  // Find shop by userId
   const shop = shops.find(shop => shop.userId === userId);
   
   if (!shop) {
@@ -329,7 +327,6 @@ const ShopDashboard = ({ userId }: { userId: string }) => {
 };
 
 const CollaboratorDashboard = ({ userId }: { userId: string }) => {
-  // Find collaborator by userId
   const collaborator = collaborators.find(collab => collab.userId === userId);
   
   if (!collaborator) {
