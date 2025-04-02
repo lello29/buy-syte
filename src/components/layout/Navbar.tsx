@@ -30,9 +30,12 @@ const Navbar = () => {
     <nav className="bg-white border-b border-gray-200 fixed w-full z-50 top-0">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center text-primary font-bold text-2xl">
-            <Store className="h-6 w-6 mr-2" />
-            ShopHubConnect
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/eb9eb2f3-24f5-4273-bab4-45b921b6aa64.png" 
+              alt="BuySite Logo" 
+              className="h-10" 
+            />
           </Link>
 
           {/* Desktop menu */}
