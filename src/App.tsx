@@ -23,9 +23,9 @@ import TasksPage from "./pages/dashboard/collaborator/TasksPage";
 // Admin pages
 import AdminDashboardPage from "./pages/dashboard/admin/AdminDashboardPage";
 import UsersPage from "./pages/dashboard/admin/UsersPage";
-import ShopsPage as AdminShopsPage from "./pages/dashboard/admin/ShopsPage";
+import { default as AdminShopsPage } from "./pages/dashboard/admin/ShopsPage";
 import CollaboratorsPage from "./pages/dashboard/admin/CollaboratorsPage";
-import ProductsPage as AdminProductsPage from "./pages/dashboard/admin/ProductsPage";
+import { default as AdminProductsPage } from "./pages/dashboard/admin/ProductsPage";
 import SettingsPage from "./pages/dashboard/admin/SettingsPage";
 
 const queryClient = new QueryClient();
