@@ -25,7 +25,19 @@ export interface Shop {
   offers: Offer[];
   aiCredits: number;
   isApproved?: boolean; // Added property
+  promotionPackage?: PromotionPackage; // Added property
+  promotionExpiryDate?: string; // Added property
   lastUpdated: string;
+  createdAt: string;
+}
+
+export interface PromotionPackage {
+  id: string;
+  name: string;
+  description: string;
+  durationDays: number;
+  price: number;
+  isActive: boolean;
   createdAt: string;
 }
 

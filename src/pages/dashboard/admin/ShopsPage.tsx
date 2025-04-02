@@ -11,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Store, Package, ShoppingBag, Check, X } from "lucide-react";
+import { Store, Package, ShoppingBag, Check, X, Sparkles } from "lucide-react";
 import { shops, getProductsByShopId } from "@/data/mockData";
 
 const ShopsPage = () => {
@@ -32,6 +32,10 @@ const ShopsPage = () => {
   
   const handleRejectShop = (shopId: string) => {
     toast.success("Negozio rifiutato");
+  };
+  
+  const handleAssignPromotion = (shopId: string) => {
+    toast.success("Pacchetto promozionale assegnato con successo");
   };
 
   const filteredShops = approvalFilters === "all" 
@@ -89,6 +93,7 @@ const ShopsPage = () => {
                     <th className="px-4 py-3 text-left font-medium">Prodotti</th>
                     <th className="px-4 py-3 text-left font-medium">Creato</th>
                     <th className="px-4 py-3 text-left font-medium">Stato</th>
+                    <th className="px-4 py-3 text-left font-medium">Promozione</th>
                     <th className="px-4 py-3 text-right font-medium">Azioni</th>
                   </tr>
                 </thead>
@@ -111,6 +116,17 @@ const ShopsPage = () => {
                           {shop.isApproved ? "Approvato" : "In Attesa"}
                         </Badge>
                       </td>
+                      <td className="px-4 py-3 text-left">
+                        {parseInt(shop.id) < 3 ? (
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                            <Sparkles className="h-3 w-3 mr-1" /> Attiva
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200">
+                            Nessuna
+                          </Badge>
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex justify-end gap-2">
                           {!shop.isApproved && (
@@ -131,6 +147,16 @@ const ShopsPage = () => {
                                 <X className="mr-1 h-4 w-4" /> Rifiuta
                               </Button>
                             </>
+                          )}
+                          {shop.isApproved && parseInt(shop.id) >= 3 && (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                              onClick={() => handleAssignPromotion(shop.id)}
+                            >
+                              <Sparkles className="mr-1 h-4 w-4" /> Promuovi
+                            </Button>
                           )}
                           <Button size="sm" variant="outline">
                             Dettagli
