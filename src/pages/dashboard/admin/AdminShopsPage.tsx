@@ -4,7 +4,7 @@ import { shops } from '@/data/shops';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, Pencil } from 'lucide-react';
+import { Eye, Pencil, Plus } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -23,12 +23,25 @@ import {
 import { getProductsByShopId } from '@/data/products';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 const AdminShopsPage = () => {
   const [selectedShop, setSelectedShop] = useState<any>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [shopsList, setShopsList] = useState(shops);
   const isMobile = useIsMobile();
+  
+  // Add shop form state
+  const [newShop, setNewShop] = useState({
+    name: '',
+    address: '',
+    email: '',
+    phone: '',
+    aiCredits: 100,
+  });
 
   const handleViewShop = (shop: any) => {
     setSelectedShop(shop);
@@ -42,18 +55,65 @@ const AdminShopsPage = () => {
 
   const handleApproveShop = () => {
     // In a real application, this would call an API to update the shop
+    const updatedShops = shopsList.map(shop => 
+      shop.id === selectedShop.id 
+        ? { ...selectedShop, isApproved: selectedShop.isApproved === false ? true : selectedShop.isApproved }
+        : shop
+    );
+    
+    setShopsList(updatedShops);
     toast({
-      title: "Negozio approvato",
-      description: `Il negozio "${selectedShop.name}" è stato approvato.`
+      title: "Negozio aggiornato",
+      description: `Il negozio "${selectedShop.name}" è stato aggiornato con successo.`
     });
     setEditDialogOpen(false);
   };
 
+  const handleAddShop = () => {
+    setAddDialogOpen(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    if (editDialogOpen && selectedShop) {
+      setSelectedShop({ ...selectedShop, [name]: value });
+    } else if (addDialogOpen) {
+      setNewShop({ ...newShop, [name]: name === 'aiCredits' ? parseInt(value) : value });
+    }
+  };
+
+  const handleCreateShop = () => {
+    const newShopWithId = {
+      ...newShop,
+      id: `shop-${Date.now()}`,
+      isApproved: false,
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
+      imageUrl: 'https://placehold.co/400x300',
+    };
+    
+    setShopsList([...shopsList, newShopWithId]);
+    toast({
+      title: "Negozio creato",
+      description: `Il negozio "${newShop.name}" è stato creato con successo.`
+    });
+    setAddDialogOpen(false);
+    setNewShop({
+      name: '',
+      address: '',
+      email: '',
+      phone: '',
+      aiCredits: 100,
+    });
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Gestione Negozi</h1>
-        <Button>Aggiungi Negozio</Button>
+        <Button onClick={handleAddShop}>
+          <Plus className="mr-1 h-4 w-4" /> Aggiungi Negozio
+        </Button>
       </div>
       
       <Card>
@@ -74,7 +134,7 @@ const AdminShopsPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {shops.map((shop) => (
+              {shopsList.map((shop) => (
                 <TableRow key={shop.id}>
                   <TableCell className="font-medium">{shop.name}</TableCell>
                   <TableCell>{shop.address}</TableCell>
@@ -161,52 +221,61 @@ const AdminShopsPage = () => {
           {selectedShop && (
             <div className="space-y-4">
               <div className="flex flex-col space-y-1">
-                <span className="text-sm font-medium text-gray-500">Nome</span>
-                <input 
-                  type="text" 
-                  className="border p-2 rounded" 
-                  defaultValue={selectedShop.name}
+                <Label htmlFor="name">Nome</Label>
+                <Input 
+                  id="name"
+                  name="name"
+                  value={selectedShop.name}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="flex flex-col space-y-1">
-                <span className="text-sm font-medium text-gray-500">Indirizzo</span>
-                <input 
-                  type="text" 
-                  className="border p-2 rounded" 
-                  defaultValue={selectedShop.address}
+                <Label htmlFor="address">Indirizzo</Label>
+                <Input 
+                  id="address"
+                  name="address"
+                  value={selectedShop.address}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="flex flex-col space-y-1">
-                <span className="text-sm font-medium text-gray-500">Email</span>
-                <input 
-                  type="email" 
-                  className="border p-2 rounded" 
-                  defaultValue={selectedShop.email}
+                <Label htmlFor="email">Email</Label>
+                <Input 
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={selectedShop.email}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="flex flex-col space-y-1">
-                <span className="text-sm font-medium text-gray-500">Telefono</span>
-                <input 
-                  type="text" 
-                  className="border p-2 rounded" 
-                  defaultValue={selectedShop.phone}
+                <Label htmlFor="phone">Telefono</Label>
+                <Input 
+                  id="phone"
+                  name="phone"
+                  value={selectedShop.phone}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="flex flex-col space-y-1">
-                <span className="text-sm font-medium text-gray-500">Crediti AI</span>
-                <input 
+                <Label htmlFor="aiCredits">Crediti AI</Label>
+                <Input 
+                  id="aiCredits"
+                  name="aiCredits"
                   type="number" 
-                  className="border p-2 rounded" 
-                  defaultValue={selectedShop.aiCredits}
+                  value={selectedShop.aiCredits}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="flex items-center space-x-2">
                 <input 
                   type="checkbox" 
                   id="isApproved" 
-                  defaultChecked={selectedShop.isApproved !== false}
+                  name="isApproved"
+                  checked={selectedShop.isApproved !== false}
+                  onChange={(e) => setSelectedShop({...selectedShop, isApproved: e.target.checked})}
                 />
-                <label htmlFor="isApproved">Approvato</label>
+                <Label htmlFor="isApproved">Approvato</Label>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
@@ -218,6 +287,77 @@ const AdminShopsPage = () => {
               </DialogFooter>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Shop Dialog */}
+      <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Aggiungi Nuovo Negozio</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex flex-col space-y-1">
+              <Label htmlFor="new-name">Nome</Label>
+              <Input 
+                id="new-name"
+                name="name"
+                value={newShop.name}
+                onChange={handleInputChange}
+                placeholder="Nome del negozio"
+              />
+            </div>
+            <div className="flex flex-col space-y-1">
+              <Label htmlFor="new-address">Indirizzo</Label>
+              <Input 
+                id="new-address"
+                name="address"
+                value={newShop.address}
+                onChange={handleInputChange}
+                placeholder="Indirizzo"
+              />
+            </div>
+            <div className="flex flex-col space-y-1">
+              <Label htmlFor="new-email">Email</Label>
+              <Input 
+                id="new-email"
+                name="email"
+                type="email"
+                value={newShop.email}
+                onChange={handleInputChange}
+                placeholder="Email"
+              />
+            </div>
+            <div className="flex flex-col space-y-1">
+              <Label htmlFor="new-phone">Telefono</Label>
+              <Input 
+                id="new-phone"
+                name="phone"
+                value={newShop.phone}
+                onChange={handleInputChange}
+                placeholder="Numero di telefono"
+              />
+            </div>
+            <div className="flex flex-col space-y-1">
+              <Label htmlFor="new-aiCredits">Crediti AI</Label>
+              <Input 
+                id="new-aiCredits"
+                name="aiCredits"
+                type="number" 
+                value={newShop.aiCredits}
+                onChange={handleInputChange}
+                placeholder="Crediti AI"
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
+                Annulla
+              </Button>
+              <Button onClick={handleCreateShop}>
+                Crea Negozio
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
