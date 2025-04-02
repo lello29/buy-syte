@@ -34,6 +34,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 800));
     
+    // Demo accounts for testing
+    if (email === "cliente@test.com") {
+      const testUser: User = {
+        id: "test-user",
+        name: "Cliente Test",
+        email: "cliente@test.com",
+        role: "user",
+        favorites: ["shop1", "shop3"],
+        loyaltyPoints: 150,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setCurrentUser(testUser);
+      localStorage.setItem("currentUser", JSON.stringify(testUser));
+      toast.success("Login effettuato con successo!");
+      return true;
+    } 
+    
+    if (email === "negozio@test.com") {
+      const testUser: User = {
+        id: "test-shop",
+        name: "Negozio Test",
+        email: "negozio@test.com",
+        role: "shop",
+        favorites: [],
+        loyaltyPoints: 0,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setCurrentUser(testUser);
+      localStorage.setItem("currentUser", JSON.stringify(testUser));
+      toast.success("Login effettuato con successo!");
+      return true;
+    }
+    
+    if (email === "admin@test.com") {
+      const testUser: User = {
+        id: "test-admin",
+        name: "Amministratore Test",
+        email: "admin@test.com",
+        role: "admin",
+        favorites: [],
+        loyaltyPoints: 0,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setCurrentUser(testUser);
+      localStorage.setItem("currentUser", JSON.stringify(testUser));
+      toast.success("Login effettuato con successo!");
+      return true;
+    }
+    
     // In a real app, this would validate against a backend
     // For now, we're just checking against mock data
     const user = users.find(u => u.email === email);

@@ -73,10 +73,10 @@ const LoginPage = () => {
 
             {/* Demo accounts info */}
             <div className="bg-blue-50 p-3 rounded-md text-sm text-blue-800 border border-blue-200">
-              <p className="font-semibold mb-1">Account demo:</p>
-              <p>- Cliente: mario@example.com</p>
-              <p>- Negozio: store@elettronica.com</p>
-              <p>- Admin: admin@shophub.com</p>
+              <p className="font-semibold mb-1">Account demo funzionanti:</p>
+              <p>- Cliente: cliente@test.com</p>
+              <p>- Negozio: negozio@test.com</p>
+              <p>- Admin: admin@test.com</p>
               <p className="mt-1 text-xs italic">Usa qualsiasi password</p>
             </div>
           </CardContent>
