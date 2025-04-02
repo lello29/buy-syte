@@ -102,7 +102,7 @@ const AppRoutes = () => {
               <UsersPage />
             </AdminRoute>
           } />
-          <Route path="shops" element={
+          <Route path="admin-shops" element={
             <AdminRoute>
               <AdminShopsPage />
             </AdminRoute>
