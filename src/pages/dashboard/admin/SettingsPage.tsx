@@ -7,8 +7,17 @@ import { MapSettingsCard } from "@/components/admin/settings/MapSettingsCard";
 import { NotificationsCard } from "@/components/admin/settings/NotificationsCard";
 import { AIPackagesCard } from "@/components/admin/settings/AIPackagesCard";
 import { DatabaseCard } from "@/components/admin/settings/DatabaseCard";
+import { AISettingsCard } from "@/components/admin/settings/AISettingsCard";
+import { AIIntegrationCard } from "@/components/admin/settings/AIIntegrationCard";
 import { Separator } from "@/components/ui/separator";
-import { Settings, Map, Bell, CreditCard, Database } from "lucide-react";
+import { 
+  Settings, 
+  Map, 
+  Bell, 
+  CreditCard, 
+  Database,
+  Sparkles
+} from "lucide-react";
 
 const SettingsPage = () => {
   const { currentUser } = useAuth();
@@ -65,6 +74,12 @@ const SettingsPage = () => {
             setEnablePayments={setEnablePayments}
             onSubmit={handleSaveSettings}
           />
+          
+          <div className="flex items-center gap-2 text-lg font-semibold mt-8">
+            <Sparkles className="h-5 w-5 text-primary" />
+            <h2>Configurazione Intelligenza Artificiale</h2>
+          </div>
+          <AISettingsCard />
         </div>
         
         <div className="space-y-6">
@@ -79,6 +94,12 @@ const SettingsPage = () => {
             <h2>Pacchetti e Crediti</h2>
           </div>
           <AIPackagesCard />
+          
+          <div className="flex items-center gap-2 text-lg font-semibold mt-8">
+            <Sparkles className="h-5 w-5 text-primary" />
+            <h2>Integrazione AI Prodotti</h2>
+          </div>
+          <AIIntegrationCard />
           
           <div className="flex items-center gap-2 text-lg font-semibold mt-8">
             <Database className="h-5 w-5 text-primary" />
