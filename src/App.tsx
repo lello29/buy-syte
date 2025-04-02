@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,6 +27,7 @@ import TasksPage from "@/pages/dashboard/collaborator/TasksPage";
 import AdminDashboardPage from "@/pages/dashboard/admin/AdminDashboardPage";
 import SettingsPage from "@/pages/dashboard/admin/SettingsPage";
 import UsersPage from "@/pages/dashboard/admin/UsersPage";
+import AdminShopsPage from "@/pages/dashboard/admin/AdminShopsPage";
 import CollaboratorsPage from "@/pages/dashboard/admin/CollaboratorsPage";
 import AdminProductsPage from "@/pages/dashboard/admin/ProductsPage";
 
