@@ -1,7 +1,7 @@
 
 import { User } from "@/types";
 import { 
-  User as UserIcon, Store, Users, Package, BarChart3, Heart, ShoppingCart
+  User as UserIcon, Store, Users, Package, BarChart3, Heart, ShoppingCart, Briefcase
 } from "lucide-react";
 
 export interface MenuItem {
@@ -36,6 +36,7 @@ export const getMenuItems = (currentUser: User): MenuItem[] => {
         { icon: BarChart3, label: "Dashboard", path: "/dashboard/admin" },
         { icon: Users, label: "Utenti", path: "/dashboard/users" },
         { icon: Store, label: "Negozi", path: "/dashboard/admin-shops" },
+        { icon: Briefcase, label: "Collaboratori", path: "/dashboard/admin-collaborators" },
       ];
     default:
       return [];
