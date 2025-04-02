@@ -10,6 +10,7 @@ interface AuthContextType {
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   updateUserRole: (role: UserRole) => void;
+  updateUserFavorites: (favorites: string[]) => void;
   isLoading: boolean;
 }
 
@@ -98,8 +99,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUserFavorites = (favorites: string[]) => {
+    if (currentUser) {
+      const updatedUser = { ...currentUser, favorites };
+      setCurrentUser(updatedUser);
+      localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout, register, updateUserRole, isLoading }}>
+    <AuthContext.Provider value={{ 
+      currentUser, 
+      login, 
+      logout, 
+      register, 
+      updateUserRole,
+      updateUserFavorites,
+      isLoading 
+    }}>
       {children}
     </AuthContext.Provider>
   );

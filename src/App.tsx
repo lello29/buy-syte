@@ -9,10 +9,16 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ShopsPage from "./pages/shops/ShopsPage";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import DashboardIndex from "./pages/dashboard/DashboardIndex";
 import ConvertToShopPage from "./pages/dashboard/profile/ConvertToShopPage";
 import ConvertToCollaboratorPage from "./pages/dashboard/profile/ConvertToCollaboratorPage";
+import FavoritesPage from "./pages/dashboard/user/FavoritesPage";
+import OrdersPage from "./pages/dashboard/user/OrdersPage";
+import LoyaltyPage from "./pages/dashboard/user/LoyaltyPage";
+import ProductsPage from "./pages/dashboard/shop/ProductsPage";
+import TasksPage from "./pages/dashboard/collaborator/TasksPage";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +45,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/shops" element={<ShopsPage />} />
         
         {/* Protected dashboard routes */}
         <Route path="/dashboard" element={
@@ -47,8 +54,20 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }>
           <Route index element={<DashboardIndex />} />
+          
+          {/* User routes */}
+          <Route path="favorites" element={<FavoritesPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="loyalty" element={<LoyaltyPage />} />
           <Route path="convert-shop" element={<ConvertToShopPage />} />
           <Route path="convert-collaborator" element={<ConvertToCollaboratorPage />} />
+          
+          {/* Shop routes */}
+          <Route path="products" element={<ProductsPage />} />
+          
+          {/* Collaborator routes */}
+          <Route path="tasks" element={<TasksPage />} />
+          
           {/* More dashboard routes can be added here */}
         </Route>
         
