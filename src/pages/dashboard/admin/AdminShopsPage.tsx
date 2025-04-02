@@ -17,7 +17,6 @@ const AdminShopsPage = () => {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [shopsList, setShopsList] = useState<Shop[]>(shops);
   
-  // Add shop form state
   const [newShop, setNewShop] = useState({
     name: '',
     address: '',
@@ -39,7 +38,6 @@ const AdminShopsPage = () => {
   const handleApproveShop = () => {
     if (!selectedShop) return;
 
-    // In a real application, this would call an API to update the shop
     const updatedShops = shopsList.map(shop => 
       shop.id === selectedShop.id 
         ? { ...selectedShop, isApproved: selectedShop.isApproved === false ? true : selectedShop.isApproved }
@@ -66,7 +64,7 @@ const AdminShopsPage = () => {
         [name]: name === 'aiCredits' 
           ? parseInt(value as string) 
           : name === 'isApproved'
-          ? value === 'true' || value === true  // Fix: compare with 'true' string or true boolean
+          ? value === true || value === 'true'
           : value 
       });
     } else if (addDialogOpen) {
@@ -88,8 +86,7 @@ const AdminShopsPage = () => {
       isApproved: false,
       createdAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
-      // Remove the imageUrl property as it's not in the Shop type
-      logoImage: 'https://placehold.co/400x300', // Use logoImage instead which is in the Shop type
+      logoImage: 'https://placehold.co/400x300',
       bannerImage: 'https://placehold.co/400x300',
     };
     
@@ -130,7 +127,6 @@ const AdminShopsPage = () => {
         </CardContent>
       </Card>
 
-      {/* Dialogs */}
       <ViewShopDialog 
         shop={selectedShop}
         open={viewDialogOpen}
