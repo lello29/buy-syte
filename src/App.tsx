@@ -20,6 +20,14 @@ import LoyaltyPage from "./pages/dashboard/user/LoyaltyPage";
 import ProductsPage from "./pages/dashboard/shop/ProductsPage";
 import TasksPage from "./pages/dashboard/collaborator/TasksPage";
 
+// Admin pages
+import AdminDashboardPage from "./pages/dashboard/admin/AdminDashboardPage";
+import UsersPage from "./pages/dashboard/admin/UsersPage";
+import ShopsPage as AdminShopsPage from "./pages/dashboard/admin/ShopsPage";
+import CollaboratorsPage from "./pages/dashboard/admin/CollaboratorsPage";
+import ProductsPage as AdminProductsPage from "./pages/dashboard/admin/ProductsPage";
+import SettingsPage from "./pages/dashboard/admin/SettingsPage";
+
 const queryClient = new QueryClient();
 
 // Create a protected route component
@@ -32,6 +40,21 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   
   if (!currentUser) {
     return <Navigate to="/login" />;
+  }
+  
+  return children;
+};
+
+// Create an admin route component
+const AdminRoute = ({ children }: { children: JSX.Element }) => {
+  const { currentUser, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div>Caricamento...</div>;
+  }
+  
+  if (!currentUser || currentUser.role !== "admin") {
+    return <Navigate to="/dashboard" />;
   }
   
   return children;
@@ -68,7 +91,37 @@ const AppRoutes = () => {
           {/* Collaborator routes */}
           <Route path="tasks" element={<TasksPage />} />
           
-          {/* More dashboard routes can be added here */}
+          {/* Admin routes */}
+          <Route path="admin" element={
+            <AdminRoute>
+              <AdminDashboardPage />
+            </AdminRoute>
+          } />
+          <Route path="users" element={
+            <AdminRoute>
+              <UsersPage />
+            </AdminRoute>
+          } />
+          <Route path="shops" element={
+            <AdminRoute>
+              <AdminShopsPage />
+            </AdminRoute>
+          } />
+          <Route path="admin-collaborators" element={
+            <AdminRoute>
+              <CollaboratorsPage />
+            </AdminRoute>
+          } />
+          <Route path="admin-products" element={
+            <AdminRoute>
+              <AdminProductsPage />
+            </AdminRoute>
+          } />
+          <Route path="admin-settings" element={
+            <AdminRoute>
+              <SettingsPage />
+            </AdminRoute>
+          } />
         </Route>
         
         {/* 404 route */}
