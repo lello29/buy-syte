@@ -10,6 +10,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Shop } from '@/types';
 
 interface EditShopDialogProps {
@@ -28,6 +29,18 @@ const EditShopDialog: React.FC<EditShopDialogProps> = ({
   onSaveChanges
 }) => {
   if (!shop) return null;
+
+  const handleCheckboxChange = (checked: boolean) => {
+    // Create a synthetic event-like object with the properties needed by onShopChange
+    const syntheticEvent = {
+      target: {
+        name: "isApproved",
+        value: checked
+      }
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
+    
+    onShopChange(syntheticEvent);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -84,21 +97,12 @@ const EditShopDialog: React.FC<EditShopDialogProps> = ({
             />
           </div>
           <div className="flex items-center space-x-2">
-            <input 
-              type="checkbox" 
-              id="isApproved" 
-              name="isApproved"
+            <Checkbox
+              id="isApproved"
               checked={shop.isApproved !== false}
-              onChange={(e) => onShopChange({
-                ...e,
-                target: {
-                  ...e.target,
-                  name: "isApproved",
-                  value: e.target.checked
-                }
-              } as React.ChangeEvent<HTMLInputElement>)}
+              onCheckedChange={handleCheckboxChange}
             />
-            <Label htmlFor="isApproved">Approvato</Label>
+            <Label htmlFor="isApproved" className="cursor-pointer">Approvato</Label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>
