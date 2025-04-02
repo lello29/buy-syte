@@ -75,26 +75,26 @@ const NavbarUserMenu = () => {
     switch (role) {
       case "user":
         return [
-          { icon: User, label: "Profilo", path: "/dashboard/profile" },
+          { icon: User, label: "Profilo", path: "/dashboard" },
           { icon: Heart, label: "Preferiti", path: "/dashboard/favorites" },
           { icon: ShoppingCart, label: "Ordini", path: "/dashboard/orders" },
         ];
       case "shop":
         return [
-          { icon: Store, label: "Negozio", path: "/dashboard/shop" },
+          { icon: Store, label: "Negozio", path: "/dashboard" },
           { icon: Package, label: "Prodotti", path: "/dashboard/products" },
           { icon: Users, label: "Clienti", path: "/dashboard/customers" },
         ];
       case "collaborator":
         return [
-          { icon: User, label: "Profilo", path: "/dashboard/profile" },
+          { icon: User, label: "Profilo", path: "/dashboard" },
           { icon: Package, label: "Incarichi", path: "/dashboard/tasks" },
         ];
       case "admin":
         return [
+          { icon: BarChart3, label: "Dashboard", path: "/dashboard/admin" },
           { icon: Users, label: "Utenti", path: "/dashboard/users" },
-          { icon: Store, label: "Negozi", path: "/dashboard/shops" },
-          { icon: BarChart3, label: "Statistiche", path: "/dashboard/stats" },
+          { icon: Store, label: "Negozi", path: "/dashboard/admin-shops" },
         ];
       default:
         return [];

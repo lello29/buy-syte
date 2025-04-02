@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, setMobileMenuOpen }) => {
     switch (role) {
       case "user":
         return [
-          { icon: User, label: "Profilo", path: "/dashboard/profile" },
+          { icon: User, label: "Profilo", path: "/dashboard" },
           { icon: Heart, label: "Preferiti", path: "/dashboard/favorites" },
           { icon: ShoppingBag, label: "Ordini", path: "/dashboard/orders" },
           { icon: Award, label: "Punti Fedeltà", path: "/dashboard/loyalty" },
@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, setMobileMenuOpen }) => {
         ];
       case "shop":
         return [
-          { icon: Store, label: "Dashboard Negozio", path: "/dashboard/shop" },
+          { icon: Store, label: "Dashboard Negozio", path: "/dashboard" },
           { icon: Package, label: "Gestione Prodotti", path: "/dashboard/products" },
           { icon: CreditCard, label: "Ordini Ricevuti", path: "/dashboard/shop-orders" },
           { icon: Calendar, label: "Offerte", path: "/dashboard/offers" },
@@ -52,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, setMobileMenuOpen }) => {
         ];
       case "collaborator":
         return [
-          { icon: User, label: "Profilo Collaboratore", path: "/dashboard/profile" },
+          { icon: User, label: "Profilo Collaboratore", path: "/dashboard" },
           { icon: Briefcase, label: "Incarichi", path: "/dashboard/tasks" },
           { icon: Calendar, label: "Disponibilità", path: "/dashboard/availability" },
           { icon: Award, label: "Recensioni", path: "/dashboard/reviews" },
@@ -62,7 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobile, setMobileMenuOpen }) => {
         return [
           { icon: BarChart3, label: "Dashboard Admin", path: "/dashboard/admin" },
           { icon: Users, label: "Utenti", path: "/dashboard/users" },
-          { icon: Store, label: "Negozi", path: "/dashboard/shops" },
+          { icon: Store, label: "Negozi", path: "/dashboard/admin-shops" },
           { icon: Briefcase, label: "Collaboratori", path: "/dashboard/admin-collaborators" },
           { icon: Package, label: "Prodotti", path: "/dashboard/admin-products" },
           { icon: UserCog, label: "Impostazioni", path: "/dashboard/admin-settings" }
