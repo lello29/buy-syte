@@ -8,6 +8,7 @@ export interface User {
   role: UserRole;
   favorites: string[]; // IDs of favorite shops
   loyaltyPoints: number;
+  isActive?: boolean; // Added property
   createdAt: string;
   updatedAt: string;
 }
@@ -23,6 +24,7 @@ export interface Shop {
   products: Product[];
   offers: Offer[];
   aiCredits: number;
+  isApproved?: boolean; // Added property
   lastUpdated: string;
   createdAt: string;
 }
@@ -37,6 +39,7 @@ export interface Collaborator {
   availability: string;
   rating: number;
   completedTasks: number;
+  isActive?: boolean; // Added property
   createdAt: string;
 }
 
