@@ -15,18 +15,13 @@ import {
 import {
   User, Store, Package, Heart, ShoppingBag, Award, 
   Settings, Users, BarChart3, UserCog, Briefcase,
-  Calendar, Bell, CreditCard, LogOut, Home
+  Calendar, Bell, CreditCard, Home
 } from "lucide-react";
 
 const DashboardSidebar = () => {
-  const { currentUser, logout } = useAuth();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
 
   if (!currentUser) return null;
 
@@ -83,10 +78,10 @@ const DashboardSidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <Sidebar>
+    <Sidebar side="right" variant={useIsMobile() ? "floating" : "sidebar"}>
       <SidebarHeader className="border-b">
         <div className="flex items-center p-4">
-          <Store className="h-6 w-6 text-primary mr-2" />
+          <User className="h-6 w-6 text-primary mr-2" />
           <span className="text-xl font-semibold">{currentUser.name}</span>
         </div>
       </SidebarHeader>
@@ -109,7 +104,6 @@ const DashboardSidebar = () => {
         </SidebarMenu>
         <SidebarSeparator />
         <SidebarMenu>
-          {/* Impostazioni (posizionata sopra alle Home/Logout) */}
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
@@ -122,28 +116,8 @@ const DashboardSidebar = () => {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              tooltip="Home"
-            >
-              <Link to="/">
-                <Home className="h-5 w-5 mr-2" />
-                <span>Home</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="border-t p-4">
-        <SidebarMenuButton
-          onClick={handleLogout}
-          tooltip="Logout"
-        >
-          <LogOut className="h-5 w-5 mr-2" />
-          <span>Logout</span>
-        </SidebarMenuButton>
-      </SidebarFooter>
     </Sidebar>
   );
 };

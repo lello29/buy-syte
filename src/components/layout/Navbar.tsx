@@ -3,14 +3,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Home, LogOut } from "lucide-react";
 
-// Import our newly created components
-import DesktopNavigation from "./navbar/DesktopNavigation";
 import MobileNavigation from "./navbar/MobileNavigation";
-import AuthActions from "./navbar/AuthActions";
 
-const Navbar = () => {
+const Navbar = ({ simplified = false }) => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -32,8 +29,30 @@ const Navbar = () => {
             />
           </Link>
 
-          {/* Desktop menu */}
-          <DesktopNavigation />
+          {/* Desktop navigation - simplified for dashboard */}
+          {currentUser && simplified && (
+            <div className="hidden md:flex space-x-2">
+              <Link to="/">
+                <Button variant="ghost" size="sm" className="flex items-center">
+                  <Home className="h-4 w-4 mr-1" />
+                  Home
+                </Button>
+              </Link>
+              <Button variant="outline" size="sm" onClick={handleLogout} className="flex items-center">
+                <LogOut className="h-4 w-4 mr-1" />
+                Logout
+              </Button>
+            </div>
+          )}
+
+          {/* Standard desktop navigation for non-simplified mode */}
+          {(!simplified || !currentUser) && (
+            <div className="hidden md:flex space-x-4">
+              <Link to="/" className="text-gray-600 hover:text-primary">Home</Link>
+              <Link to="/shops" className="text-gray-600 hover:text-primary">Negozi</Link>
+              <Link to="/offers" className="text-gray-600 hover:text-primary">Offerte</Link>
+            </div>
+          )}
 
           {/* Mobile menu toggle */}
           <div className="md:hidden">
@@ -46,8 +65,33 @@ const Navbar = () => {
             </Button>
           </div>
 
-          {/* Auth actions for desktop */}
-          <AuthActions handleLogout={handleLogout} />
+          {/* Auth actions for desktop - non-dashboard mode */}
+          {!simplified && (
+            <div className="hidden md:flex items-center space-x-4">
+              {currentUser ? (
+                <div className="flex items-center space-x-2">
+                  <Link to="/dashboard">
+                    <Button variant="outline" size="sm">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Link to="/login">
+                    <Button variant="outline" size="sm">Login</Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button size="sm">Registrati</Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -56,6 +100,7 @@ const Navbar = () => {
         mobileMenuOpen={mobileMenuOpen} 
         setMobileMenuOpen={setMobileMenuOpen}
         handleLogout={handleLogout}
+        simplified={simplified}
       />
     </nav>
   );

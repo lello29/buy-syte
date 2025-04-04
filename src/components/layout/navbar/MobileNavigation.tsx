@@ -3,19 +3,21 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, LogIn, UserPlus } from "lucide-react";
+import { LogOut, LogIn, UserPlus, Home } from "lucide-react";
 import MobileNavbarUserMenu from "./MobileNavbarUserMenu";
 
 interface MobileNavigationProps {
   mobileMenuOpen: boolean;
   setMobileMenuOpen: (isOpen: boolean) => void;
   handleLogout: () => void;
+  simplified?: boolean;
 }
 
 const MobileNavigation = ({ 
   mobileMenuOpen, 
   setMobileMenuOpen, 
-  handleLogout 
+  handleLogout,
+  simplified = false
 }: MobileNavigationProps) => {
   const { currentUser } = useAuth();
 
@@ -25,31 +27,51 @@ const MobileNavigation = ({
     <div className="md:hidden bg-white border-t border-gray-200 py-2">
       <div className="container mx-auto px-4">
         <div className="flex flex-col space-y-3">
-          <Link 
-            to="/" 
-            className="text-gray-600 hover:text-primary py-2"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Home
-          </Link>
-          <Link 
-            to="/shops" 
-            className="text-gray-600 hover:text-primary py-2"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Negozi
-          </Link>
-          <Link 
-            to="/offers" 
-            className="text-gray-600 hover:text-primary py-2"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Offerte
-          </Link>
+          {!simplified && (
+            <>
+              <Link 
+                to="/" 
+                className="text-gray-600 hover:text-primary py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/shops" 
+                className="text-gray-600 hover:text-primary py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Negozi
+              </Link>
+              <Link 
+                to="/offers" 
+                className="text-gray-600 hover:text-primary py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Offerte
+              </Link>
+            </>
+          )}
           
           {currentUser ? (
             <>
-              <MobileNavbarUserMenu setMobileMenuOpen={setMobileMenuOpen} />
+              {simplified ? (
+                <div className="flex flex-col space-y-2">
+                  <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
+                      <Home className="h-4 w-4 mr-2" />
+                      Home
+                    </Button>
+                  </Link>
+                  <MobileNavbarUserMenu setMobileMenuOpen={setMobileMenuOpen} />
+                </div>
+              ) : (
+                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full justify-start">
+                    Dashboard
+                  </Button>
+                </Link>
+              )}
               <Button variant="outline" size="sm" onClick={handleLogout} className="w-full justify-start">
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
