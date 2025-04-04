@@ -1,10 +1,11 @@
 
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ImagePlus, X, MoveUp, MoveDown, Camera } from "lucide-react";
-import { toast } from "sonner";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Trash2, Upload, Plus, Image as ImageIcon } from "lucide-react";
+import { useProductForm } from "./ProductFormContext";
+import { FormMessage } from "@/components/ui/form";
 
 interface ProductImagesProps {
   data: any;
@@ -12,235 +13,198 @@ interface ProductImagesProps {
 }
 
 const ProductImages: React.FC<ProductImagesProps> = ({ data, updateData }) => {
-  const isMobile = useIsMobile();
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [images, setImages] = useState<(string | File)[]>(data.images || []);
+  const [dragActive, setDragActive] = useState(false);
+  const [currentUrlInput, setCurrentUrlInput] = useState("");
+  const { getErrorForField } = useProductForm();
+  
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
 
-  const updateImages = (newImages: (string | File)[]) => {
-    setImages(newImages);
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    if (files && files.length > 0) {
+      handleNewImages(files);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    if (files.length > 0) {
+      handleNewImages(files);
+    }
+  };
+
+  const handleNewImages = (files: File[]) => {
+    // Filter out non-image files
+    const imageFiles = files.filter(file => file.type.startsWith("image/"));
+    
+    // Check if we're exceeding the limit (10 images max)
+    const currentImages = data.images || [];
+    const totalImages = currentImages.length + imageFiles.length;
+    
+    if (totalImages > 10) {
+      alert("Puoi caricare un massimo di 10 immagini");
+      
+      // Only add images up to the limit
+      const remainingSlots = 10 - currentImages.length;
+      if (remainingSlots > 0) {
+        const newImages = [...currentImages, ...imageFiles.slice(0, remainingSlots)];
+        updateData({ images: newImages });
+      }
+    } else {
+      // Add all images
+      const newImages = [...currentImages, ...imageFiles];
+      updateData({ images: newImages });
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const newImages = [...data.images];
+    newImages.splice(index, 1);
     updateData({ images: newImages });
   };
 
-  const handleFileDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        const newFiles = Array.from(e.dataTransfer.files).filter(file => 
-          file.type.startsWith("image/")
-        );
-
-        if (newFiles.length === 0) {
-          toast.error("Puoi caricare solo immagini");
-          return;
-        }
-
-        if (images.length + newFiles.length > 10) {
-          toast.error("Puoi caricare massimo 10 immagini");
-          return;
-        }
-
-        updateImages([...images, ...newFiles]);
-        toast.success(`${newFiles.length} immagini caricate con successo`);
-      }
-    },
-    [images]
-  );
-
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-
-      if (images.length + newFiles.length > 10) {
-        toast.error("Puoi caricare massimo 10 immagini");
+  const handleAddImageUrl = () => {
+    if (currentUrlInput && currentUrlInput.trim() !== "") {
+      const currentImages = data.images || [];
+      
+      if (currentImages.length >= 10) {
+        alert("Puoi caricare un massimo di 10 immagini");
         return;
       }
-
-      updateImages([...images, ...newFiles]);
-      toast.success(`${newFiles.length} immagini caricate con successo`);
-    }
-  };
-
-  const removeImage = (index: number) => {
-    const newImages = [...images];
-    newImages.splice(index, 1);
-    updateImages(newImages);
-    toast.info("Immagine rimossa");
-  };
-
-  const moveImage = (index: number, direction: "up" | "down") => {
-    if ((direction === "up" && index === 0) || 
-        (direction === "down" && index === images.length - 1)) {
-      return;
-    }
-
-    const newImages = [...images];
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    
-    const temp = newImages[index];
-    newImages[index] = newImages[targetIndex];
-    newImages[targetIndex] = temp;
-    
-    updateImages(newImages);
-  };
-
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-  };
-
-  const handleDragEnter = (index: number) => {
-    if (draggedIndex !== null && draggedIndex !== index) {
-      const newImages = [...images];
-      const draggedImage = newImages[draggedIndex];
       
-      // Remove the dragged item
-      newImages.splice(draggedIndex, 1);
-      // Insert it at the new position
-      newImages.splice(index, 0, draggedImage);
-      
-      updateImages(newImages);
-      setDraggedIndex(index);
+      const newImages = [...currentImages, currentUrlInput];
+      updateData({ images: newImages });
+      setCurrentUrlInput("");
     }
-  };
-
-  const handleCameraCapture = () => {
-    if (!isMobile) {
-      toast.info("Questa funzione è ottimizzata per dispositivi mobili con fotocamera");
-      return;
-    }
-    
-    // In a real app, this would open the device camera
-    toast.info("Funzione di scatto foto in fase di sviluppo");
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Immagini prodotto</h3>
-        <p className="text-sm text-gray-500">{images.length}/10</p>
-      </div>
+      <h3 className="text-lg font-medium">Immagini del prodotto</h3>
       
       <div 
-        className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors"
-        onDrop={handleFileDrop}
-        onDragOver={handleDragOver}
+        className={`border-2 border-dashed rounded-md p-6 text-center ${
+          dragActive ? "border-primary bg-primary/5" : "border-gray-300"
+        }`}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
       >
-        <div className="flex flex-col items-center justify-center gap-2">
-          <ImagePlus className="h-10 w-10 text-gray-400" />
-          <p className="text-sm text-gray-500 font-medium">Trascina qui le immagini o clicca per caricarle</p>
-          <p className="text-xs text-gray-400">Formati supportati: JPG, PNG, WebP - Max 2MB per file</p>
-          
-          <div className="flex gap-2 mt-2">
-            <Button variant="outline" size="sm" asChild>
-              <label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={handleFileInputChange}
-                />
-                Seleziona file
-              </label>
-            </Button>
+        <div className="flex flex-col items-center justify-center space-y-2">
+          <div className="p-3 rounded-full bg-primary/10">
+            <Upload className="h-6 w-6 text-primary" />
+          </div>
+          <div className="text-sm">
+            <Label htmlFor="image-upload" className="cursor-pointer font-medium text-primary hover:underline">
+              Clicca per caricare
+            </Label>
+            <Input 
+              id="image-upload" 
+              type="file" 
+              multiple 
+              accept="image/*" 
+              className="hidden" 
+              onChange={handleFileChange}
+            />
+            <p className="text-muted-foreground">o trascina le immagini qui</p>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            PNG, JPG o GIF fino a 5MB (max 10 immagini)
+          </p>
+        </div>
+      </div>
+      
+      {getErrorForField("images") && (
+        <FormMessage>{getErrorForField("images")?.message}</FormMessage>
+      )}
+      
+      <div className="space-y-3">
+        <h4 className="text-sm font-medium mb-2">Aggiungi immagine da URL</h4>
+        <div className="flex space-x-2">
+          <Input
+            placeholder="https://esempio.com/immagine.jpg"
+            value={currentUrlInput}
+            onChange={(e) => setCurrentUrlInput(e.target.value)}
+          />
+          <Button onClick={handleAddImageUrl}>
+            <Plus className="h-4 w-4 mr-1" /> Aggiungi
+          </Button>
+        </div>
+      </div>
+      
+      {data.images && data.images.length > 0 && (
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium">Immagini caricate ({data.images.length}/10)</h4>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {data.images.map((image: string | File, index: number) => (
+              <div key={index} className="relative group">
+                <div className="aspect-square border rounded-md overflow-hidden bg-gray-50">
+                  {typeof image === "string" ? (
+                    <img
+                      src={image}
+                      alt={`Product image ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Error";
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt={`Product image ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => handleRemoveImage(index)}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
             
-            {isMobile && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleCameraCapture}
-              >
-                <Camera className="h-4 w-4 mr-2" />
-                Scatta foto
-              </Button>
+            {data.images.length < 10 && (
+              <div className="aspect-square border rounded-md flex items-center justify-center bg-gray-50 cursor-pointer hover:bg-gray-100">
+                <Label htmlFor="add-more-images" className="cursor-pointer flex flex-col items-center p-4">
+                  <ImageIcon className="h-6 w-6 text-gray-400 mb-2" />
+                  <span className="text-xs text-center text-gray-500">Aggiungi altra immagine</span>
+                </Label>
+                <Input 
+                  id="add-more-images" 
+                  type="file" 
+                  multiple 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleFileChange}
+                />
+              </div>
             )}
           </div>
         </div>
-      </div>
-
-      {images.length > 0 && (
-        <div className="space-y-4">
-          <h4 className="text-sm font-medium">Immagini caricate</h4>
-          <p className="text-xs text-gray-500">Trascina le immagini per riordinare. La prima immagine sarà quella principale.</p>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {images.map((image, index) => (
-              <Card
-                key={index}
-                className={`relative overflow-hidden hover:ring-2 ${index === 0 ? 'ring-2 ring-primary' : ''} ${draggedIndex === index ? 'opacity-50' : 'opacity-100'}`}
-                draggable
-                onDragStart={(e) => handleDragStart(e, index)}
-                onDragEnd={handleDragEnd}
-                onDragOver={(e) => e.preventDefault()}
-                onDragEnter={() => handleDragEnter(index)}
-              >
-                <CardContent className="p-0 aspect-square relative">
-                  <img
-                    src={typeof image === 'string' 
-                      ? image 
-                      : URL.createObjectURL(image)
-                    }
-                    alt={`Product ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                  
-                  {index === 0 && (
-                    <span className="absolute top-2 left-2 bg-primary text-white text-xs py-1 px-2 rounded">
-                      Principale
-                    </span>
-                  )}
-                  
-                  <div className="absolute top-2 right-2 flex flex-col gap-1">
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => removeImage(index)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                    
-                    {!isMobile && (
-                      <>
-                        <Button
-                          variant="secondary"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => moveImage(index, "up")}
-                          disabled={index === 0}
-                        >
-                          <MoveUp className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => moveImage(index, "down")}
-                          disabled={index === images.length - 1}
-                        >
-                          <MoveDown className="h-3 w-3" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
       )}
+
+      <div className="text-sm text-muted-foreground">
+        <p>
+          <span className="font-medium">Suggerimento:</span> Carica immagini di alta qualità per migliorare le conversioni. Le immagini di qualità aumentano le vendite del 30%.
+        </p>
+      </div>
     </div>
   );
 };

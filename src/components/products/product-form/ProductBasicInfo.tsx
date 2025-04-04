@@ -1,206 +1,155 @@
 
-import React, { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import React from "react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
+import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
-import { Wand } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
-
-const formSchema = z.object({
-  name: z.string().min(3, "Il nome deve avere almeno 3 caratteri"),
-  description: z.string().min(10, "La descrizione deve avere almeno 10 caratteri"),
-  category: z.string().min(1, "Seleziona una categoria"),
-  price: z.coerce.number().positive("Il prezzo deve essere maggiore di zero"),
-});
-
-const CATEGORIES = [
-  "Abbigliamento",
-  "Alimentari",
-  "Arredamento",
-  "Elettronica",
-  "Giocattoli",
-  "Libri",
-  "Musica",
-  "Sport",
-  "Altro",
-];
+import { useProductForm } from "./ProductFormContext";
+import { FormField, FormItem, FormControl, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
 
 interface ProductBasicInfoProps {
   data: any;
   updateData: (data: any) => void;
 }
 
+const CATEGORIES = [
+  "Abbigliamento",
+  "Accessori",
+  "Arredamento",
+  "Arte e Collezionismo",
+  "Bellezza e Cura Personale",
+  "Elettronica",
+  "Food & Beverage",
+  "Gioielli",
+  "Libri e Media",
+  "Salute e Benessere",
+  "Sport e Tempo Libero",
+  "Altro"
+];
+
 const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ data, updateData }) => {
-  const [useAI, setUseAI] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: data.name || "",
-      description: data.description || "",
-      category: data.category || "",
-      price: data.price || 0,
-    },
-  });
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    updateData(values);
+  const { getErrorForField } = useProductForm();
+  
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateData({ name: e.target.value });
   };
 
-  const handleAIGenerate = async () => {
-    // This would call an AI service to generate product details
-    setIsGenerating(true);
-    try {
-      // Simulate AI generation
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
-      const aiGeneratedData = {
-        name: "Smart TV 4K Ultra HD",
-        description: "Smart TV 4K con tecnologia LED, HDR e sistema operativo integrato. Esperienza visiva straordinaria con colori vividi e dettagli nitidi. Compatibile con tutti i servizi di streaming più popolari.",
-        category: "Elettronica",
-        price: 699.99,
-      };
-      
-      form.reset(aiGeneratedData);
-      updateData(aiGeneratedData);
-      toast.success("Dati generati con intelligenza artificiale");
-    } catch (error) {
-      toast.error("Errore nella generazione dei dati");
-    } finally {
-      setIsGenerating(false);
-    }
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    updateData({ description: e.target.value });
+  };
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value ? parseFloat(e.target.value) : 0;
+    updateData({ price: value });
+  };
+
+  const handleCategoryChange = (value: string) => {
+    updateData({ category: value });
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium">Informazioni Base</h3>
-        <div className="flex items-center space-x-2">
-          <span className="text-sm">Usa AI</span>
-          <Switch 
-            checked={useAI} 
-            onCheckedChange={setUseAI} 
-          />
+      <h3 className="text-lg font-medium">Informazioni di base</h3>
+      
+      <div className="space-y-4">
+        <FormItem>
+          <FormLabel htmlFor="product-name" className="block text-sm font-medium text-gray-700">
+            Nome Prodotto <span className="text-red-500">*</span>
+          </FormLabel>
+          <FormControl>
+            <Input
+              id="product-name"
+              placeholder="Nome del prodotto"
+              value={data.name || ""}
+              onChange={handleNameChange}
+              className={getErrorForField("name") ? "border-red-500" : ""}
+            />
+          </FormControl>
+          {getErrorForField("name") && (
+            <FormMessage>{getErrorForField("name")?.message}</FormMessage>
+          )}
+        </FormItem>
+        
+        <FormItem>
+          <FormLabel htmlFor="product-description" className="block text-sm font-medium text-gray-700">
+            Descrizione
+          </FormLabel>
+          <FormControl>
+            <Textarea
+              id="product-description"
+              placeholder="Descrizione del prodotto"
+              value={data.description || ""}
+              onChange={handleDescriptionChange}
+              rows={4}
+            />
+          </FormControl>
+        </FormItem>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormItem>
+            <FormLabel htmlFor="product-price" className="block text-sm font-medium text-gray-700">
+              Prezzo <span className="text-red-500">*</span>
+            </FormLabel>
+            <FormControl>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                  €
+                </span>
+                <Input
+                  id="product-price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  value={data.price || ""}
+                  onChange={handlePriceChange}
+                  className={`pl-8 ${getErrorForField("price") ? "border-red-500" : ""}`}
+                />
+              </div>
+            </FormControl>
+            {getErrorForField("price") && (
+              <FormMessage>{getErrorForField("price")?.message}</FormMessage>
+            )}
+          </FormItem>
+          
+          <FormItem>
+            <FormLabel htmlFor="product-category" className="block text-sm font-medium text-gray-700">
+              Categoria <span className="text-red-500">*</span>
+            </FormLabel>
+            <Select 
+              value={data.category || ""} 
+              onValueChange={handleCategoryChange}
+            >
+              <FormControl>
+                <SelectTrigger id="product-category" className={getErrorForField("category") ? "border-red-500" : ""}>
+                  <SelectValue placeholder="Seleziona categoria" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {CATEGORIES.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {getErrorForField("category") && (
+              <FormMessage>{getErrorForField("category")?.message}</FormMessage>
+            )}
+          </FormItem>
+        </div>
+        
+        <div className="text-xs text-muted-foreground mt-4">
+          <p>I campi contrassegnati con <span className="text-red-500">*</span> sono obbligatori</p>
         </div>
       </div>
-
-      {useAI && (
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={handleAIGenerate}
-          disabled={isGenerating}
-        >
-          <Wand className="mr-2 h-4 w-4" />
-          {isGenerating ? "Generazione in corso..." : "Genera con AI"}
-        </Button>
-      )}
-
-      <Form {...form}>
-        <form onChange={() => onSubmit(form.getValues())} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nome Prodotto*</FormLabel>
-                <FormControl>
-                  <Input placeholder="Inserisci il nome del prodotto" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Descrizione*</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Inserisci la descrizione del prodotto"
-                    className="min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categoria*</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleziona una categoria" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {CATEGORIES.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Prezzo (€)*</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </form>
-      </Form>
     </div>
   );
 };
