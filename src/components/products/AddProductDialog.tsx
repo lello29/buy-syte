@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Plus, Barcode } from "lucide-react";
+import { Plus } from "lucide-react";
 import AddProductForm from "./AddProductForm";
 
 interface AddProductDialogProps {
