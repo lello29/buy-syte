@@ -32,6 +32,7 @@ const DashboardLayout = () => {
       
       <SidebarProvider defaultOpen={!isMobile}>
         <div className="flex flex-1 w-full pt-16">
+          <DashboardSidebar />
           <SidebarInset className="px-4 py-6 md:px-6">
             <div className="container mx-auto">
               <div className="flex items-center mb-6">
@@ -41,7 +42,6 @@ const DashboardLayout = () => {
               <Outlet />
             </div>
           </SidebarInset>
-          <DashboardSidebar />
         </div>
       </SidebarProvider>
     </div>

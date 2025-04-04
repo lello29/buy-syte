@@ -79,7 +79,7 @@ const DashboardSidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <Sidebar side="right" variant={useIsMobile() ? "floating" : "sidebar"}>
+    <Sidebar side="left" variant={useIsMobile() ? "floating" : "sidebar"}>
       <SidebarHeader className="border-b">
         <div className="flex items-center p-4">
           <User className="h-6 w-6 text-primary mr-2" />
