@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import DashboardCard from "../cards/DashboardCard";
 import { Users, Store, User, Package, ShoppingBag } from "lucide-react";
 import { getUsersByRole, shops, products, collaborators } from "@/data/mockData";
+import { getProductsByShopId } from "@/data/products";
 
 const AdminDashboard: React.FC = () => {
   const allUsers = getUsersByRole("user").length;
