@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,7 +29,7 @@ import SettingsPage from "@/pages/dashboard/admin/SettingsPage";
 import UsersPage from "@/pages/dashboard/admin/UsersPage";
 import AdminShopsPage from "@/pages/dashboard/admin/AdminShopsPage";
 import CollaboratorsPage from "@/pages/dashboard/admin/CollaboratorsPage";
-import ProductsPage as AdminProductsPage from "@/pages/dashboard/admin/ProductsPage";
+import { default as AdminProductsPage } from "@/pages/dashboard/admin/ProductsPage";
 
 const queryClient = new QueryClient();
 
