@@ -1,14 +1,37 @@
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import DashboardCard from "../cards/DashboardCard";
-import { Package, ShoppingBag, BarChart3, Calendar, Users, Store } from "lucide-react";
+import { Package, Calendar, ShoppingBag, DollarSign, ChevronRight } from "lucide-react";
 import { getProductsByShopId, shops } from "@/data/mockData";
+import { toast } from "sonner";
 
 interface ShopDashboardProps {
   userId: string;
 }
+
+const RecentProductItem = ({ product }: { product: any }) => {
+  return (
+    <div className="flex items-center justify-between py-4 border-b last:border-b-0">
+      <div className="flex items-center">
+        <div className="h-16 w-16 bg-gray-100 rounded-lg mr-4 overflow-hidden">
+          <img
+            src={product.images[0] || "/placeholder.svg"}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div>
+          <h3 className="font-medium">{product.name}</h3>
+          <p className="text-lg font-bold">€ {product.price.toFixed(2)}</p>
+        </div>
+      </div>
+      <ChevronRight className="h-5 w-5 text-gray-400" />
+    </div>
+  );
+};
 
 const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
   const shop = shops.find(shop => shop.userId === userId);
@@ -18,138 +41,110 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
   }
   
   const shopProducts = getProductsByShopId(shop.id);
+  const recentProducts = shopProducts.slice(0, 5);
+  
+  // Simulate some orders and sales data
+  const todayOrders = Math.floor(Math.random() * 10) + 1;
+  const totalSales = Math.floor(Math.random() * 10000) + 1000;
+  const reservations = Math.floor(Math.random() * 10) + 1;
+
+  const handleAddProduct = () => {
+    toast.info("Funzionalità di aggiunta prodotto in arrivo!");
+  };
   
   return (
-    <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="space-y-6 max-w-md mx-auto md:max-w-none pb-20">
+      {/* Header with shop name and logout */}
+      <div className="bg-primary text-white p-4 -mx-4 -mt-6 mb-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Negozio</h1>
+          <Button variant="ghost" className="text-white hover:bg-white/20">
+            Logout
+          </Button>
+        </div>
+      </div>
+      
+      {/* Summary cards section */}
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         <DashboardCard
-          title="Prodotti"
-          description="Gestisci il tuo catalogo"
+          title="Totale Prodotti"
+          description=""
           value={shopProducts.length.toString()}
-          icon={<Package className="h-8 w-8 text-purple-600" />}
+          icon={<Package />}
           linkTo="/dashboard/products"
+          iconPosition="left"
+          showFooter={false}
+          className="col-span-1"
         />
         
         <DashboardCard
-          title="Ordini Ricevuti"
-          description="Ordini da evadere"
-          value={(Math.floor(Math.random() * 10) + 1).toString()}
-          icon={<ShoppingBag className="h-8 w-8 text-blue-600" />}
+          title="Ordini Oggi"
+          description=""
+          value={todayOrders.toString()}
+          icon={<Calendar />}
+          variant="primary"
           linkTo="/dashboard/shop-orders"
+          iconPosition="left"
+          showFooter={false}
+          className="col-span-1"
         />
         
         <DashboardCard
-          title="Crediti AI"
-          description="Crediti disponibili per assistenza AI"
-          value={shop.aiCredits.toString()}
-          icon={<BarChart3 className="h-8 w-8 text-green-600" />}
-          linkTo="/dashboard/ai-credits"
+          title="Vendite Totali"
+          description=""
+          value={`€ ${totalSales.toLocaleString('it-IT')}`}
+          icon={<DollarSign />}
+          variant="primary"
+          linkTo="/dashboard/sales"
+          iconPosition="left"
+          valueSize="large"
+          showFooter={false}
+          className="col-span-1"
+        />
+        
+        <DashboardCard
+          title="Domande Prenotazione"
+          description=""
+          value={reservations.toString()}
+          icon={<ShoppingBag />}
+          linkTo="/dashboard/reservations"
+          iconPosition="left"
+          showFooter={false}
+          className="col-span-1"
         />
       </div>
 
-      <h2 className="text-2xl font-semibold mt-8 mb-4">Prodotti Recenti</h2>
-      {shopProducts.length > 0 ? (
-        <div className="bg-white rounded-lg border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left">Nome Prodotto</th>
-                  <th className="px-4 py-3 text-left">Categoria</th>
-                  <th className="px-4 py-3 text-right">Prezzo</th>
-                  <th className="px-4 py-3 text-right">Inventario</th>
-                  <th className="px-4 py-3 text-left">Stato</th>
-                  <th className="px-4 py-3"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {shopProducts.map((product) => (
-                  <tr key={product.id}>
-                    <td className="px-4 py-3">{product.name}</td>
-                    <td className="px-4 py-3">{product.category}</td>
-                    <td className="px-4 py-3 text-right">
-                      €{product.price.toFixed(2)}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {product.inventory}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block px-2 py-1 rounded-full text-xs ${
-                        product.isActive 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {product.isActive ? 'Attivo' : 'Disattivato'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <Button size="sm" variant="ghost">Modifica</Button>
-                    </td>
-                  </tr>
+      {/* Add Product Button */}
+      <div className="mt-8">
+        <Button 
+          variant="primary" 
+          size="lg" 
+          className="w-full justify-center text-lg py-6"
+          onClick={handleAddProduct}
+        >
+          Aggiungi Prodotto
+        </Button>
+      </div>
+
+      {/* Recent Products */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Ultimi Prodotti</h2>
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-4">
+            {recentProducts.length > 0 ? (
+              <div>
+                {recentProducts.map((product) => (
+                  <Link to={`/dashboard/products/${product.id}`} key={product.id}>
+                    <RecentProductItem product={product} />
+                  </Link>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : (
-        <Card>
-          <CardContent className="py-10 text-center">
-            <p className="text-gray-500">Non hai ancora aggiunto prodotti.</p>
-            <Button className="mt-4">Aggiungi Prodotto</Button>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="mt-8 grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Statistiche Negozio</CardTitle>
-            <CardDescription>Dati degli ultimi 30 giorni</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Visite totali:</span>
-                <span className="font-medium">{Math.floor(Math.random() * 500) + 100}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Conversioni:</span>
-                <span className="font-medium">{Math.floor(Math.random() * 50) + 10}</span>
+            ) : (
+              <div className="py-10 text-center">
+                <p className="text-gray-500 mb-4">Non hai ancora aggiunto prodotti.</p>
+                <Button onClick={handleAddProduct}>Aggiungi Prodotto</Button>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Ultimo aggiornamento:</span>
-                <span className="font-medium">
-                  {new Date(shop.lastUpdated).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Offerte attive:</span>
-                <span className="font-medium">{shop.offers.length}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Azioni Rapide</CardTitle>
-            <CardDescription>Gestisci il tuo negozio</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Button className="w-full justify-start">
-                <Package className="mr-2 h-4 w-4" /> Aggiungi Nuovo Prodotto
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Calendar className="mr-2 h-4 w-4" /> Crea Nuova Offerta
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Users className="mr-2 h-4 w-4" /> Cerca Collaboratori
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Store className="mr-2 h-4 w-4" /> Modifica Informazioni Negozio
-              </Button>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -11,6 +11,13 @@ interface DashboardCardProps {
   icon: React.ReactNode;
   linkTo: string;
   buttonText?: string;
+  variant?: "default" | "primary";
+  iconPosition?: "left" | "right";
+  valueSize?: "default" | "large";
+  footerVariant?: "default" | "primary" | "full";
+  className?: string;
+  rightIcon?: React.ReactNode;
+  showFooter?: boolean;
 }
 
 const DashboardCard: React.FC<DashboardCardProps> = ({ 
@@ -19,18 +26,61 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   value, 
   icon, 
   linkTo,
-  buttonText
+  buttonText,
+  variant = "default",
+  iconPosition = "right",
+  valueSize = "default",
+  footerVariant = "default",
+  className = "",
+  rightIcon,
+  showFooter = true
 }) => {
-  return (
-    <Card>
-      <UICardContent className="p-6">
+  // If it's a primary variant, we don't need the Card wrapper
+  if (variant === "primary") {
+    return (
+      <div className={className}>
         <CardContent
           title={title}
           value={value}
           description={description}
           icon={icon}
+          variant={variant}
+          iconPosition={iconPosition}
+          valueSize={valueSize}
         />
-        <CardFooter linkTo={linkTo} buttonText={buttonText} />
+        {showFooter && (
+          <CardFooter 
+            linkTo={linkTo} 
+            buttonText={buttonText} 
+            variant={footerVariant} 
+            rightIcon={rightIcon}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // Default card with white background
+  return (
+    <Card className={`border-0 shadow-sm ${className}`}>
+      <UICardContent className="p-0">
+        <CardContent
+          title={title}
+          value={value}
+          description={description}
+          icon={icon}
+          variant={variant}
+          iconPosition={iconPosition}
+          valueSize={valueSize}
+        />
+        {showFooter && (
+          <CardFooter 
+            linkTo={linkTo} 
+            buttonText={buttonText} 
+            variant={footerVariant}
+            rightIcon={rightIcon}
+          />
+        )}
       </UICardContent>
     </Card>
   );
