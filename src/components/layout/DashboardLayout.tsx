@@ -37,7 +37,7 @@ const DashboardLayout = () => {
             <div className="container mx-auto">
               <div className="flex items-center mb-6">
                 <SidebarTrigger />
-                <h1 className="text-2xl font-bold ml-2">Dashboard</h1>
+                {/* Removed the "Dashboard" title here as it's redundant */}
               </div>
               <Outlet />
             </div>

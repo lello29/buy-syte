@@ -41,17 +41,17 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
     if (!hasErrors) return null;
     
     return (
-      <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-        <div className="flex items-center text-red-800 mb-2">
-          <AlertCircle className="h-4 w-4 mr-2" />
-          <span className="font-medium">Correggi i seguenti errori:</span>
-        </div>
-        <ul className="list-disc list-inside text-sm text-red-700 pl-2">
-          {currentStepErrors.map((error, index) => (
-            <li key={index}>{error.message}</li>
-          ))}
-        </ul>
-      </div>
+      <Alert variant="destructive" className="mb-3">
+        <AlertCircle className="h-4 w-4 mr-2" />
+        <AlertDescription>
+          <span className="font-medium block mb-1">Correggi i seguenti errori:</span>
+          <ul className="list-disc list-inside text-sm pl-1">
+            {currentStepErrors.map((error, index) => (
+              <li key={index}>{error.message}</li>
+            ))}
+          </ul>
+        </AlertDescription>
+      </Alert>
     );
   };
 

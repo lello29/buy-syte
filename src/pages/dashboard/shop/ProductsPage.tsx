@@ -54,7 +54,7 @@ const ProductsPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <ProductsHeader onAddProduct={handleAddProduct} />
       
       <ProductsSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -71,11 +71,11 @@ const ProductsPage = () => {
       
       <ProductsMetrics products={products} />
       
-      <ProductsSalesHints />
+      {isMobile ? null : <ProductsSalesHints />}
 
       {/* Mobile Floating Action Button */}
       {isMobile && (
-        <div className="fixed bottom-4 right-4 z-10">
+        <div className="fixed bottom-6 right-6 z-10">
           <AddProductDialog
             trigger={
               <Button size="icon" className="h-14 w-14 rounded-full shadow-lg">

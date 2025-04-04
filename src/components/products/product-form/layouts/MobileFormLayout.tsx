@@ -29,9 +29,9 @@ const MobileFormLayout: React.FC<MobileFormLayoutProps> = ({ onClose }) => {
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-3">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold">
+          <h2 className="text-lg font-bold">
             {currentStep === 0 ? "Inserimento" : steps[currentStep].label}
           </h2>
           
@@ -69,8 +69,8 @@ const MobileFormLayout: React.FC<MobileFormLayoutProps> = ({ onClose }) => {
         <MobileStepNav />
       </div>
 
-      <div className="border rounded-lg overflow-hidden mb-4">
-        <TabsContent value={steps[currentStep].id} className="m-0 p-4">
+      <div className="border rounded-lg overflow-hidden mb-3">
+        <TabsContent value={steps[currentStep].id} className="m-0 p-3">
           <FormStepContent onClose={onClose} isMobile />
         </TabsContent>
       </div>

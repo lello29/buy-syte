@@ -32,13 +32,15 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({ trigger }) => {
         )}
       </DialogTrigger>
       <DialogContent 
-        className={`${isMobile ? 'max-w-[95vw]' : 'max-w-5xl'} h-[85vh] overflow-y-auto`}
+        className={`${isMobile ? 'max-w-[98vw] p-3' : 'max-w-5xl'} h-[90vh] overflow-y-auto`}
       >
-        <DialogHeader>
+        <DialogHeader className="mb-2">
           <DialogTitle>Aggiungi nuovo prodotto</DialogTitle>
-          <DialogDescription>
-            Inserisci un nuovo prodotto nel tuo catalogo con un processo guidato
-          </DialogDescription>
+          {!isMobile && (
+            <DialogDescription>
+              Inserisci un nuovo prodotto nel tuo catalogo con un processo guidato
+            </DialogDescription>
+          )}
         </DialogHeader>
         <AddProductForm onClose={() => setOpen(false)} />
       </DialogContent>
