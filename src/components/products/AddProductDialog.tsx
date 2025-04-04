@@ -6,10 +6,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Plus } from "lucide-react";
+import { Plus, Barcode } from "lucide-react";
 import AddProductForm from "./AddProductForm";
 
 interface AddProductDialogProps {
@@ -35,6 +36,9 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({ trigger }) => {
       >
         <DialogHeader>
           <DialogTitle>Aggiungi nuovo prodotto</DialogTitle>
+          <DialogDescription>
+            Inserisci un nuovo prodotto nel tuo catalogo con un processo guidato
+          </DialogDescription>
         </DialogHeader>
         <AddProductForm onClose={() => setOpen(false)} />
       </DialogContent>

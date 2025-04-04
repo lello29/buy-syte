@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -16,7 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Barcode, Scan, Tag } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Barcode, Scan, Tag, AlertCircle, Check, X } from "lucide-react";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -34,6 +35,10 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => {
+  const [isScanning, setIsScanning] = useState(false);
+  const [foundProduct, setFoundProduct] = useState<any>(null);
+  const [showProductDialog, setShowProductDialog] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,30 +56,35 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => 
   };
 
   const handleScanBarcode = () => {
-    // In a real app, this would access the camera and scan a barcode
-    toast.info("Funzione di scansione in fase di sviluppo");
+    setIsScanning(true);
+    toast.info("Accesso alla fotocamera in corso...");
     
-    // Simulate a successful scan
+    // Simulate a successful scan after 1.5 seconds
     setTimeout(() => {
       const mockedBarcodeData = "8001120329394";
       form.setValue("barcode", mockedBarcodeData);
-      onSubmit(form.getValues());
+      setIsScanning(false);
       toast.success("Codice a barre scansionato con successo");
-    }, 1000);
+      
+      // After scanning, search for the product
+      handleSearchBarcode(mockedBarcodeData);
+    }, 1500);
   };
 
-  const handleSearchBarcode = () => {
-    const barcodeValue = form.getValues("barcode");
-    if (!barcodeValue) {
+  const handleSearchBarcode = (barcodeValue?: string) => {
+    const codeToSearch = barcodeValue || form.getValues("barcode");
+    
+    if (!codeToSearch) {
       toast.error("Inserisci un codice a barre prima di cercare");
       return;
     }
 
-    toast.loading("Ricerca prodotto in corso...");
+    toast.loading("Ricerca prodotto nell'archivio centrale...");
     
-    // Simulate product search
+    // Simulate product search in the shared database
     setTimeout(() => {
-      if (barcodeValue === "8001120329394") {
+      if (codeToSearch === "8001120329394") {
+        // Product found in the central database
         const productData = {
           name: "Pasta Barilla Spaghetti N.5",
           description: "Pasta di semola di grano duro",
@@ -84,15 +94,48 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => 
           weight: 0.5,
           dimensions: "10x5x20 cm",
           sku: "BARILLA-SPA5",
-          barcode: barcodeValue
+          barcode: codeToSearch
         };
         
-        updateData(productData);
-        toast.success("Prodotto trovato e importato");
+        setFoundProduct(productData);
+        setShowProductDialog(true);
+        toast.dismiss();
       } else {
         toast.error("Nessun prodotto trovato con questo codice");
+        toast.info("Puoi inserire manualmente i dettagli del prodotto");
       }
     }, 1500);
+  };
+
+  const handleAcceptProduct = () => {
+    if (foundProduct) {
+      updateData(foundProduct);
+      
+      // Update form values to match the found product
+      Object.entries(foundProduct).forEach(([key, value]) => {
+        if (form.getValues(key as any) !== undefined) {
+          form.setValue(key as any, value as any);
+        }
+      });
+      
+      setShowProductDialog(false);
+      toast.success("Prodotto importato con successo");
+    }
+  };
+
+  const handleRejectProduct = () => {
+    setShowProductDialog(false);
+    toast.info("Procedere con inserimento manuale");
+  };
+
+  const handleGenerateCode = () => {
+    // Generate a unique code for the product
+    const uniqueCode = "SHOP" + Date.now().toString().slice(-8);
+    form.setValue("barcode", uniqueCode);
+    form.setValue("sku", data.sku || uniqueCode);
+    
+    toast.success("Codice generato con successo");
+    onSubmit(form.getValues());
   };
 
   return (
@@ -169,6 +212,21 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => 
               </TabsContent>
 
               <TabsContent value="identification">
+                <div className="bg-blue-50 p-4 rounded-md mb-4 border border-blue-200">
+                  <h4 className="font-medium text-blue-800 mb-2 flex items-center">
+                    <AlertCircle className="h-4 w-4 mr-2" />
+                    Opzioni di identificazione prodotto
+                  </h4>
+                  <p className="text-sm text-blue-700 mb-2">
+                    Puoi identificare il prodotto in tre modi:
+                  </p>
+                  <ul className="text-sm text-blue-700 list-disc list-inside space-y-1">
+                    <li>Scansiona un codice a barre esistente</li>
+                    <li>Inserisci manualmente un codice</li>
+                    <li>Genera un nuovo codice univoco</li>
+                  </ul>
+                </div>
+
                 <FormField
                   control={form.control}
                   name="sku"
@@ -202,18 +260,31 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => 
                             size="icon" 
                             variant="outline"
                             onClick={handleScanBarcode}
+                            disabled={isScanning}
                           >
-                            <Scan className="h-4 w-4" />
+                            {isScanning ? (
+                              <span className="animate-pulse">...</span>
+                            ) : (
+                              <Scan className="h-4 w-4" />
+                            )}
                           </Button>
                         </div>
-                        <div className="flex justify-end mt-2">
+                        <div className="flex justify-between mt-2">
                           <Button 
                             type="button" 
                             variant="outline" 
                             size="sm"
-                            onClick={handleSearchBarcode}
+                            onClick={() => handleSearchBarcode()}
                           >
                             Cerca prodotto
+                          </Button>
+                          <Button 
+                            type="button" 
+                            variant="secondary" 
+                            size="sm"
+                            onClick={handleGenerateCode}
+                          >
+                            Genera codice
                           </Button>
                         </div>
                         <FormMessage />
@@ -249,6 +320,47 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => 
           </Form>
         </div>
       </Tabs>
+
+      {/* Product Found Dialog */}
+      <AlertDialog open={showProductDialog} onOpenChange={setShowProductDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Prodotto trovato nell'archivio</AlertDialogTitle>
+            <AlertDialogDescription>
+              È questo il prodotto che stai cercando di aggiungere?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          {foundProduct && (
+            <div className="p-4 border rounded-md my-4">
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="font-semibold">Nome:</div>
+                <div>{foundProduct.name}</div>
+                
+                <div className="font-semibold">Categoria:</div>
+                <div>{foundProduct.category}</div>
+                
+                <div className="font-semibold">Prezzo:</div>
+                <div>€{foundProduct.price.toFixed(2)}</div>
+                
+                <div className="font-semibold">Codice:</div>
+                <div>{foundProduct.barcode}</div>
+              </div>
+            </div>
+          )}
+          
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleRejectProduct} className="flex items-center">
+              <X className="mr-2 h-4 w-4" />
+              No, inserisco manualmente
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleAcceptProduct} className="flex items-center">
+              <Check className="mr-2 h-4 w-4" />
+              Sì, importa questo prodotto
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
