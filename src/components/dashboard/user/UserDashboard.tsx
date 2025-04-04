@@ -16,6 +16,15 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ userId }) => {
   
   return (
     <div className="space-y-6">
+      <div className="bg-primary text-white p-4 -mx-4 -mt-6 mb-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Dashboard Cliente</h1>
+          <Button variant="ghost" className="text-white hover:bg-white/20">
+            Logout
+          </Button>
+        </div>
+      </div>
+      
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <DashboardCard
           title="Ordini Recenti"
@@ -110,7 +119,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ userId }) => {
       <h2 className="text-2xl font-semibold mt-8 mb-4">Prodotti consigliati</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.slice(0, 4).map((product) => (
-          <Card key={product.id} className="overflow-hidden">
+          <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow">
             <div className="h-40 bg-gray-100">
               <img
                 src={product.images[0] || "/placeholder.svg"} 

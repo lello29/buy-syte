@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import DashboardCard from "../cards/DashboardCard";
 import { Package, Calendar, ShoppingBag, DollarSign, ChevronRight } from "lucide-react";
@@ -57,7 +57,7 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
       {/* Header with shop name and logout */}
       <div className="bg-primary text-white p-4 -mx-4 -mt-6 mb-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Negozio</h1>
+          <h1 className="text-2xl font-bold">Negozio: {shop.name}</h1>
           <Button variant="ghost" className="text-white hover:bg-white/20">
             Logout
           </Button>
@@ -65,7 +65,7 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
       </div>
       
       {/* Summary cards section */}
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         <DashboardCard
           title="Totale Prodotti"
           description=""
@@ -103,7 +103,7 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
         />
         
         <DashboardCard
-          title="Domande Prenotazione"
+          title="Prenotazioni"
           description=""
           value={reservations.toString()}
           icon={<ShoppingBag />}

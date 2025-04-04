@@ -21,6 +21,15 @@ const CollaboratorDashboard: React.FC<CollaboratorDashboardProps> = ({ userId })
   
   return (
     <div className="space-y-6">
+      <div className="bg-primary text-white p-4 -mx-4 -mt-6 mb-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Dashboard Collaboratore</h1>
+          <Button variant="ghost" className="text-white hover:bg-white/20">
+            Logout
+          </Button>
+        </div>
+      </div>
+      
       <div className="grid gap-6 md:grid-cols-3">
         <DashboardCard
           title="Incarichi Completati"
