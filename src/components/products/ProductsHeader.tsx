@@ -1,7 +1,8 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
+import AddProductDialog from "./AddProductDialog";
 
 interface ProductsHeaderProps {
   onAddProduct: () => void;
@@ -18,10 +19,7 @@ const ProductsHeader: React.FC<ProductsHeaderProps> = ({ onAddProduct }) => {
       </div>
       
       <div className="flex gap-4">
-        <Button onClick={onAddProduct}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nuovo Prodotto
-        </Button>
+        <AddProductDialog />
         <Button variant="outline">
           <Upload className="h-4 w-4 mr-2" />
           Importa CSV

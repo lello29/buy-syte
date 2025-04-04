@@ -10,11 +10,16 @@ import ProductsTable from "@/components/products/ProductsTable";
 import EmptyProductsState from "@/components/products/EmptyProductsState";
 import ProductsMetrics from "@/components/products/ProductsMetrics";
 import ProductsSalesHints from "@/components/products/ProductsSalesHints";
+import AddProductDialog from "@/components/products/AddProductDialog";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ProductsPage = () => {
   const { currentUser, getUserShop } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+  const isMobile = useIsMobile();
   
   if (!currentUser || currentUser.role !== "shop") {
     return <div>Accesso non autorizzato</div>;
@@ -42,8 +47,6 @@ const ProductsPage = () => {
 
   const handleAddProduct = () => {
     setShowAddModal(true);
-    // This is where the add product modal would be triggered
-    toast.info("Funzione di aggiunta prodotto in fase di sviluppo");
   };
 
   const clearSearch = () => {
@@ -69,6 +72,19 @@ const ProductsPage = () => {
       <ProductsMetrics products={products} />
       
       <ProductsSalesHints />
+
+      {/* Mobile Floating Action Button */}
+      {isMobile && (
+        <div className="fixed bottom-4 right-4 z-10">
+          <AddProductDialog
+            trigger={
+              <Button size="icon" className="h-14 w-14 rounded-full shadow-lg">
+                <Plus className="h-6 w-6" />
+              </Button>
+            }
+          />
+        </div>
+      )}
     </div>
   );
 };
