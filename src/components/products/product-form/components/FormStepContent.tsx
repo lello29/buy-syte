@@ -7,7 +7,8 @@ import ProductDetails from "../ProductDetails";
 import ProductImages from "../ProductImages";
 import ProductOptions from "../ProductOptions";
 import ProductPublish from "../ProductPublish";
-import { Alert, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface FormStepContentProps {
   onClose?: () => void;
@@ -91,8 +92,8 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
         data={productData}
         updateData={updateProductData}
         onSubmit={() => {
-          const success = handleSubmit();
-          if (success && onClose) setTimeout(onClose, 2000);
+          handleSubmit();
+          if (onClose) setTimeout(onClose, 2000);
         }}
       />
     );
