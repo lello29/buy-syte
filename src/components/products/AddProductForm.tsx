@@ -18,7 +18,8 @@ import {
   Tag,
   Info,
   Barcode,
-  ShoppingBag
+  ShoppingBag,
+  Scan
 } from "lucide-react";
 import { toast } from "sonner";
 import ProductBasicInfo from "./product-form/ProductBasicInfo";
@@ -46,6 +47,7 @@ type ProductFormData = Partial<Product> & {
   };
   images: (string | File)[];
   isSharedProduct?: boolean; // Flag to indicate if this is a product from the shared database
+  barcode?: string; // Add the barcode property to fix the first error
 }
 
 const STEPS = [
