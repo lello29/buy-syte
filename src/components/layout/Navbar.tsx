@@ -31,7 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ simplified = false }) => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <Store className="h-6 w-6 text-primary mr-2" />
-            <span className="font-bold text-lg">ShopHubConnect</span>
+            <span className="font-bold text-lg">Buy-sity</span>
           </Link>
 
           {/* Desktop Navigation */}

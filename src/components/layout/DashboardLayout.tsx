@@ -33,11 +33,10 @@ const DashboardLayout = () => {
       <SidebarProvider defaultOpen={!isMobile}>
         <div className="flex flex-1 w-full pt-16">
           <DashboardSidebar />
-          <SidebarInset className="px-4 py-6 md:px-6">
+          <SidebarInset className="px-4 py-6 md:px-6 w-full">
             <div className="container mx-auto">
               <div className="flex items-center mb-6">
                 <SidebarTrigger />
-                {/* Removed the "Dashboard" title here as it's redundant */}
               </div>
               <Outlet />
             </div>

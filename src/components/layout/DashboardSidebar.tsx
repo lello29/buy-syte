@@ -79,11 +79,11 @@ const DashboardSidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <Sidebar side="left" variant={useIsMobile() ? "floating" : "sidebar"}>
+    <Sidebar side="left" variant={useIsMobile() ? "floating" : "sidebar"} className="z-20">
       <SidebarHeader className="border-b">
         <div className="flex items-center p-4">
           <User className="h-6 w-6 text-primary mr-2" />
-          <span className="text-xl font-semibold">{currentUser.name}</span>
+          <span className="text-xl font-semibold truncate">{currentUser.name}</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -97,7 +97,7 @@ const DashboardSidebar = () => {
               >
                 <Link to={link.path} className="flex items-center">
                   <link.icon className="h-5 w-5 mr-2" />
-                  <span>{link.label}</span>
+                  <span className="truncate">{link.label}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
