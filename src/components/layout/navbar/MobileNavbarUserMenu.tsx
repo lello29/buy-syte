@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { getMenuItems } from "./menuItems";
+import { ChevronRight } from "lucide-react";
 
 interface MobileNavbarUserMenuProps {
   setMobileMenuOpen: (isOpen: boolean) => void;
@@ -18,7 +19,7 @@ const MobileNavbarUserMenu = ({ setMobileMenuOpen }: MobileNavbarUserMenuProps) 
 
   return (
     <div className="flex flex-col space-y-2">
-      <div className="font-medium text-sm text-gray-500 py-1">Account</div>
+      <div className="font-medium text-sm text-gray-500 py-1">Mio Profilo</div>
       {menuItems.map((item, index) => (
         <Link 
           key={index} 
@@ -28,10 +29,13 @@ const MobileNavbarUserMenu = ({ setMobileMenuOpen }: MobileNavbarUserMenuProps) 
           <Button 
             variant="ghost" 
             size="sm"
-            className="w-full justify-start"
+            className="w-full justify-between"
           >
-            <item.icon className="h-4 w-4 mr-2" />
-            {item.label}
+            <span className="flex items-center">
+              <item.icon className="h-4 w-4 mr-2" />
+              {item.label}
+            </span>
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </Link>
       ))}
