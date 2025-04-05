@@ -1,7 +1,6 @@
 
 import React from "react";
-import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
@@ -10,10 +9,23 @@ import {
   SidebarTrigger
 } from "@/components/ui/sidebar";
 import DashboardSidebar from "./DashboardSidebar";
+import MobileDashboard from "./MobileDashboard";
+import { Menu, Home, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const DashboardLayout = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Solo per admin mostro la dashboard mobile personalizzata
+  const shouldShowMobileDashboard = isMobile && currentUser?.role === "admin";
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
 
   if (!currentUser) {
     return (
@@ -26,10 +38,35 @@ const DashboardLayout = () => {
     );
   }
 
+  // Rendering condizionale per dispositivi mobili (solo per admin)
+  if (shouldShowMobileDashboard) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-100">
+        {/* Header blu */}
+        <header className="bg-[#0a3276] text-white p-4 fixed top-0 left-0 right-0 z-50">
+          <div className="flex items-center justify-between">
+            <button className="p-1">
+              <Menu className="h-8 w-8" />
+            </button>
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+            <div className="flex flex-col items-end">
+              <button onClick={() => navigate("/")} className="text-lg mb-1">Home</button>
+              <button onClick={handleLogout} className="text-lg">Logout</button>
+            </div>
+          </div>
+        </header>
+        
+        {/* Contenuto principale con padding-top per evitare sovrapposizione con l'header */}
+        <main className="flex-1 pt-20 pb-4 px-4">
+          <MobileDashboard />
+        </main>
+      </div>
+    );
+  }
+
+  // Layout desktop o per altri ruoli diversi da admin
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      <Navbar simplified={true} />
-      
       <SidebarProvider defaultOpen={!isMobile}>
         <div className="flex flex-1 w-full pt-16">
           <DashboardSidebar />

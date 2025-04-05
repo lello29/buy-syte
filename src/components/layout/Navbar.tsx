@@ -1,9 +1,10 @@
 
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Store, Menu, X } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Store, Menu, X, Home, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import DesktopNavigation from "./navbar/DesktopNavigation";
 import MobileNavigation from "./navbar/MobileNavigation";
 import AuthActions from "./navbar/AuthActions";
@@ -17,6 +18,13 @@ const Navbar: React.FC<NavbarProps> = ({ simplified = false }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isMobile = useIsMobile();
+  const isAdmin = currentUser?.role === "admin";
+  const isDashboardRoute = location.pathname.startsWith("/dashboard");
+
+  // Verifica se siamo nella dashboard e su dispositivo mobile e admin
+  const shouldUseAlternativeHeader = isMobile && isDashboardRoute && isAdmin;
 
   const handleLogout = async () => {
     await logout();
@@ -24,8 +32,13 @@ const Navbar: React.FC<NavbarProps> = ({ simplified = false }) => {
     setMobileMenuOpen(false);
   };
 
+  // Se siamo nella dashboard admin in mobile view, non mostriamo la navbar standard
+  if (shouldUseAlternativeHeader) {
+    return null;
+  }
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-10 bg-white shadow-sm">
+    <header className={`fixed top-0 left-0 right-0 z-10 ${simplified || isMobile ? "bg-white" : "bg-white"} shadow-sm`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
