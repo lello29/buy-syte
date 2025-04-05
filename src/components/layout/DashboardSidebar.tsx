@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -78,22 +77,11 @@ const DashboardSidebar = () => {
   const links = getSidebarLinks();
   const isActive = (path) => location.pathname === path;
 
-  // Ottieni il titolo del pannello in base al ruolo
-  const getPanelTitle = () => {
-    switch (currentUser.role) {
-      case "user": return "Pannello Cliente";
-      case "shop": return "Pannello Negozio";
-      case "collaborator": return "Pannello Collaboratore";
-      case "admin": return "Pannello Admin";
-      default: return "Pannello";
-    }
-  };
-
   return (
     <Sidebar side="left" variant={useIsMobile() ? "floating" : "sidebar"} className="z-20">
       <SidebarHeader className="border-b">
         <div className="p-4 text-center">
-          <div className="text-lg font-bold">{getPanelTitle()}</div>
+          <div className="h-6"></div>
         </div>
       </SidebarHeader>
       <SidebarContent>
