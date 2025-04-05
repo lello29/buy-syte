@@ -27,7 +27,7 @@ const DashboardLayout = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       <Navbar simplified={true} />
       
       <SidebarProvider defaultOpen={!isMobile}>
@@ -35,15 +35,17 @@ const DashboardLayout = () => {
           <DashboardSidebar />
           <SidebarInset className="px-4 py-6 md:px-6 w-full">
             <div className="container mx-auto">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm">
                 <div className="flex items-center">
                   <SidebarTrigger />
                   <h1 className="text-xl font-semibold ml-2">
-                    Dashboard <span className="text-primary">{currentUser.name}</span>
+                    Benvenuto, <span className="text-primary">{currentUser.name}</span>!
                   </h1>
                 </div>
               </div>
-              <Outlet />
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <Outlet />
+              </div>
             </div>
           </SidebarInset>
         </div>

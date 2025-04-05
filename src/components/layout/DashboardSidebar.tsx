@@ -78,12 +78,22 @@ const DashboardSidebar = () => {
   const links = getSidebarLinks();
   const isActive = (path) => location.pathname === path;
 
+  // Ottieni il titolo del pannello in base al ruolo
+  const getPanelTitle = () => {
+    switch (currentUser.role) {
+      case "user": return "Pannello Cliente";
+      case "shop": return "Pannello Negozio";
+      case "collaborator": return "Pannello Collaboratore";
+      case "admin": return "Pannello Admin";
+      default: return "Pannello";
+    }
+  };
+
   return (
     <Sidebar side="left" variant={useIsMobile() ? "floating" : "sidebar"} className="z-20">
       <SidebarHeader className="border-b">
         <div className="p-4 text-center">
-          {/* Empty space where the role text was, kept for layout consistency */}
-          <div className="h-6"></div>
+          <div className="text-lg font-bold">{getPanelTitle()}</div>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -94,9 +104,10 @@ const DashboardSidebar = () => {
                 asChild 
                 isActive={isActive(link.path)}
                 tooltip={link.label}
+                className="hover:text-primary transition-colors"
               >
-                <Link to={link.path} className="flex items-center">
-                  <link.icon className="h-5 w-5 mr-2" />
+                <Link to={link.path} className="flex items-center gap-2">
+                  <link.icon className="h-5 w-5" />
                   <span className="truncate">{link.label}</span>
                 </Link>
               </SidebarMenuButton>
@@ -110,6 +121,7 @@ const DashboardSidebar = () => {
               asChild
               isActive={location.pathname.includes("/settings")}
               tooltip="Impostazioni"
+              className="font-semibold hover:text-primary transition-colors"
             >
               <Link to={currentUser.role === "admin" ? "/dashboard/admin/settings" : "/dashboard/settings"}>
                 <Settings className="h-5 w-5 mr-2" />
