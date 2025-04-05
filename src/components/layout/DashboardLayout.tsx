@@ -49,19 +49,29 @@ const DashboardLayout = () => {
         {/* Header blu */}
         <header className="bg-[#0a3276] text-white p-4 fixed top-0 left-0 right-0 z-50">
           <div className="flex items-center justify-between">
-            <button className="p-1">
+            <button className="p-1 rounded-full hover:bg-blue-700 active:bg-blue-800 transition-colors">
               <Menu className="h-8 w-8" />
             </button>
             <h1 className="text-2xl font-bold">Dashboard</h1>
-            <div className="flex flex-col items-end">
-              <button onClick={handleHomeClick} className="text-lg mb-1">Home</button>
-              <button onClick={handleLogout} className="text-lg">Logout</button>
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={handleHomeClick} 
+                className="flex items-center justify-center h-9 w-9 rounded-full hover:bg-blue-700 active:bg-blue-800 transition-colors"
+              >
+                <Home className="h-5 w-5" />
+              </button>
+              <button 
+                onClick={handleLogout}
+                className="flex items-center justify-center h-9 w-9 rounded-full hover:bg-blue-700 active:bg-blue-800 transition-colors"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </header>
         
         {/* Contenuto principale con padding-top per evitare sovrapposizione con l'header */}
-        <main className="flex-1 pt-20 pb-4 px-4">
+        <main className="flex-1 pt-20 pb-6 px-4">
           <MobileDashboard />
         </main>
       </div>
@@ -94,7 +104,7 @@ const DashboardLayout = () => {
                   </div>
                 )}
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
+              <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
                 <Outlet />
               </div>
             </div>

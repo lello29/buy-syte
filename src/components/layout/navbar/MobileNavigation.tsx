@@ -3,8 +3,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, LogIn, UserPlus, Home } from "lucide-react";
+import { LogOut, LogIn, UserPlus, Home, AlertTriangle, Store, Tag, UserCircle } from "lucide-react";
 import MobileNavbarUserMenu from "./MobileNavbarUserMenu";
+import { toast } from "@/hooks/use-toast";
 
 interface MobileNavigationProps {
   mobileMenuOpen: boolean;
@@ -23,6 +24,15 @@ const MobileNavigation = ({
 
   if (!mobileMenuOpen) return null;
 
+  // Function to show toast for unavailable features
+  const handleNotAvailable = (featureName: string) => {
+    toast({
+      title: "Funzione non disponibile",
+      description: `La funzione "${featureName}" non è ancora disponibile.`,
+      variant: "destructive",
+    });
+  };
+
   return (
     <div className="md:hidden bg-white border-t border-gray-200 py-2">
       <div className="container mx-auto px-4">
@@ -31,23 +41,26 @@ const MobileNavigation = ({
             <>
               <Link 
                 to="/" 
-                className="text-gray-600 hover:text-primary py-2"
+                className="text-gray-600 hover:text-primary py-2 flex items-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
+                <Home className="h-4 w-4 mr-2" />
                 Home
               </Link>
               <Link 
                 to="/shops" 
-                className="text-gray-600 hover:text-primary py-2"
+                className="text-gray-600 hover:text-primary py-2 flex items-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
+                <Store className="h-4 w-4 mr-2" />
                 Negozi
               </Link>
               <Link 
                 to="/offers" 
-                className="text-gray-600 hover:text-primary py-2"
+                className="text-gray-600 hover:text-primary py-2 flex items-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
+                <Tag className="h-4 w-4 mr-2" />
                 Offerte
               </Link>
             </>
@@ -68,6 +81,7 @@ const MobileNavigation = ({
               ) : (
                 <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" size="sm" className="w-full justify-start">
+                    <UserCircle className="h-4 w-4 mr-2" />
                     Dashboard
                   </Button>
                 </Link>
