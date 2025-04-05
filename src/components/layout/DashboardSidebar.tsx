@@ -81,9 +81,12 @@ const DashboardSidebar = () => {
   return (
     <Sidebar side="left" variant={useIsMobile() ? "floating" : "sidebar"} className="z-20">
       <SidebarHeader className="border-b">
-        <div className="flex items-center p-4">
-          <User className="h-6 w-6 text-primary mr-2" />
-          <span className="text-xl font-semibold truncate">{currentUser.name}</span>
+        <div className="p-4 text-center">
+          <div className="text-primary font-semibold">
+            {currentUser.role === "user" ? "Cliente" : 
+             currentUser.role === "shop" ? "Negozio" :
+             currentUser.role === "collaborator" ? "Collaboratore" : "Amministratore"}
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -119,6 +122,14 @@ const DashboardSidebar = () => {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
+      <SidebarFooter className="border-t">
+        <div className="p-4">
+          <div className="flex items-center">
+            <User className="h-5 w-5 text-primary mr-2" />
+            <span className="truncate text-sm font-medium">{currentUser.name}</span>
+          </div>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 };
