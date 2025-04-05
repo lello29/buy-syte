@@ -82,11 +82,8 @@ const DashboardSidebar = () => {
     <Sidebar side="left" variant={useIsMobile() ? "floating" : "sidebar"} className="z-20">
       <SidebarHeader className="border-b">
         <div className="p-4 text-center">
-          <div className="text-primary font-semibold">
-            {currentUser.role === "user" ? "Cliente" : 
-             currentUser.role === "shop" ? "Negozio" :
-             currentUser.role === "collaborator" ? "Collaboratore" : "Amministratore"}
-          </div>
+          {/* Empty space where the role text was, kept for layout consistency */}
+          <div className="h-6"></div>
         </div>
       </SidebarHeader>
       <SidebarContent>
