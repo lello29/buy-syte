@@ -20,11 +20,10 @@ const Navbar: React.FC<NavbarProps> = ({ simplified = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  const isAdmin = currentUser?.role === "admin";
   const isDashboardRoute = location.pathname.startsWith("/dashboard");
 
-  // Verifica se siamo nella dashboard e su dispositivo mobile e admin
-  const shouldUseAlternativeHeader = isMobile && isDashboardRoute && isAdmin;
+  // Verifico se siamo nella dashboard principale in modalità mobile
+  const shouldHideNavbar = isMobile && isDashboardRoute && location.pathname === "/dashboard";
 
   const handleLogout = async () => {
     await logout();
@@ -32,8 +31,8 @@ const Navbar: React.FC<NavbarProps> = ({ simplified = false }) => {
     setMobileMenuOpen(false);
   };
 
-  // Se siamo nella dashboard admin in mobile view, non mostriamo la navbar standard
-  if (shouldUseAlternativeHeader) {
+  // Se siamo nella dashboard principale in mobile view, non mostriamo la navbar standard
+  if (shouldHideNavbar) {
     return null;
   }
 

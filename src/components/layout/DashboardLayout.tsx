@@ -19,12 +19,16 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Solo per admin mostro la dashboard mobile personalizzata
-  const shouldShowMobileDashboard = isMobile && currentUser?.role === "admin";
+  // Controllo se visualizzare la dashboard mobile
+  const shouldShowMobileDashboard = isMobile && location.pathname === "/dashboard";
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
+  };
+
+  const handleHomeClick = () => {
+    navigate("/");
   };
 
   if (!currentUser) {
@@ -38,7 +42,7 @@ const DashboardLayout = () => {
     );
   }
 
-  // Rendering condizionale per dispositivi mobili (solo per admin)
+  // Rendering per dispositivi mobili sulla rotta principale
   if (shouldShowMobileDashboard) {
     return (
       <div className="flex flex-col min-h-screen bg-gray-100">
@@ -50,7 +54,7 @@ const DashboardLayout = () => {
             </button>
             <h1 className="text-2xl font-bold">Dashboard</h1>
             <div className="flex flex-col items-end">
-              <button onClick={() => navigate("/")} className="text-lg mb-1">Home</button>
+              <button onClick={handleHomeClick} className="text-lg mb-1">Home</button>
               <button onClick={handleLogout} className="text-lg">Logout</button>
             </div>
           </div>
@@ -64,7 +68,7 @@ const DashboardLayout = () => {
     );
   }
 
-  // Layout desktop o per altri ruoli diversi da admin
+  // Layout desktop o per percorsi diversi dalla dashboard principale in mobile
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <SidebarProvider defaultOpen={!isMobile}>
@@ -79,6 +83,16 @@ const DashboardLayout = () => {
                     Benvenuto, <span className="text-primary">{currentUser.name}</span>!
                   </h1>
                 </div>
+                {isMobile && (
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm" onClick={handleHomeClick}>
+                      <Home className="h-4 w-4 mr-1" /> Home
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={handleLogout}>
+                      <LogOut className="h-4 w-4 mr-1" /> Logout
+                    </Button>
+                  </div>
+                )}
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm">
                 <Outlet />
