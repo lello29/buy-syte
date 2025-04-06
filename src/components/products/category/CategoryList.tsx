@@ -2,6 +2,7 @@
 import React from "react";
 import { toast } from "sonner";
 import CategoryItem from "./CategoryItem";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CategoryListProps {
   categories: string[];
@@ -13,6 +14,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
   onCategoriesChange,
 }) => {
   const [editingCategory, setEditingCategory] = React.useState<{index: number, value: string} | null>(null);
+  const isMobile = useIsMobile();
 
   const handleDeleteCategory = (index: number) => {
     const updatedCategories = [...categories];
@@ -68,9 +70,9 @@ const CategoryList: React.FC<CategoryListProps> = ({
   }
 
   return (
-    <div className="divide-y">
+    <div className={`divide-y ${isMobile ? "text-sm" : ""}`}>
       {categories.map((category, index) => (
-        <div key={index} className="flex items-center justify-between p-3">
+        <div key={index} className={`flex items-center justify-between ${isMobile ? "p-2" : "p-3"}`}>
           <CategoryItem
             category={category}
             index={index}

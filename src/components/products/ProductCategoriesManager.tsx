@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
 import CategoryDropdown from "./category/CategoryDropdown";
 import CategoryDialog from "./category/CategoryDialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProductCategoriesManagerProps {
   categories: string[];
@@ -20,9 +21,14 @@ const ProductCategoriesManager: React.FC<ProductCategoriesManagerProps> = ({
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [managedCategories, setManagedCategories] = useState<string[]>(categories);
+  const isMobile = useIsMobile();
 
   const handleCategoriesChange = (updatedCategories: string[]) => {
     setManagedCategories(updatedCategories);
+    // Se una funzione di callback è fornita, notifica il componente padre
+    if (onCategoryChange && updatedCategories.length > 0) {
+      onCategoryChange(updatedCategories[0]); // Seleziona la prima categoria di default
+    }
   };
 
   const openCategoryManager = () => {
@@ -44,13 +50,26 @@ const ProductCategoriesManager: React.FC<ProductCategoriesManagerProps> = ({
     <>
       {manageCategoriesButton}
       
-      <CategoryDropdown
-        categories={managedCategories}
-        onCategoryChange={onCategoryChange}
-        onManageCategories={openCategoryManager}
-        className={className}
-        dropdownOnly={dropdownOnly}
-      />
+      {!dropdownOnly && (
+        <Button 
+          variant="outline" 
+          onClick={openCategoryManager}
+          className={isMobile ? "w-full" : ""}
+        >
+          <Edit className="h-4 w-4 mr-2" />
+          Gestione Categorie
+        </Button>
+      )}
+      
+      {!isMobile && (
+        <CategoryDropdown
+          categories={managedCategories}
+          onCategoryChange={onCategoryChange}
+          onManageCategories={openCategoryManager}
+          className={className}
+          dropdownOnly={dropdownOnly}
+        />
+      )}
 
       <CategoryDialog
         isOpen={isDialogOpen}

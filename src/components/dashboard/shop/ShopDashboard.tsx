@@ -1,12 +1,13 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import DashboardCard from "../cards/DashboardCard";
-import { Package, Calendar, ShoppingBag, DollarSign, ChevronRight } from "lucide-react";
+import { Package, Calendar, ShoppingBag, DollarSign, ChevronRight, Settings } from "lucide-react";
 import { getProductsByShopId, shops } from "@/data/mockData";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ShopDashboardProps {
   userId: string;
@@ -35,6 +36,8 @@ const RecentProductItem = ({ product }: { product: any }) => {
 
 const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
   const shop = shops.find(shop => shop.userId === userId);
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
   
   if (!shop) {
     return <div>Negozio non trovato</div>;
@@ -49,19 +52,34 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
   const reservations = Math.floor(Math.random() * 10) + 1;
 
   const handleAddProduct = () => {
-    toast.info("Funzionalità di aggiunta prodotto in arrivo!");
+    navigate("/dashboard/products/add");
+  };
+
+  const handleManageCategories = () => {
+    // Trova e clicca il pulsante nascosto per gestire le categorie
+    const manageCategoriesButton = document.getElementById("manage-categories-button");
+    if (manageCategoriesButton) {
+      manageCategoriesButton.click();
+    } else {
+      toast.error("Impossibile aprire la gestione categorie");
+    }
   };
   
   return (
     <div className="space-y-6 max-w-md mx-auto md:max-w-none pb-20">
-      {/* Header with shop name and logout */}
-      <div className="bg-primary text-white p-4 -mx-4 -mt-6 mb-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Negozio: {shop.name}</h1>
-          <Button variant="ghost" className="text-white hover:bg-white/20">
-            Logout
-          </Button>
-        </div>
+      {/* Header with shop name and options */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Negozio: {shop.name}</h1>
+        
+        {/* Desktop Settings Button */}
+        {!isMobile && (
+          <Link to="/dashboard/shop-settings">
+            <Button variant="outline">
+              <Settings className="h-4 w-4 mr-2" />
+              Impostazioni Negozio
+            </Button>
+          </Link>
+        )}
       </div>
       
       {/* Summary cards section */}
@@ -114,21 +132,38 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
         />
       </div>
 
-      {/* Add Product Button */}
-      <div className="mt-8">
+      {/* Action Buttons */}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
         <Button 
           variant="primary" 
           size="lg" 
-          className="w-full justify-center text-lg py-6"
+          className="justify-center text-lg py-6"
           onClick={handleAddProduct}
         >
           Aggiungi Prodotto
         </Button>
+        
+        <Button 
+          variant="outline" 
+          size="lg" 
+          className="justify-center text-lg py-6"
+          onClick={handleManageCategories}
+        >
+          Gestisci Categorie
+        </Button>
       </div>
 
       {/* Recent Products */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Ultimi Prodotti</h2>
+      <div className="mt-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Ultimi Prodotti</h2>
+          <Link to="/dashboard/products">
+            <Button variant="ghost" size="sm">
+              Vedi tutti <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
+        </div>
+        
         <Card className="border-0 shadow-sm">
           <CardContent className="p-4">
             {recentProducts.length > 0 ? (
@@ -147,6 +182,25 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
             )}
           </CardContent>
         </Card>
+      </div>
+      
+      {/* Mobile-only Settings Link at bottom */}
+      {isMobile && (
+        <div className="mt-8">
+          <Link to="/dashboard/shop-settings">
+            <Button variant="outline" className="w-full justify-center">
+              <Settings className="h-4 w-4 mr-2" />
+              Impostazioni Negozio
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      {/* Hidden component for category management */}
+      <div className="hidden">
+        <ProductCategoriesManager 
+          categories={["Abbigliamento", "Accessori", "Elettronica", "Casa", "Sport", "Bellezza"]} 
+        />
       </div>
     </div>
   );
