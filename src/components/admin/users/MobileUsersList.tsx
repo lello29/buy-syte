@@ -3,7 +3,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Ban, Trash2, UserPlus, Edit } from 'lucide-react';
 import { User } from '@/types';
-import { toast } from 'sonner';
 
 interface MobileUsersListProps {
   users: User[];
