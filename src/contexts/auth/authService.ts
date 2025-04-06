@@ -4,7 +4,9 @@ import { toast } from "sonner";
 import { ShopData } from "./types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { handleMockLogin, isTestAccount } from "./mockAuth";
-import { supabaseAuth } from "./supabaseAuth";
+import { supabaseAuth } from "./supabase/auth";
+import { userProfileService } from "./supabase/userProfile";
+import { shopService } from "./supabase/shopService";
 
 /**
  * Handles user authentication
@@ -117,7 +119,7 @@ export const authService = {
       
       if (isSupabaseConfigured) {
         // Update user role in the database
-        const roleUpdated = await supabaseAuth.updateUserRole(
+        const roleUpdated = await userProfileService.updateUserRole(
           user.id, 
           role, 
           shopData?.fiscalCode, 
@@ -130,7 +132,7 @@ export const authService = {
         
         // If converting to shop, create shop record
         if (role === "shop" && shopData && shopData.shopData) {
-          const shopCreated = await supabaseAuth.createShopRecord(
+          const shopCreated = await shopService.createShopRecord(
             user.id,
             shopData.shopData,
             shopData.fiscalCode,
@@ -166,46 +168,7 @@ export const authService = {
     try {
       // Update in Supabase if configured
       if (isSupabaseConfigured) {
-        const { error } = await supabase
-          .from('users')
-          .update({ 
-            favorites,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', userId);
-        
-        if (error) {
-          console.error("Update favorites error:", error.message);
-          toast.error("Errore nell'aggiornamento dei preferiti");
-          return null;
-        }
-        
-        // Get updated user
-        const { data: userData, error: fetchError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', userId)
-          .single();
-          
-        if (fetchError || !userData) {
-          console.error("Fetch updated user error:", fetchError?.message);
-          return null;
-        }
-        
-        // Transform from snake_case to camelCase
-        return {
-          id: userData.id,
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-          favorites: userData.favorites || [],
-          loyaltyPoints: userData.loyalty_points || 0,
-          isActive: userData.is_active,
-          createdAt: userData.created_at,
-          updatedAt: userData.updated_at,
-          fiscalCode: userData.fiscal_code,
-          vatNumber: userData.vat_number
-        };
+        return await userProfileService.updateUserFavorites(userId, favorites);
       }
       
       // For mock data, just get the user from localStorage and update
