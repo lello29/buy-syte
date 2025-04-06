@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 interface BarcodeStepProps {
   isMobile?: boolean;
-  handleSkipToManualEntry: () => void;
+  handleSkipToManualEntry?: () => void;
 }
 
 const BarcodeStep: React.FC<BarcodeStepProps> = ({ isMobile, handleSkipToManualEntry }) => {
@@ -59,7 +59,7 @@ const BarcodeStep: React.FC<BarcodeStepProps> = ({ isMobile, handleSkipToManualE
           </div>
           
           <p className="text-[10px] text-muted-foreground mt-4">
-            Prodotti con codice a barre vengono salvati in archivio condiviso
+            L'uso dei codici a barre è gratuito e può essere utilizzato liberamente da tutti gli utenti
           </p>
         </div>
 
@@ -102,7 +102,8 @@ const BarcodeStep: React.FC<BarcodeStepProps> = ({ isMobile, handleSkipToManualE
         </div>
         
         <p className="text-xs text-muted-foreground mt-8">
-          Nota: i prodotti con codice a barre vengono salvati in un archivio condiviso per facilitare l'inserimento da parte di altri utenti.
+          Nota: L'uso dei codici a barre è gratuito e può essere utilizzato liberamente da tutti gli utenti per l'inserimento dei prodotti.
+          I prodotti con codice a barre vengono salvati in un archivio condiviso per facilitare l'inserimento da parte di altri utenti.
         </p>
       </div>
 

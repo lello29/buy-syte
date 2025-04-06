@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Eye, Check, X, Plus, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface Product {
   id: string;
@@ -33,6 +33,8 @@ const MobileProductsList: React.FC<MobileProductsListProps> = ({
   onAddProduct,
   onViewProduct
 }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-4">
       <Button 
@@ -86,14 +88,13 @@ const MobileProductsList: React.FC<MobileProductsListProps> = ({
                   <><Check className="h-5 w-5 mr-1" /> Attiva</>
                 )}
               </Button>
-              <Button 
-                variant="ghost" 
-                className="flex-1 rounded-none h-12 text-blue-700 hover:bg-blue-50"
-                onClick={() => onViewProduct(product)}
+              <Link 
+                to={`/dashboard/products/${product.id}`}
+                className="flex-1 flex items-center justify-center rounded-none h-12 text-blue-700 hover:bg-blue-50"
               >
                 <Eye className="h-5 w-5 mr-1" />
                 Visualizza
-              </Button>
+              </Link>
             </div>
           </div>
         ))}

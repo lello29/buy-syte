@@ -9,6 +9,7 @@ import ProductOptions from "../ProductOptions";
 import ProductPublish from "../ProductPublish";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import AIStatusCheck from "./AIStatusCheck";
 
 interface FormStepContentProps {
   onClose?: () => void;
@@ -102,6 +103,8 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
   return (
     <>
       {hasErrors && renderErrors()}
+      {/* Mostra lo stato dell'AI solo nei passaggi rilevanti (non nella scansione barcode) */}
+      {currentStep > 0 && currentStep < 5 && <AIStatusCheck />}
       {content}
     </>
   );

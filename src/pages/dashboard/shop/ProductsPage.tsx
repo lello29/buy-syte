@@ -55,7 +55,7 @@ const ProductsPage = () => {
 
   const handleAddProduct = () => {
     if (isMobile) {
-      setShowAddModal(true);
+      navigate('/dashboard/products/add');
     } else {
       setShowAddModal(true);
     }
@@ -120,7 +120,7 @@ const ProductsPage = () => {
         />
       </div>
 
-      {/* Add Product Dialog for all devices */}
+      {/* Add Product Dialog for desktop */}
       {showAddModal && (
         <AddProductDialog 
           trigger={<div className="hidden" />} 

@@ -49,12 +49,11 @@ const ShopActionButtons: React.FC<ShopActionButtonsProps> = ({
       <h2 className="font-bold text-xl mb-4">Azioni Rapide</h2>
       <div className="grid grid-cols-2 gap-3">
         {mainActions.map((action, idx) => (
-          action.path ? (
+          action.path && !action.onClick ? (
             <Link 
               key={idx} 
               to={action.path} 
               className="no-underline"
-              onClick={action.onClick}
             >
               <Button 
                 className={`w-full ${action.color} border-0 text-white`}
