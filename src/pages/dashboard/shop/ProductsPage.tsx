@@ -5,7 +5,7 @@ import { getProductsByShopId } from "@/data/products";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
-import { Shop } from "@/types";
+import { Shop, Product } from "@/types";
 
 // UI Components
 import ProductsHeader from "@/components/products/ProductsHeader";
@@ -26,15 +26,64 @@ const ProductsPage = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [shop, setShop] = useState<Shop | null>(null);
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>(["all"]);
+  const [shopNames, setShopNames] = useState<Record<string, string>>({});
+  
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   
+  // Define handler functions before using them
+  const handleAddProduct = () => {
+    if (isMobile) {
+      navigate('/dashboard/products/add');
+    } else {
+      setShowAddModal(true);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchTerm("");
+  };
+
+  const openCategoryManager = () => {
+    const manageCategoriesButton = document.getElementById("manage-categories-button");
+    if (manageCategoriesButton) {
+      manageCategoriesButton.click();
+    } else {
+      toast.error("Impossibile aprire la gestione categorie");
+    }
+  };
+  
+  const handleToggleProductStatus = (id: string, newStatus: boolean) => {
+    toast.success(`Prodotto ${newStatus ? 'attivato' : 'disattivato'} con successo`);
+  };
+  
+  const handleViewProduct = (product: any) => {
+    navigate(`/dashboard/products/${product.id}`);
+  };
+
+  // Fetch shop data
   useEffect(() => {
     const fetchShop = async () => {
       if (currentUser && currentUser.role === "shop") {
         try {
           const shopData = await getUserShop();
           setShop(shopData || null);
+          
+          if (shopData) {
+            // Load products for the shop
+            const shopProducts = getProductsByShopId(shopData.id);
+            setProducts(shopProducts);
+            
+            // Extract categories from products
+            const productCategories = ["all", ...Array.from(new Set(shopProducts.map(p => p.category)))];
+            setCategories(productCategories);
+            
+            // Set shop names mapping
+            setShopNames({ [shopData.id]: shopData.name });
+          }
         } catch (error) {
           console.error("Error fetching shop data:", error);
           toast.error("Errore nel caricamento dei dati del negozio");
@@ -48,6 +97,18 @@ const ProductsPage = () => {
     
     fetchShop();
   }, [currentUser, getUserShop]);
+  
+  // Update filtered products whenever products or filters change
+  useEffect(() => {
+    const filtered = products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          product.category.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+    
+    setFilteredProducts(filtered);
+  }, [products, searchTerm, categoryFilter]);
   
   // Use ShopAuthCheck component to handle authentication and shop validation
   return (
@@ -100,48 +161,6 @@ const ProductsPage = () => {
       )}
     </ShopAuthCheck>
   );
-  
-  // Move all the derived values and handlers inside the component body
-  const products = shop ? getProductsByShopId(shop.id) : [];
-  const categories = ["all", ...Array.from(new Set(products.map(p => p.category)))];
-  
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          product.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
-
-  const handleAddProduct = () => {
-    if (isMobile) {
-      navigate('/dashboard/products/add');
-    } else {
-      setShowAddModal(true);
-    }
-  };
-
-  const clearSearch = () => {
-    setSearchTerm("");
-  };
-
-  const openCategoryManager = () => {
-    const manageCategoriesButton = document.getElementById("manage-categories-button");
-    if (manageCategoriesButton) {
-      manageCategoriesButton.click();
-    } else {
-      toast.error("Impossibile aprire la gestione categorie");
-    }
-  };
-
-  const shopNames = shop ? { [shop.id]: shop.name } : {};
-  
-  const handleToggleProductStatus = (id: string, newStatus: boolean) => {
-    toast.success(`Prodotto ${newStatus ? 'attivato' : 'disattivato'} con successo`);
-  };
-  
-  const handleViewProduct = (product: any) => {
-    navigate(`/dashboard/products/${product.id}`);
-  };
 };
 
 export default ProductsPage;
