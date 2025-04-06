@@ -11,7 +11,6 @@ import { AISettingsCard } from "@/components/admin/settings/AISettingsCard";
 import { AIIntegrationCard } from "@/components/admin/settings/AIIntegrationCard";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
-import MobileDashboard from "@/components/layout/MobileDashboard";
 import { 
   Settings, 
   Map, 
@@ -50,6 +49,18 @@ const SettingsPage = () => {
   const [enableMapFeature, setEnableMapFeature] = useState(true);
   const [enablePayments, setEnablePayments] = useState(false);
   const isMobile = useIsMobile();
+
+  // Definizione della funzione handleSaveSettings prima del suo utilizzo
+  const handleSaveSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Salva le impostazioni nel localStorage
+    saveSettingsToStorage("mapApiKey", mapApiKey);
+    saveSettingsToStorage("enableMapFeature", enableMapFeature);
+    saveSettingsToStorage("enablePayments", enablePayments);
+    
+    // In a real app, here we would save to Supabase or another database
+    toast.success("Impostazioni salvate con successo");
+  };
 
   // Carica le impostazioni salvate al caricamento della pagina
   useEffect(() => {
@@ -112,17 +123,6 @@ const SettingsPage = () => {
       </div>
     );
   }
-
-  const handleSaveSettings = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Salva le impostazioni nel localStorage
-    saveSettingsToStorage("mapApiKey", mapApiKey);
-    saveSettingsToStorage("enableMapFeature", enableMapFeature);
-    saveSettingsToStorage("enablePayments", enablePayments);
-    
-    // In a real app, here we would save to Supabase or another database
-    toast.success("Impostazioni salvate con successo");
-  };
 
   return (
     <div className="space-y-6">

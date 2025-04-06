@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext } from "react";
-import { Home, ShoppingBag, ShoppingCart, Users, Settings, List, PlusCircle, CreditCard, Bell, ShoppingBasket, BarChart3, Building2, User } from "lucide-react";
+import { Home, ShoppingBag, ShoppingCart, Users, Settings, List, PlusCircle, CreditCard, Bell, ShoppingBasket, BarChart3, Building2, User, Store, LogOut } from "lucide-react";
+import { Heart } from "lucide-react";
 
 // Definizione del tipo per le opzioni di menu
 interface MenuOption {
@@ -164,8 +165,5 @@ export const RoleMenuProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     </RoleMenuContext.Provider>
   );
 };
-
-// Import missing Heart icon
-import { Heart } from "lucide-react";
 
 export default RoleMenuProvider;
