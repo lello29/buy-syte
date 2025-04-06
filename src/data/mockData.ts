@@ -8,7 +8,7 @@ import { offers } from "./offers";
 import { shops } from "./shops";
 import { collaborators } from "./collaborators";
 
-// Import helper functions
+// Import helper functions directly from the index file
 import { 
   getUsersByRole,
   getShopById,
