@@ -18,14 +18,14 @@ import {
   TabsList, 
   TabsTrigger 
 } from "@/components/ui/tabs";
-import { Globe } from "lucide-react";
+import { Globe, Settings } from "lucide-react";
 import GeneralTab from "./components/GeneralTab";
 import AppearanceTab from "./components/AppearanceTab";
 import AboutTab from "./components/AboutTab";
 import SocialTab from "./components/SocialTab";
 
 const ShopSettingsContainer: React.FC = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, getUserShop } = useAuth();
   
   // Questa verifica dovrebbe essere già gestita dal componente ShopAuthCheck
   // ma la manteniamo per sicurezza
@@ -33,7 +33,7 @@ const ShopSettingsContainer: React.FC = () => {
     return <div>Accesso non autorizzato</div>;
   }
   
-  const shop = shops.find(shop => shop.userId === currentUser.id);
+  const shop = getUserShop();
   
   if (!shop) {
     return <div>Negozio non trovato</div>;
@@ -101,10 +101,12 @@ const ShopSettingsContainer: React.FC = () => {
             Gestisci i dettagli del tuo negozio e personalizza la tua pagina pubblica.
           </p>
         </div>
-        <Button onClick={handlePreview}>
-          <Globe className="mr-2 h-4 w-4" />
-          Anteprima Pagina
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handlePreview} variant="outline">
+            <Globe className="mr-2 h-4 w-4" />
+            Anteprima Pagina
+          </Button>
+        </div>
       </div>
       
       <Separator />
