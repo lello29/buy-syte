@@ -4,12 +4,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { products, shops } from "@/data/mockData";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from "react-router-dom";
 import MobileProductsList from "@/components/products/MobileProductsList";
 import ProductCategoriesManager from "@/components/products/ProductCategoriesManager";
 import ProductsTable from "@/components/admin/products/ProductsTable";
 import ProductDetailsDialog from "@/components/admin/products/ProductDetailsDialog";
 import ProductsFilter from "@/components/admin/products/ProductsFilter";
 import MobileProductsFilter from "@/components/admin/products/MobileProductsFilter";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 const ProductsPage = () => {
   const { currentUser } = useAuth();
@@ -18,6 +21,7 @@ const ProductsPage = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   if (!currentUser || currentUser.role !== "admin") {
     return (
@@ -55,7 +59,19 @@ const ProductsPage = () => {
   };
 
   const handleAddProduct = () => {
-    toast.info("Funzionalità in sviluppo");
+    try {
+      if (isMobile) {
+        // Per admin, potremmo voler reindirizzare a una pagina specifica di admin
+        navigate("/dashboard/admin/products/add");
+        console.log("Navigazione verso /dashboard/admin/products/add");
+      } else {
+        // Per desktop, potremmo utilizzare un dialog esistente o creare uno specifico per admin
+        toast.info("Funzionalità in sviluppo per desktop");
+      }
+    } catch (error) {
+      console.error("Errore durante la navigazione:", error);
+      toast.error("Impossibile accedere alla pagina di aggiunta prodotto");
+    }
   };
 
   const handleCategoryChange = (category: string) => {
@@ -110,16 +126,34 @@ const ProductsPage = () => {
             onAddProduct={handleAddProduct}
             onViewProduct={handleViewProduct}
           />
+          
+          {/* Mobile Floating Action Button */}
+          <div className="fixed bottom-6 right-6 z-10">
+            <Button 
+              size="icon" 
+              className="h-14 w-14 rounded-full shadow-lg bg-primary text-white"
+              onClick={handleAddProduct}
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+          </div>
         </>
       ) : (
         <>
-          <ProductsFilter
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            categories={categories}
-            onCategoryChange={handleCategoryChange}
-            openCategoryManager={openCategoryManager}
-          />
+          <div className="flex justify-between items-center mb-6">
+            <ProductsFilter
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              categories={categories}
+              onCategoryChange={handleCategoryChange}
+              openCategoryManager={openCategoryManager}
+            />
+            
+            <Button onClick={handleAddProduct}>
+              <Plus className="h-4 w-4 mr-2" />
+              Aggiungi Prodotto
+            </Button>
+          </div>
 
           <ProductsTable
             products={filteredProducts}

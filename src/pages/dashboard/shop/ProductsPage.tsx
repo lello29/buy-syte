@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getProductsByShopId } from "@/data/mockData";
@@ -69,10 +68,17 @@ const ProductsPage = () => {
   });
 
   const handleAddProduct = () => {
-    if (isMobile) {
-      navigate("/dashboard/products/add");
-    } else {
-      setShowAddModal(true);
+    try {
+      if (isMobile) {
+        // Log per debug
+        console.log("Tentativo di navigazione verso /dashboard/products/add su mobile");
+        navigate("/dashboard/products/add");
+      } else {
+        setShowAddModal(true);
+      }
+    } catch (error) {
+      console.error("Errore durante la navigazione:", error);
+      toast.error("Impossibile accedere alla pagina di aggiunta prodotto");
     }
   };
 
@@ -105,7 +111,6 @@ const ProductsPage = () => {
     navigate(`/dashboard/products/${product.id}`);
   };
 
-  // Per il componente desktop rimane la stessa implementazione
   return (
     <div className="space-y-5">
       {isMobile ? (
@@ -205,12 +210,19 @@ const ProductsPage = () => {
         <div className="fixed bottom-6 right-6 z-10">
           <Button 
             size="icon" 
-            className="h-14 w-14 rounded-full shadow-lg"
+            className="h-14 w-14 rounded-full shadow-lg bg-primary text-white"
             onClick={handleAddProduct}
           >
             <Plus className="h-6 w-6" />
           </Button>
         </div>
+      )}
+
+      {/* Add Product Dialog for desktop */}
+      {!isMobile && showAddModal && (
+        <AddProductDialog 
+          trigger={<div className="hidden" />} 
+        />
       )}
     </div>
   );

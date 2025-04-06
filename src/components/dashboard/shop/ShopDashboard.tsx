@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -51,7 +52,14 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
   const reservations = Math.floor(Math.random() * 10) + 1;
 
   const handleAddProduct = () => {
-    navigate("/dashboard/products/add");
+    // Assicuriamoci che la navigazione funzioni correttamente indipendentemente dalla piattaforma
+    try {
+      navigate("/dashboard/products/add");
+      console.log("Navigazione verso /dashboard/products/add");
+    } catch (error) {
+      console.error("Errore durante la navigazione:", error);
+      toast.error("Impossibile accedere alla pagina di aggiunta prodotto");
+    }
   };
 
   const handleManageCategories = () => {
