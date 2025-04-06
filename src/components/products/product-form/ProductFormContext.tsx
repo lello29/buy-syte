@@ -1,45 +1,10 @@
 
 import React, { createContext, useContext, useState } from "react";
 import { toast } from "sonner";
-import { 
-  Barcode, 
-  Info, 
-  Package, 
-  ImagePlus, 
-  Settings, 
-  ShoppingBag,
-  Scan 
-} from "lucide-react";
-import { Product } from "@/types";
+import { ProductFormData } from "./types/productTypes";
+import { STEPS } from "./config/formSteps";
 import { useProductValidation } from "./hooks/useProductValidation";
-
-export type ProductFormData = Partial<Product> & {
-  variants?: {
-    name: string;
-    options: { value: string; price?: number; stock?: number }[];
-  }[];
-  sellingOptions?: {
-    isOnlinePurchase: boolean;
-    isReservationOnly: boolean;
-    isInStoreOnly: boolean;
-  };
-  seo?: {
-    keywords: string[];
-    optimizedTitle: string;
-  };
-  images: (string | File)[];
-  isSharedProduct?: boolean; // Flag to indicate if this is a product from the shared database
-  barcode?: string; // Add the barcode property to fix the first error
-}
-
-export const STEPS = [
-  { id: "barcode", label: "Codice", icon: Barcode, subtitle: "Inizia con un codice" },
-  { id: "basic-info", label: "Info base", icon: Info, subtitle: "Titolo e prezzo" },
-  { id: "details", label: "Dettagli", icon: Package, subtitle: "Specifiche prodotto" },
-  { id: "images", label: "Immagini", icon: ImagePlus, subtitle: "Foto e media" },
-  { id: "options", label: "Opzioni", icon: Settings, subtitle: "Varianti e vendita" },
-  { id: "publish", label: "Pubblica", icon: ShoppingBag, subtitle: "Finalizza e pubblica" }
-];
+import { useProductSubmit } from "./hooks/useProductSubmit";
 
 interface ProductFormContextType {
   productData: ProductFormData;
@@ -63,7 +28,6 @@ const ProductFormContext = createContext<ProductFormContextType | undefined>(und
 export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showHelp, setShowHelp] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [productData, setProductData] = useState<ProductFormData>({
     name: "",
     description: "",
@@ -88,6 +52,8 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
     getErrorsForStep,
     clearErrors
   } = useProductValidation();
+
+  const { isLoading, handleSubmit: submitProduct } = useProductSubmit(clearErrors);
 
   const updateProductData = (data: Partial<ProductFormData>) => {
     setProductData(prev => ({ ...prev, ...data }));
@@ -118,47 +84,7 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
       return;
     }
     
-    const isNewBarcode = productData.barcode && !productData.isSharedProduct;
-    
-    setIsLoading(true);
-    toast.loading("Salvataggio in corso...");
-    
-    try {
-      // Simula una richiesta API asincrona
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Generazione ID per il nuovo prodotto
-      const newProductId = `prod_${Math.random().toString(36).substring(2, 10)}`;
-      
-      // Qui dovresti inviare i dati a un'API
-      const submittedProduct = {
-        ...productData,
-        id: newProductId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      
-      console.log("Prodotto salvato:", submittedProduct);
-      
-      toast.dismiss();
-      toast.success("Prodotto salvato con successo!");
-      
-      if (isNewBarcode) {
-        toast.info("Il codice di questo prodotto è stato aggiunto all'archivio riservato e sarà verificato dall'amministratore");
-      }
-      
-      // Reset del form
-      clearErrors();
-      
-      return true;
-    } catch (error) {
-      console.error("Errore durante il salvataggio:", error);
-      toast.dismiss();
-      toast.error("Si è verificato un errore durante il salvataggio");
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
+    return await submitProduct(productData);
   };
 
   const handleSkipToManualEntry = () => {
@@ -200,3 +126,6 @@ export const useProductForm = () => {
   }
   return context;
 };
+
+export { STEPS };
+export type { ProductFormData };
