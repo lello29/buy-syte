@@ -21,7 +21,7 @@ const ShopStatusFields: React.FC<ShopStatusFieldsProps> = ({
     if (onCheckboxChange) {
       onCheckboxChange("isApproved", checked);
     } else {
-      // Fallback per mantenere compatibilità con implementazioni esistenti
+      // Fallback to maintain compatibility with existing implementations
       const syntheticEvent = {
         target: {
           name: "isApproved",
@@ -50,7 +50,7 @@ const ShopStatusFields: React.FC<ShopStatusFieldsProps> = ({
       <div className="flex items-center space-x-2">
         <Checkbox
           id="isApproved"
-          checked={isApproved !== false}
+          checked={isApproved}
           onCheckedChange={handleCheckboxChange}
         />
         <Label htmlFor="isApproved" className="cursor-pointer">Approvato</Label>
