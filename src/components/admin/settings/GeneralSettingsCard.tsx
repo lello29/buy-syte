@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Settings } from "lucide-react";
 import {
   Card,
@@ -12,12 +12,64 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+
+interface GeneralSettingsFormData {
+  platformName: string;
+  contactEmail: string;
+  supportPhone: string;
+  siteDescription: string;
+  maintenanceMode: boolean;
+}
 
 interface GeneralSettingsCardProps {
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent, formData: GeneralSettingsFormData) => void;
 }
 
 export function GeneralSettingsCard({ onSubmit }: GeneralSettingsCardProps) {
+  const [formData, setFormData] = useState<GeneralSettingsFormData>({
+    platformName: "ShopHubConnect",
+    contactEmail: "admin@shophubconnect.com",
+    supportPhone: "+39 02 1234567",
+    siteDescription: "Piattaforma per la gestione dei negozi e delle attività commerciali",
+    maintenanceMode: false
+  });
+
+  // Carica i dati dal localStorage
+  useEffect(() => {
+    try {
+      const savedSettings = localStorage.getItem('generalSettings');
+      if (savedSettings) {
+        setFormData(JSON.parse(savedSettings));
+      }
+    } catch (error) {
+      console.error("Errore nel caricare le impostazioni generali:", error);
+    }
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id.replace("general-", "")]: value
+    }));
+  };
+
+  const handleSwitchChange = (checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      maintenanceMode: checked
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Salva nel localStorage
+    localStorage.setItem('generalSettings', JSON.stringify(formData));
+    onSubmit(e, formData);
+  };
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
@@ -30,38 +82,57 @@ export function GeneralSettingsCard({ onSubmit }: GeneralSettingsCardProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="platform-name">Nome Piattaforma</Label>
+            <Label htmlFor="general-platformName">Nome Piattaforma</Label>
             <Input
-              id="platform-name"
-              defaultValue="ShopHubConnect"
+              id="general-platformName"
+              value={formData.platformName}
+              onChange={handleInputChange}
               className="focus:border-primary"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="contact-email">Email di Contatto</Label>
+            <Label htmlFor="general-siteDescription">Descrizione Sito</Label>
+            <Textarea
+              id="general-siteDescription"
+              value={formData.siteDescription}
+              onChange={handleInputChange}
+              placeholder="Inserisci una breve descrizione del sito"
+              className="focus:border-primary"
+              rows={3}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="general-contactEmail">Email di Contatto</Label>
             <Input
-              id="contact-email"
+              id="general-contactEmail"
               type="email"
-              defaultValue="admin@shophubconnect.com"
+              value={formData.contactEmail}
+              onChange={handleInputChange}
               className="focus:border-primary"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="support-phone">Telefono Supporto</Label>
+            <Label htmlFor="general-supportPhone">Telefono Supporto</Label>
             <Input
-              id="support-phone"
-              defaultValue="+39 02 1234567"
+              id="general-supportPhone"
+              value={formData.supportPhone}
+              onChange={handleInputChange}
               className="focus:border-primary"
             />
           </div>
 
           <div className="flex items-center justify-between space-x-2 py-2 border-t border-gray-100 mt-4 pt-4">
-            <Label htmlFor="maintenance-mode">Modalità Manutenzione</Label>
-            <Switch id="maintenance-mode" />
+            <Label htmlFor="general-maintenanceMode">Modalità Manutenzione</Label>
+            <Switch 
+              id="general-maintenanceMode" 
+              checked={formData.maintenanceMode}
+              onCheckedChange={handleSwitchChange}
+            />
           </div>
           
           <Button type="submit" className="w-full mt-4">Salva Impostazioni</Button>

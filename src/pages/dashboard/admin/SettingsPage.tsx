@@ -20,7 +20,6 @@ import {
   Sparkles, 
   Loader2
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 // Funzione per salvare le impostazioni nel localStorage
 const saveSettingsToStorage = (key: string, data: any) => {
@@ -42,31 +41,28 @@ const loadSettingsFromStorage = (key: string, defaultValue: any) => {
   }
 };
 
+interface GeneralSettingsFormData {
+  platformName: string;
+  contactEmail: string;
+  supportPhone: string;
+  siteDescription: string;
+  maintenanceMode: boolean;
+}
+
 const SettingsPage = () => {
   const { currentUser, isLoading } = useAuth();
-  const navigate = useNavigate();
   const [mapApiKey, setMapApiKey] = useState("");
   const [enableMapFeature, setEnableMapFeature] = useState(true);
   const [enablePayments, setEnablePayments] = useState(false);
+  const [defaultRadius, setDefaultRadius] = useState("10");
   const isMobile = useIsMobile();
-
-  // Definizione della funzione handleSaveSettings prima del suo utilizzo
-  const handleSaveSettings = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Salva le impostazioni nel localStorage
-    saveSettingsToStorage("mapApiKey", mapApiKey);
-    saveSettingsToStorage("enableMapFeature", enableMapFeature);
-    saveSettingsToStorage("enablePayments", enablePayments);
-    
-    // In a real app, here we would save to Supabase or another database
-    toast.success("Impostazioni salvate con successo");
-  };
 
   // Carica le impostazioni salvate al caricamento della pagina
   useEffect(() => {
     setMapApiKey(loadSettingsFromStorage("mapApiKey", ""));
     setEnableMapFeature(loadSettingsFromStorage("enableMapFeature", true));
     setEnablePayments(loadSettingsFromStorage("enablePayments", false));
+    setDefaultRadius(loadSettingsFromStorage("defaultRadius", "10"));
     
     console.log("SettingsPage mounted", { 
       isMobile, 
@@ -74,6 +70,25 @@ const SettingsPage = () => {
       userRole: currentUser?.role 
     });
   }, [isMobile, isLoading, currentUser]);
+
+  // Definizione delle funzioni di salvataggio per ciascuna sezione
+  const handleSaveGeneralSettings = (e: React.FormEvent, data: GeneralSettingsFormData) => {
+    e.preventDefault();
+    // I dati sono già stati salvati nel localStorage dal componente
+    toast.success("Impostazioni generali salvate con successo");
+  };
+  
+  const handleSaveMapSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Salva le impostazioni nel localStorage
+    saveSettingsToStorage("mapApiKey", mapApiKey);
+    saveSettingsToStorage("enableMapFeature", enableMapFeature);
+    saveSettingsToStorage("enablePayments", enablePayments);
+    saveSettingsToStorage("defaultRadius", defaultRadius);
+    
+    // In un'app reale, qui salveremmo su Supabase o un altro database
+    toast.success("Impostazioni mappa salvate con successo");
+  };
   
   // Handle loading states
   if (isLoading || isMobile === null) {
@@ -107,7 +122,7 @@ const SettingsPage = () => {
         <Separator className="my-6" />
         
         <div className="space-y-6">
-          <GeneralSettingsCard onSubmit={handleSaveSettings} />
+          <GeneralSettingsCard onSubmit={handleSaveGeneralSettings} />
           <MapSettingsCard 
             mapApiKey={mapApiKey}
             setMapApiKey={setMapApiKey}
@@ -115,7 +130,7 @@ const SettingsPage = () => {
             setEnableMapFeature={setEnableMapFeature}
             enablePayments={enablePayments}
             setEnablePayments={setEnablePayments}
-            onSubmit={handleSaveSettings}
+            onSubmit={handleSaveMapSettings}
           />
           <NotificationsCard />
           <AISettingsCard />
@@ -141,7 +156,7 @@ const SettingsPage = () => {
             <Settings className="h-5 w-5 text-primary" />
             <h2>Configurazione Generale</h2>
           </div>
-          <GeneralSettingsCard onSubmit={handleSaveSettings} />
+          <GeneralSettingsCard onSubmit={handleSaveGeneralSettings} />
           
           <div className="flex items-center gap-2 text-lg font-semibold mt-8">
             <Map className="h-5 w-5 text-primary" />
@@ -154,7 +169,7 @@ const SettingsPage = () => {
             setEnableMapFeature={setEnableMapFeature}
             enablePayments={enablePayments}
             setEnablePayments={setEnablePayments}
-            onSubmit={handleSaveSettings}
+            onSubmit={handleSaveMapSettings}
           />
           
           <div className="flex items-center gap-2 text-lg font-semibold mt-8">

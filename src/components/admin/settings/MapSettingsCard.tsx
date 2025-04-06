@@ -51,13 +51,11 @@ export function MapSettingsCard({
   const handleRadiusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setDefaultRadius(value);
-    localStorage.setItem('defaultRadius', value);
   };
 
   // Gestisce il submit del form
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('defaultRadius', defaultRadius);
     onSubmit(e);
   };
 
