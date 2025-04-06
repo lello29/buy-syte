@@ -1,5 +1,5 @@
 
-import { supabase } from '@/lib/supabase';
+import { supabase, verifyRequiredTables } from '@/lib/supabase';
 import { 
   users, 
   shops, 
@@ -36,6 +36,17 @@ export const migrateAllData = async () => {
   try {
     console.log("Inizio migrazione dati...");
     toast.info("Inizio migrazione dati nel database...");
+    
+    // Verifica che tutte le tabelle richieste esistano
+    const { allTablesExist, missingTables } = await verifyRequiredTables();
+    
+    if (!allTablesExist) {
+      const missingTablesList = missingTables.join(', ');
+      const errorMessage = `Migrazione fallita: tabelle mancanti nel database (${missingTablesList})`;
+      console.error(errorMessage);
+      toast.error(errorMessage);
+      return false;
+    }
     
     // Mappatura delle entità e relative tabelle
     const migrations = [
