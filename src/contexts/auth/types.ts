@@ -24,7 +24,7 @@ export interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<boolean>;
   updateUserRole: (role: UserRole, shopData?: ShopData) => void;
   updateUserFavorites: (favorites: string[]) => void;
-  getNearestShops: (lat: number, lng: number, radius?: number) => Shop[];
+  getNearestShops: (lat: number, lng: number, radius?: number) => Promise<Shop[]>;
   isLoading: boolean;
-  getUserShop: () => Shop | undefined;
+  getUserShop: () => Promise<Shop | undefined>;
 }
