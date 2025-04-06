@@ -53,7 +53,7 @@ const AIStatusCheck: React.FC = () => {
   }
   
   return (
-    <Alert variant="warning" className="mb-4">
+    <Alert variant="default" className="mb-4">
       <AlertCircle className="h-4 w-4" />
       <AlertTitle>Funzionalità AI limitate</AlertTitle>
       <AlertDescription>

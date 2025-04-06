@@ -6,7 +6,7 @@ import NotFound from "../pages/NotFound";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import DashboardIndex from "../pages/dashboard/DashboardIndex";
-import ProtectedRoutes from "../components/routes/ProtectedRoutes";
+import { ProtectedRoute } from "../components/routes/ProtectedRoutes";
 import ShopsPage from "../pages/shops/ShopsPage";
 import ShopDetailPage from "../pages/shops/ShopDetailPage";
 import NearestShopsPage from "../pages/shops/NearestShopsPage";
@@ -40,7 +40,7 @@ const AppRoutes = () => {
       <Route path="/shops/nearest" element={<NearestShopsPage />} />
       <Route path="/offers" element={<OffersPage />} />
 
-      <Route path="/dashboard" element={<ProtectedRoutes />}>
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardIndex /></ProtectedRoute>}>
         <Route index element={<DashboardIndex />} />
         
         {/* Shop routes */}
