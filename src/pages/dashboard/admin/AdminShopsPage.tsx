@@ -59,8 +59,6 @@ const AdminShopsPage: React.FC = () => {
           : shop
       )
     );
-    
-    toast.success(`Negozio ${isActive ? 'attivato' : 'disattivato'} con successo`);
   };
   
   // Logic for handling shop form changes
@@ -212,7 +210,12 @@ const AdminShopsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Gestione Negozi</h1>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Gestione Negozi</h1>
+          <p className="text-muted-foreground">
+            Visualizza e gestisci i negozi registrati sulla piattaforma.
+          </p>
+        </div>
         {!isMobile && (
           <Button onClick={handleAddShop}>
             <Plus className="mr-2 h-4 w-4" />

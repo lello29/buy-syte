@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Ban, Eye, Trash2, Store, Edit, MapPin, Mail, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Shop } from '@/types';
+import { toast } from 'sonner';
 
 interface MobileShopsListProps {
   shops: Shop[];
@@ -28,21 +29,26 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
     }
   };
 
+  const handleToggleStatus = (shop: Shop) => {
+    onToggleStatus(shop.id, !shop.isActive);
+    toast.success(`Negozio ${!shop.isActive ? 'attivato' : 'disattivato'} con successo`);
+  };
+
   return (
     <div className="space-y-4">
       <Button 
-        className="w-full bg-[#0a3276] hover:bg-[#0a3276]/90 text-white font-bold py-3 rounded-md flex items-center justify-center"
+        className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-md flex items-center justify-center"
         onClick={onAddShop}
       >
         <Store className="h-5 w-5 mr-2" />
         Aggiungi nuovo negozio
       </Button>
       
-      <div className="space-y-1">
+      <div className="space-y-4">
         {shops.map((shop) => (
-          <div key={shop.id} className="border rounded-md overflow-hidden mb-4 bg-white">
+          <div key={shop.id} className="border rounded-md overflow-hidden mb-4 bg-white shadow-sm">
             <div className="p-4">
-              <div className="text-2xl font-bold">{shop.name}</div>
+              <div className="text-xl font-semibold">{shop.name}</div>
               
               <div className="text-sm text-gray-600 mt-1 capitalize">
                 Categoria: {shop.category || 'Non specificata'}
@@ -64,9 +70,11 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
               </div>
               
               <div className="mt-2 flex flex-wrap gap-2">
-                <Badge variant={shop.isApproved ? "success" : "destructive"}>
-                  {shop.isApproved ? "Approvato" : "In attesa"}
-                </Badge>
+                {shop.isApproved !== undefined && (
+                  <Badge variant={shop.isApproved ? "success" : "destructive"}>
+                    {shop.isApproved ? "Approvato" : "In attesa"}
+                  </Badge>
+                )}
                 <Badge variant={shop.isActive ? "success" : "destructive"}>
                   {shop.isActive ? "Attivo" : "Inattivo"}
                 </Badge>
@@ -80,7 +88,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-gray-700 hover:bg-gray-100"
-                onClick={() => onToggleStatus(shop.id, !shop.isActive)}
+                onClick={() => handleToggleStatus(shop)}
               >
                 <Ban className="h-5 w-5 mr-1" /> 
                 {shop.isActive ? "Disattiva" : "Attiva"}
