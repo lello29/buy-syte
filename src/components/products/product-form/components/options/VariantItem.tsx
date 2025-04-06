@@ -7,20 +7,20 @@ import VariantOption from "./VariantOption";
 
 interface VariantItemProps {
   variant: any;
-  index: number;
-  removeVariant: (index: number) => void;
-  addVariantOption: (variantIndex: number) => void;
-  removeVariantOption: (variantIndex: number, optionIndex: number) => void;
-  updateVariantOption: (variantIndex: number, optionIndex: number, field: string, value: any) => void;
+  variantIndex: number;
+  onRemove: () => void;
+  onAddOption: () => void;
+  onRemoveOption: (optionIndex: number) => void;
+  onUpdateOption: (optionIndex: number, field: string, value: any) => void;
 }
 
 const VariantItem: React.FC<VariantItemProps> = ({
   variant,
-  index,
-  removeVariant,
-  addVariantOption,
-  removeVariantOption,
-  updateVariantOption
+  variantIndex,
+  onRemove,
+  onAddOption,
+  onRemoveOption,
+  onUpdateOption
 }) => {
   return (
     <AccordionItem key={variant.id} value={variant.id}>
@@ -33,7 +33,7 @@ const VariantItem: React.FC<VariantItemProps> = ({
           size="sm"
           onClick={(e) => {
             e.stopPropagation();
-            removeVariant(index);
+            onRemove();
           }}
         >
           <Trash className="h-4 w-4" />
@@ -45,16 +45,16 @@ const VariantItem: React.FC<VariantItemProps> = ({
             <VariantOption
               key={optionIndex}
               variant={variant}
-              index={index}
+              index={variantIndex}
               optionIndex={optionIndex}
-              updateVariantOption={updateVariantOption}
-              removeVariantOption={removeVariantOption}
+              updateVariantOption={onUpdateOption}
+              removeVariantOption={onRemoveOption}
             />
           ))}
           <Button
             variant="outline"
             size="sm"
-            onClick={() => addVariantOption(index)}
+            onClick={() => onAddOption()}
           >
             <Plus className="h-4 w-4 mr-2" />
             Aggiungi opzione

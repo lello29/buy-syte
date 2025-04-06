@@ -8,16 +8,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 
 interface DatePickerProps {
-  id: string;
+  id?: string;
   label: string;
   date: Date | undefined;
-  onDateChange: (date: Date | undefined) => void;
+  onSelect: (date: Date | undefined) => void;
+  description?: string;
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ id, label, date, onDateChange }) => {
+const DatePicker: React.FC<DatePickerProps> = ({ id, label, date, onSelect, description }) => {
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -37,8 +39,9 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, label, date, onDateChange }
           <CalendarComponent
             mode="single"
             selected={date}
-            onSelect={onDateChange}
+            onSelect={onSelect}
             initialFocus
+            className="p-3 pointer-events-auto"
           />
         </PopoverContent>
       </Popover>
