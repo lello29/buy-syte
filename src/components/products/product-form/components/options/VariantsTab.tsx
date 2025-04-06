@@ -1,18 +1,10 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Accordion } from "@/components/ui/accordion";
-import { Shirt, Palette, Scale } from "lucide-react";
-import VariantItem from "./VariantItem";
+import { PlusCircle } from "lucide-react";
+import { VARIANT_TYPES } from "./constants";
 import VariantTypeButton from "./VariantTypeButton";
-
-const VARIANT_TYPES = [
-  { id: "size", label: "Taglia", icon: Shirt },
-  { id: "color", label: "Colore", icon: Palette },
-  { id: "weight", label: "Peso/Volume", icon: Scale },
-];
+import VariantItem from "./VariantItem";
 
 interface VariantsTabProps {
   variants: any[];
@@ -29,56 +21,70 @@ const VariantsTab: React.FC<VariantsTabProps> = ({
   removeVariant,
   addVariantOption,
   removeVariantOption,
-  updateVariantOption
+  updateVariantOption,
 }) => {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Varianti prodotto</CardTitle>
-        <CardDescription>
-          Aggiungi varianti come taglie, colori o pesi
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {variants.length === 0 ? (
-            <div className="text-center p-6 border rounded-md">
-              <p className="text-muted-foreground mb-2">Nessuna variante configurata</p>
-              <p className="text-sm text-muted-foreground">
-                Aggiungi varianti per prodotti disponibili in diverse opzioni
-              </p>
-            </div>
-          ) : (
-            <Accordion type="single" collapsible className="w-full">
-              {variants.map((variant, index) => (
-                <VariantItem
-                  key={variant.id}
-                  variant={variant}
-                  index={index}
-                  removeVariant={removeVariant}
-                  addVariantOption={addVariantOption}
-                  removeVariantOption={removeVariantOption}
-                  updateVariantOption={updateVariantOption}
-                />
-              ))}
-            </Accordion>
-          )}
+  const availableVariantTypes = VARIANT_TYPES.filter(
+    (type) => !variants.some((v) => v.type === type.id)
+  );
 
-          <Separator className="my-4" />
-          
-          <div className="grid grid-cols-3 gap-2">
+  return (
+    <div className="space-y-4">
+      {variants.length === 0 ? (
+        <div className="text-center py-6 border-2 border-dashed rounded-md">
+          <p className="text-muted-foreground mb-4">
+            Aggiungi varianti al prodotto come taglia, colore o peso
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
             {VARIANT_TYPES.map((type) => (
               <VariantTypeButton
                 key={type.id}
                 type={type}
                 onClick={() => addVariant(type.id)}
-                disabled={variants.some(v => v.type === type.id)}
+                disabled={false}
               />
             ))}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      ) : (
+        <>
+          <div className="space-y-3">
+            {variants.map((variant, variantIndex) => (
+              <VariantItem
+                key={variantIndex}
+                variant={variant}
+                variantIndex={variantIndex}
+                onRemove={() => removeVariant(variantIndex)}
+                onAddOption={() => addVariantOption(variantIndex)}
+                onRemoveOption={(optionIndex) =>
+                  removeVariantOption(variantIndex, optionIndex)
+                }
+                onUpdateOption={(optionIndex, field, value) =>
+                  updateVariantOption(variantIndex, optionIndex, field, value)
+                }
+              />
+            ))}
+          </div>
+
+          {availableVariantTypes.length > 0 && (
+            <div className="mt-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                Aggiungi un'altra variante:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {availableVariantTypes.map((type) => (
+                  <VariantTypeButton
+                    key={type.id}
+                    type={type}
+                    onClick={() => addVariant(type.id)}
+                    disabled={false}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 };
 

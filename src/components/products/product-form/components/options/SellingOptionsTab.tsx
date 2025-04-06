@@ -9,7 +9,11 @@ interface SellingOptionsTabProps {
     isReservationOnly: boolean;
     isInStoreOnly: boolean;
   };
-  updateSellingOptions: (newOptions: any) => void;
+  updateSellingOptions: (options: Partial<{
+    isOnlinePurchase: boolean;
+    isReservationOnly: boolean;
+    isInStoreOnly: boolean;
+  }>) => void;
   location: string;
   handleLocationChange: (value: string) => void;
 }
@@ -18,19 +22,20 @@ const SellingOptionsTab: React.FC<SellingOptionsTabProps> = ({
   sellingOptions,
   updateSellingOptions,
   location,
-  handleLocationChange
+  handleLocationChange,
 }) => {
   return (
-    <>
+    <div className="space-y-4">
       <SellingOptionsCard 
-        sellingOptions={sellingOptions} 
-        updateSellingOptions={updateSellingOptions} 
+        sellingOptions={sellingOptions}
+        updateSellingOptions={updateSellingOptions}
       />
+      
       <LocationCard 
-        location={location} 
-        handleLocationChange={handleLocationChange} 
+        location={location}
+        handleLocationChange={handleLocationChange}
       />
-    </>
+    </div>
   );
 };
 

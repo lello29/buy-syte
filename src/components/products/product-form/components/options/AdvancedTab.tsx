@@ -1,8 +1,13 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormControl 
+} from "@/components/ui/form";
 import DatePicker from "./DatePicker";
 
 interface AdvancedTabProps {
@@ -18,48 +23,58 @@ const AdvancedTab: React.FC<AdvancedTabProps> = ({
   expirationDate,
   handlePublicationDateChange,
   handleExpirationDateChange,
-  updateData
+  updateData,
 }) => {
+  const handleSharedProductChange = (checked: boolean) => {
+    updateData({ isSharedProduct: checked });
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Programmazione</CardTitle>
-        <CardDescription>
-          Imposta quando il prodotto sarà visibile o nascosto
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <h4 className="text-sm font-medium">Periodo di disponibilità</h4>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DatePicker
-            id="publish-date"
             label="Data di pubblicazione"
             date={publicationDate}
-            onDateChange={handlePublicationDateChange}
+            onSelect={handlePublicationDateChange}
+            description="Quando il prodotto diventerà visibile"
           />
-
+          
           <DatePicker
-            id="expiry-date"
             label="Data di scadenza"
             date={expirationDate}
-            onDateChange={handleExpirationDateChange}
+            onSelect={handleExpirationDateChange}
+            description="Quando il prodotto non sarà più visibile"
           />
         </div>
-
-        <div className="pt-4">
-          <Button 
-            variant="outline" 
-            onClick={() => {
-              handlePublicationDateChange(undefined);
-              handleExpirationDateChange(undefined);
-              updateData({ publicationDate: null, expirationDate: null });
-              toast.info("Date di programmazione rimosse");
-            }}
-          >
-            Rimuovi programmazione
-          </Button>
+      </div>
+      
+      <div className="border-t pt-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="shared-product">Prodotto condiviso</Label>
+            <p className="text-sm text-muted-foreground">
+              Condividi questo prodotto con altri negozi nel catalogo
+            </p>
+          </div>
+          <FormField
+            name="isSharedProduct"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={handleSharedProductChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
