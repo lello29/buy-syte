@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -33,7 +32,8 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { users as mockUsers } from "@/data/users";
 
 const UsersPage = () => {
   const { currentUser } = useAuth();
@@ -49,43 +49,52 @@ const UsersPage = () => {
   });
   const isMobile = useIsMobile();
 
-  // Fetch users from the database
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .order('created_at', { ascending: false });
-          
-        if (error) {
-          console.error("Error fetching users:", error.message);
-          toast.error("Errore nel caricamento degli utenti");
-          return;
-        }
         
-        if (data) {
-          // Transform snake_case to camelCase
-          const formattedUsers: User[] = data.map(user => ({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            favorites: user.favorites || [],
-            loyaltyPoints: user.loyalty_points || 0,
-            isActive: user.is_active,
-            createdAt: user.created_at,
-            updatedAt: user.updated_at,
-            fiscalCode: user.fiscal_code,
-            vatNumber: user.vat_number
-          }));
+        if (isSupabaseConfigured) {
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .order('created_at', { ascending: false });
+            
+          if (error) {
+            console.error("Error fetching users:", error.message);
+            toast.error("Errore nel caricamento degli utenti");
+            setUsers(mockUsers);
+            return;
+          }
           
-          setUsers(formattedUsers);
+          if (data && data.length > 0) {
+            const formattedUsers: User[] = data.map(user => ({
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              role: user.role,
+              favorites: user.favorites || [],
+              loyaltyPoints: user.loyalty_points || 0,
+              isActive: user.is_active,
+              createdAt: user.created_at,
+              updatedAt: user.updated_at,
+              fiscalCode: user.fiscal_code,
+              vatNumber: user.vat_number
+            }));
+            
+            setUsers(formattedUsers);
+          } else {
+            console.log("No users found in the database, using mock data instead");
+            setUsers(mockUsers);
+          }
+        } else {
+          console.log("Supabase not configured, using mock data");
+          setUsers(mockUsers);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
         toast.error("Si è verificato un errore durante il caricamento degli utenti");
+        setUsers(mockUsers);
       } finally {
         setLoading(false);
       }
@@ -104,22 +113,22 @@ const UsersPage = () => {
 
   const handleToggleUserStatus = async (userId: string, isActive: boolean) => {
     try {
-      // Update user status in the database
-      const { error } = await supabase
-        .from('users')
-        .update({ 
-          is_active: isActive,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', userId);
-        
-      if (error) {
-        console.error("Error updating user status:", error.message);
-        toast.error("Errore nell'aggiornamento dello stato dell'utente");
-        return;
+      if (isSupabaseConfigured) {
+        const { error } = await supabase
+          .from('users')
+          .update({ 
+            is_active: isActive,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', userId);
+          
+        if (error) {
+          console.error("Error updating user status:", error.message);
+          toast.error("Errore nell'aggiornamento dello stato dell'utente");
+          return;
+        }
       }
       
-      // Update local state
       const updatedUsers = users.map(user => 
         user.id === userId ? { ...user, isActive: isActive } : user
       );
@@ -134,19 +143,19 @@ const UsersPage = () => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      // Delete user from the database
-      const { error } = await supabase
-        .from('users')
-        .delete()
-        .eq('id', userId);
-        
-      if (error) {
-        console.error("Error deleting user:", error.message);
-        toast.error("Errore nell'eliminazione dell'utente");
-        return;
+      if (isSupabaseConfigured) {
+        const { error } = await supabase
+          .from('users')
+          .delete()
+          .eq('id', userId);
+          
+        if (error) {
+          console.error("Error deleting user:", error.message);
+          toast.error("Errore nell'eliminazione dell'utente");
+          return;
+        }
       }
       
-      // Update local state
       const updatedUsers = users.filter(user => user.id !== userId);
       setUsers(updatedUsers);
       setIsDeleteDialogOpen(false);
@@ -185,7 +194,7 @@ const UsersPage = () => {
 
     try {
       const newUserObj: User = {
-        id: `user-${Date.now()}`, // Temporary ID, will be replaced by Supabase
+        id: `user-${Date.now()}`,
         name: newUser.name,
         email: newUser.email,
         role: "user",
@@ -196,44 +205,33 @@ const UsersPage = () => {
         updatedAt: new Date().toISOString(),
       };
       
-      // Insert the new user in the database
-      const { data, error } = await supabase
-        .from('users')
-        .insert({
-          name: newUserObj.name,
-          email: newUserObj.email,
-          role: newUserObj.role,
-          favorites: newUserObj.favorites,
-          loyalty_points: newUserObj.loyaltyPoints,
-          is_active: newUserObj.isActive,
-          created_at: newUserObj.createdAt,
-          updated_at: newUserObj.updatedAt
-        })
-        .select();
+      if (isSupabaseConfigured) {
+        const { data, error } = await supabase
+          .from('users')
+          .insert({
+            name: newUserObj.name,
+            email: newUserObj.email,
+            role: newUserObj.role,
+            favorites: newUserObj.favorites,
+            loyalty_points: newUserObj.loyaltyPoints,
+            is_active: newUserObj.isActive,
+            created_at: newUserObj.createdAt,
+            updated_at: newUserObj.updatedAt
+          })
+          .select();
+          
+        if (error) {
+          console.error("Error adding user:", error.message);
+          toast.error("Errore nell'aggiunta dell'utente");
+          return;
+        }
         
-      if (error) {
-        console.error("Error adding user:", error.message);
-        toast.error("Errore nell'aggiunta dell'utente");
-        return;
+        if (data && data.length > 0) {
+          newUserObj.id = data[0].id;
+        }
       }
       
-      if (data && data.length > 0) {
-        // Update with the correct ID from the database
-        const insertedUser: User = {
-          id: data[0].id,
-          name: data[0].name,
-          email: data[0].email,
-          role: data[0].role,
-          favorites: data[0].favorites || [],
-          loyaltyPoints: data[0].loyalty_points || 0,
-          isActive: data[0].is_active,
-          createdAt: data[0].created_at,
-          updatedAt: data[0].updated_at
-        };
-        
-        setUsers(prev => [insertedUser, ...prev]);
-      }
-      
+      setUsers(prev => [newUserObj, ...prev]);
       setNewUser({ name: '', email: '' });
       setIsAddDialogOpen(false);
       toast.success("Utente aggiunto con successo");
@@ -371,7 +369,6 @@ const UsersPage = () => {
         </Card>
       )}
 
-      {/* View User Details Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="sm:max-w-xl">
           <DialogHeader>
@@ -456,7 +453,6 @@ const UsersPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete User Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -491,7 +487,6 @@ const UsersPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Add User Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
