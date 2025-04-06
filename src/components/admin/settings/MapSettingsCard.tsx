@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 interface MapSettingsCardProps {
   mapApiKey: string;
@@ -35,17 +36,32 @@ export function MapSettingsCard({
 }: MapSettingsCardProps) {
   const [defaultRadius, setDefaultRadius] = useState("10");
 
-  // Carica il raggio di ricerca dal localStorage
+  // Carica tutte le impostazioni dal localStorage
   useEffect(() => {
     try {
       const savedRadius = localStorage.getItem('defaultRadius');
       if (savedRadius) {
         setDefaultRadius(savedRadius);
       }
+      
+      const savedMapApiKey = localStorage.getItem('mapApiKey');
+      if (savedMapApiKey) {
+        setMapApiKey(savedMapApiKey);
+      }
+      
+      const savedEnableMapFeature = localStorage.getItem('enableMapFeature');
+      if (savedEnableMapFeature !== null) {
+        setEnableMapFeature(savedEnableMapFeature === 'true');
+      }
+      
+      const savedEnablePayments = localStorage.getItem('enablePayments');
+      if (savedEnablePayments !== null) {
+        setEnablePayments(savedEnablePayments === 'true');
+      }
     } catch (error) {
-      console.error("Errore nel caricare il raggio di ricerca:", error);
+      console.error("Errore nel caricare le impostazioni della mappa:", error);
     }
-  }, []);
+  }, [setMapApiKey, setEnableMapFeature, setEnablePayments]);
 
   // Gestisce il cambiamento del raggio
   const handleRadiusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +72,18 @@ export function MapSettingsCard({
   // Gestisce il submit del form
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Salva tutte le impostazioni nel localStorage
+    localStorage.setItem('defaultRadius', defaultRadius);
+    localStorage.setItem('mapApiKey', mapApiKey);
+    localStorage.setItem('enableMapFeature', enableMapFeature.toString());
+    localStorage.setItem('enablePayments', enablePayments.toString());
+    
+    // Chiama la funzione onSubmit passata come prop
     onSubmit(e);
+    
+    // Mostra un messaggio di conferma
+    toast.success("Impostazioni mappa salvate con successo");
   };
 
   return (

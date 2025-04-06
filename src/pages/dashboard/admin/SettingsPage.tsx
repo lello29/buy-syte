@@ -20,6 +20,7 @@ import {
   Sparkles, 
   Loader2
 } from "lucide-react";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 // Funzione per salvare le impostazioni nel localStorage
 const saveSettingsToStorage = (key: string, data: any) => {
@@ -54,7 +55,6 @@ const SettingsPage = () => {
   const [mapApiKey, setMapApiKey] = useState("");
   const [enableMapFeature, setEnableMapFeature] = useState(true);
   const [enablePayments, setEnablePayments] = useState(false);
-  const [defaultRadius, setDefaultRadius] = useState("10");
   const isMobile = useIsMobile();
 
   // Carica le impostazioni salvate al caricamento della pagina
@@ -62,7 +62,6 @@ const SettingsPage = () => {
     setMapApiKey(loadSettingsFromStorage("mapApiKey", ""));
     setEnableMapFeature(loadSettingsFromStorage("enableMapFeature", true));
     setEnablePayments(loadSettingsFromStorage("enablePayments", false));
-    setDefaultRadius(loadSettingsFromStorage("defaultRadius", "10"));
     
     console.log("SettingsPage mounted", { 
       isMobile, 
@@ -75,19 +74,30 @@ const SettingsPage = () => {
   const handleSaveGeneralSettings = (e: React.FormEvent, data: GeneralSettingsFormData) => {
     e.preventDefault();
     // I dati sono già stati salvati nel localStorage dal componente
+    
+    // Se Supabase è configurato, qui potremmo salvare anche sul database
+    if (isSupabaseConfigured) {
+      console.log("Saving to Supabase:", data);
+      // Qui andrebbe implementato il salvataggio su Supabase
+    }
+    
     toast.success("Impostazioni generali salvate con successo");
   };
   
   const handleSaveMapSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    // Salva le impostazioni nel localStorage
-    saveSettingsToStorage("mapApiKey", mapApiKey);
-    saveSettingsToStorage("enableMapFeature", enableMapFeature);
-    saveSettingsToStorage("enablePayments", enablePayments);
-    saveSettingsToStorage("defaultRadius", defaultRadius);
+    // Le impostazioni vengono salvate all'interno del componente MapSettingsCard
     
-    // In un'app reale, qui salveremmo su Supabase o un altro database
-    toast.success("Impostazioni mappa salvate con successo");
+    // Se Supabase è configurato, qui potremmo salvare anche sul database
+    if (isSupabaseConfigured) {
+      const mapSettings = {
+        mapApiKey,
+        enableMapFeature,
+        enablePayments
+      };
+      console.log("Saving to Supabase:", mapSettings);
+      // Qui andrebbe implementato il salvataggio su Supabase
+    }
   };
   
   // Handle loading states

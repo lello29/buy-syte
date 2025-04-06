@@ -68,6 +68,7 @@ export function GeneralSettingsCard({ onSubmit }: GeneralSettingsCardProps) {
     // Salva nel localStorage
     localStorage.setItem('generalSettings', JSON.stringify(formData));
     onSubmit(e, formData);
+    toast.success("Impostazioni generali salvate con successo");
   };
 
   return (
