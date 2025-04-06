@@ -11,7 +11,7 @@ export * from './categories';
 
 // Import the data directly to avoid require statements
 import { users } from './users';
-import { shops } from './shops';
+import { shops } from './mock-data/shops-data';
 import { products } from './products';
 import { offers } from './offers';
 import { tasks } from './tasks';

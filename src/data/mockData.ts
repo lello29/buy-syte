@@ -5,7 +5,7 @@ import { products } from "./products";
 import { categories } from "./categories";
 import { orders } from "./orders";
 import { offers } from "./offers";
-import { shops } from "./shops";
+import { shops } from "./mock-data/shops-data";
 import { collaborators } from "./collaborators";
 
 // Import helper functions directly from the index file
