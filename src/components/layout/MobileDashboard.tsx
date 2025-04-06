@@ -1,6 +1,6 @@
 
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import MobileDashboardItem from "./mobile-dashboard/MobileDashboardItem";
@@ -11,12 +11,18 @@ import { useRoleMenu } from "./mobile-dashboard/RoleMenuProvider";
 const MobileDashboard = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdminDashboard = location.pathname.includes("/admin");
 
   // Log component mount
   useEffect(() => {
-    console.log("MobileDashboard mounted", { currentUser: !!currentUser });
+    console.log("MobileDashboard mounted", { 
+      currentUser: !!currentUser, 
+      isAdminDashboard,
+      path: location.pathname
+    });
     return () => console.log("MobileDashboard unmounted");
-  }, [currentUser]);
+  }, [currentUser, isAdminDashboard, location.pathname]);
 
   if (!currentUser) {
     console.log("MobileDashboard: No user found");
@@ -45,8 +51,11 @@ const MobileDashboard = () => {
     });
   };
 
-  // Get menu options based on user role
-  const { dashboardOptions, additionalOptions, actionButton } = useRoleMenu(currentUser.role);
+  // Get menu options based on user role, considering the current admin path
+  const { dashboardOptions, additionalOptions, actionButton } = useRoleMenu(
+    currentUser.role,
+    isAdminDashboard
+  );
 
   return (
     <div className="space-y-6">

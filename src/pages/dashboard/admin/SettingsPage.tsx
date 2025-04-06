@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { GeneralSettingsCard } from "@/components/admin/settings/GeneralSettingsCard";
@@ -10,20 +10,43 @@ import { DatabaseCard } from "@/components/admin/settings/DatabaseCard";
 import { AISettingsCard } from "@/components/admin/settings/AISettingsCard";
 import { AIIntegrationCard } from "@/components/admin/settings/AIIntegrationCard";
 import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from "@/hooks/use-mobile";
+import MobileDashboard from "@/components/layout/MobileDashboard";
 import { 
   Settings, 
   Map, 
   Bell, 
   CreditCard, 
   Database,
-  Sparkles
+  Sparkles, 
+  Loader2
 } from "lucide-react";
 
 const SettingsPage = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, isLoading } = useAuth();
   const [mapApiKey, setMapApiKey] = useState("");
   const [enableMapFeature, setEnableMapFeature] = useState(true);
   const [enablePayments, setEnablePayments] = useState(false);
+  const isMobile = useIsMobile();
+
+  // Log component mounting
+  useEffect(() => {
+    console.log("SettingsPage mounted", { 
+      isMobile, 
+      isLoading, 
+      userRole: currentUser?.role 
+    });
+  }, [isMobile, isLoading, currentUser]);
+  
+  // Handle loading states
+  if (isLoading || isMobile === null) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
+        <span className="text-lg">Caricamento...</span>
+      </div>
+    );
+  }
 
   if (!currentUser || currentUser.role !== "admin") {
     return (
@@ -31,6 +54,11 @@ const SettingsPage = () => {
         <p>Non sei autorizzato a visualizzare questa pagina.</p>
       </div>
     );
+  }
+
+  // Per dispositivi mobili, usa il layout mobile unificato
+  if (isMobile) {
+    return <MobileDashboard />;
   }
 
   const handleSaveSettings = (e: React.FormEvent) => {

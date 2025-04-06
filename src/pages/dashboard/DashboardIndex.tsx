@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import UserDashboard from "@/components/dashboard/user/UserDashboard";
 import ShopDashboard from "@/components/dashboard/shop/ShopDashboard";
 import CollaboratorDashboard from "@/components/dashboard/collaborator/CollaboratorDashboard";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileDashboard from "@/components/layout/MobileDashboard";
@@ -13,6 +13,7 @@ const DashboardIndex = () => {
   const { currentUser, isLoading } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const location = useLocation();
   
   // Use a useEffect to log component state
   useEffect(() => {
@@ -20,9 +21,10 @@ const DashboardIndex = () => {
       isMobile, 
       isLoading, 
       hasUser: !!currentUser,
-      userRole: currentUser?.role 
+      userRole: currentUser?.role,
+      path: location.pathname
     });
-  }, [isLoading, currentUser, isMobile]);
+  }, [isLoading, currentUser, isMobile, location.pathname]);
   
   // Show loading state while authentication or mobile detection is in progress
   if (isLoading || isMobile === null) {
@@ -39,7 +41,7 @@ const DashboardIndex = () => {
   }
 
   // Redirect admin users to the admin dashboard
-  if (currentUser.role === "admin") {
+  if (currentUser.role === "admin" && location.pathname === "/dashboard") {
     return <Navigate to="/dashboard/admin" replace />;
   }
 
