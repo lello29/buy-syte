@@ -12,8 +12,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import CategoryItem from "./CategoryItem";
 import { useIsMobile } from "@/hooks/use-mobile";
+import CategoryList from "./CategoryList";
 
 interface CategoryDialogProps {
   isOpen: boolean;
@@ -30,7 +30,6 @@ const CategoryDialog: React.FC<CategoryDialogProps> = ({
 }) => {
   const [newCategory, setNewCategory] = useState("");
   const [managedCategories, setManagedCategories] = useState<string[]>(categories);
-  const [editingCategory, setEditingCategory] = useState<{index: number, value: string} | null>(null);
   const isMobile = useIsMobile();
 
   const handleAddCategory = () => {
@@ -49,53 +48,6 @@ const CategoryDialog: React.FC<CategoryDialogProps> = ({
     onCategoriesChange(updatedCategories);
     setNewCategory("");
     toast.success("Categoria aggiunta con successo");
-  };
-
-  const handleDeleteCategory = (index: number) => {
-    const updatedCategories = [...managedCategories];
-    updatedCategories.splice(index, 1);
-    setManagedCategories(updatedCategories);
-    onCategoriesChange(updatedCategories);
-    toast.success("Categoria eliminata con successo");
-  };
-
-  const handleStartEdit = (index: number) => {
-    setEditingCategory({
-      index,
-      value: managedCategories[index]
-    });
-  };
-
-  const handleCancelEdit = () => {
-    setEditingCategory(null);
-  };
-
-  const handleEditChange = (value: string) => {
-    if (editingCategory) {
-      setEditingCategory({...editingCategory, value});
-    }
-  };
-
-  const handleSaveEdit = () => {
-    if (!editingCategory) return;
-    
-    if (!editingCategory.value.trim()) {
-      toast.error("Il nome della categoria non può essere vuoto");
-      return;
-    }
-
-    if (managedCategories.includes(editingCategory.value.trim()) && 
-        managedCategories[editingCategory.index] !== editingCategory.value.trim()) {
-      toast.error("Questa categoria esiste già");
-      return;
-    }
-
-    const updatedCategories = [...managedCategories];
-    updatedCategories[editingCategory.index] = editingCategory.value.trim();
-    setManagedCategories(updatedCategories);
-    onCategoriesChange(updatedCategories);
-    setEditingCategory(null);
-    toast.success("Categoria aggiornata con successo");
   };
 
   return (
@@ -121,29 +73,13 @@ const CategoryDialog: React.FC<CategoryDialogProps> = ({
           </div>
 
           <div className="border rounded-md">
-            {managedCategories.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
-                Nessuna categoria disponibile
-              </div>
-            ) : (
-              <div className="divide-y">
-                {managedCategories.map((category, index) => (
-                  <div key={index} className="flex items-center justify-between p-3">
-                    <CategoryItem
-                      category={category}
-                      index={index}
-                      isEditing={editingCategory !== null && editingCategory.index === index}
-                      editValue={editingCategory?.value || ""}
-                      onStartEdit={handleStartEdit}
-                      onCancelEdit={handleCancelEdit}
-                      onSaveEdit={handleSaveEdit}
-                      onDeleteCategory={handleDeleteCategory}
-                      onEditChange={handleEditChange}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <CategoryList 
+              categories={managedCategories} 
+              onCategoriesChange={(updatedCategories) => {
+                setManagedCategories(updatedCategories);
+                onCategoriesChange(updatedCategories);
+              }} 
+            />
           </div>
         </div>
 
