@@ -45,6 +45,16 @@ const MobileUsersList: React.FC<MobileUsersListProps> = ({
               <div className="text-sm text-gray-600 mt-1 capitalize">
                 Ruolo: {user.role}
               </div>
+              {user.fiscalCode && (
+                <div className="text-sm text-gray-600 mt-1">
+                  Codice Fiscale: {user.fiscalCode}
+                </div>
+              )}
+              {user.vatNumber && (
+                <div className="text-sm text-gray-600 mt-1">
+                  Partita IVA: {user.vatNumber}
+                </div>
+              )}
               <div className="text-sm text-gray-500 mt-1">
                 Registrato il {new Date(user.createdAt).toLocaleDateString()}
               </div>
