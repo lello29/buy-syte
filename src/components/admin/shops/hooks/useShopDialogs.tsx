@@ -1,57 +1,33 @@
 
+import { useDialogState } from './useDialogState';
 import { useShopState } from './useShopState';
-import { useShopForm } from './useShopForm';
+import { useFormHandlers } from './useFormHandlers';
 
 export const useShopDialogs = () => {
+  // Get dialog state management
+  const dialogState = useDialogState();
+  
+  // Get shop state from useShopState
   const {
-    isAddShopOpen,
-    setIsAddShopOpen,
-    isEditShopOpen,
-    setIsEditShopOpen,
-    isViewShopOpen,
-    setIsViewShopOpen,
-    selectedShop,
     newShop,
-    setSelectedShop,
     setNewShop,
     setShopsList
   } = useShopState();
 
-  const {
-    handleShopChange,
-    handleNewShopChange,
-    handleSelectChange,
-    handleCheckboxChange,
-    handleGetLocation,
-    isLocating,
-    handleCreateShop,
-    handleSaveChanges
-  } = useShopForm(
-    selectedShop,
-    setSelectedShop,
+  // Get form handlers
+  const formHandlers = useFormHandlers(
+    dialogState.selectedShop,
+    dialogState.setSelectedShop,
     newShop,
     setNewShop,
     setShopsList,
-    setIsAddShopOpen,
-    setIsEditShopOpen
+    dialogState.setIsAddShopOpen,
+    dialogState.setIsEditShopOpen
   );
 
   return {
-    isAddShopOpen,
-    setIsAddShopOpen,
-    isEditShopOpen,
-    setIsEditShopOpen,
-    isViewShopOpen,
-    setIsViewShopOpen,
-    selectedShop,
+    ...dialogState,
     newShop,
-    isLocating,
-    handleShopChange,
-    handleNewShopChange,
-    handleSelectChange,
-    handleCheckboxChange,
-    handleGetLocation,
-    handleCreateShop,
-    handleSaveChanges
+    ...formHandlers
   };
 };

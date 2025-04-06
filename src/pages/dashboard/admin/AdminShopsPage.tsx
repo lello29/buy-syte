@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { shops } from "@/data/mockData";
 import { Shop } from "@/types";
 import ShopsHeader from "@/components/admin/shops/ShopsHeader";
@@ -8,6 +8,7 @@ import ShopsSearchBar from "@/components/admin/shops/ShopsSearchBar";
 import ShopsListTable from "@/components/admin/shops/ShopsListTable";
 import ShopDetailsDialog from "@/components/admin/shops/ShopDetailsDialog";
 import DeleteShopDialog from "@/components/admin/shops/DeleteShopDialog";
+import ShopDialogs from "@/components/admin/shops/ShopDialogs";
 
 const AdminShopsPage = () => {
   // State
@@ -91,6 +92,9 @@ const AdminShopsPage = () => {
         onOpenChange={setIsDeleteDialogOpen}
         onDelete={handleDelete}
       />
+      
+      {/* Shop Add/Edit Dialogs */}
+      <ShopDialogs />
     </div>
   );
 };

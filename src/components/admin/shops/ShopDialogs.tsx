@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { useShopDialogs } from './hooks/useShopDialogs';
-import AddShopDialog from './AddShopDialog';
-import ViewShopDialog from './ViewShopDialog';
-import EditShopDialog from './EditShopDialog';
+import AddShopDialog from './dialogs/AddShopDialog';
+import ViewShopDialog from './dialogs/ViewShopDialog';
+import EditShopDialog from './dialogs/EditShopDialog';
 
 const ShopDialogs: React.FC = () => {
   const {
