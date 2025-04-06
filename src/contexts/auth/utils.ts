@@ -2,7 +2,7 @@
 import { Shop } from "../../types";
 import { shops } from "../../data/mockData";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { findNearestShops, findUserShop } from "./utils";
+import { findNearestShops, findUserShop } from "./locationUtils";
 
 /**
  * Get nearest shops based on location
