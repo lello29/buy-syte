@@ -7,5 +7,12 @@ export {
   getShopById,
   getShopsByCategory,
   getNearestShops,
-  getActiveShops
-} from './shops-utils';
+  getActiveShops,
+  searchShops,
+  sortShops,
+  getRecentShops,
+  getShopsByApprovalStatus,
+  getShopsWithLowCredits,
+  createShop,
+  updateShop
+} from './shop-utils';
