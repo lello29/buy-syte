@@ -47,8 +47,12 @@ const VariantItem: React.FC<VariantItemProps> = ({
               variant={variant}
               index={variantIndex}
               optionIndex={optionIndex}
-              updateVariantOption={onUpdateOption}
-              removeVariantOption={onRemoveOption}
+              updateVariantOption={(variantIndex, optionIndex, field, value) => 
+                onUpdateOption(optionIndex, field, value)
+              }
+              removeVariantOption={(variantIndex, optionIndex) => 
+                onRemoveOption(optionIndex)
+              }
             />
           ))}
           <Button
