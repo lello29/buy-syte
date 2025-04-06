@@ -24,7 +24,7 @@ const AdminShopsPage: React.FC = () => {
     <div className="space-y-6">
       <ShopsPageHeader 
         handleAddShop={handleAddShop}
-        isMobile={isMobile}
+        isMobile={isMobile || false}
       />
       
       {isMobile ? (

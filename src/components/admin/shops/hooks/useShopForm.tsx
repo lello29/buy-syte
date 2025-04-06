@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Shop } from '@/types';
 import { toast } from "sonner";
 
@@ -51,6 +51,15 @@ export const useShopForm = (
           ...prev,
           location: newLocation
         };
+      });
+      return;
+    }
+
+    // Special handling for boolean values like isApproved  
+    if (name === 'isApproved') {
+      setSelectedShop(prev => {
+        if (!prev) return prev;
+        return { ...prev, [name]: value === 'true' || value === true };
       });
       return;
     }
@@ -116,7 +125,7 @@ export const useShopForm = (
   
   const handleCreateShop = () => {
     // Validation
-    if (!newShop.name || !newShop.description || !newShop.address || 
+    if (!newShop.name || !newShop.address || 
         !newShop.phone || !newShop.email || !newShop.fiscalCode || 
         !newShop.vatNumber) {
       toast.error('Compila tutti i campi obbligatori');
@@ -129,7 +138,7 @@ export const useShopForm = (
       id: `shop-${Date.now()}`,
       userId: `user-${Date.now()}`,
       name: newShop.name,
-      description: newShop.description,
+      description: newShop.description || '',
       address: newShop.address,
       phone: newShop.phone,
       email: newShop.email,
@@ -137,7 +146,7 @@ export const useShopForm = (
       offers: [],
       aiCredits: 100, // Default credits
       isActive: true,
-      isApproved: true,
+      isApproved: false, // Nuovi negozi non sono approvati di default
       lastUpdated: now,
       createdAt: now,
       fiscalCode: newShop.fiscalCode,
@@ -162,6 +171,14 @@ export const useShopForm = (
   
   const handleSaveChanges = () => {
     if (!selectedShop) return;
+    
+    // Validation
+    if (!selectedShop.name || !selectedShop.address || 
+        !selectedShop.phone || !selectedShop.email || !selectedShop.fiscalCode || 
+        !selectedShop.vatNumber) {
+      toast.error('Compila tutti i campi obbligatori');
+      return;
+    }
     
     // Update in the local state (would connect to backend in real app)
     setShopsList(prev => 

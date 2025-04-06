@@ -52,6 +52,7 @@ const EditShopDialog: React.FC<EditShopDialogProps> = ({
             phone={shop.phone}
             fiscalCode={shop.fiscalCode}
             vatNumber={shop.vatNumber}
+            description={shop.description}
             onShopChange={onShopChange}
             onSelectChange={onSelectChange}
           />

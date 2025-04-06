@@ -50,7 +50,7 @@ const ShopStatusFields: React.FC<ShopStatusFieldsProps> = ({
       <div className="flex items-center space-x-2">
         <Checkbox
           id="isApproved"
-          checked={isApproved}
+          checked={isApproved === true}
           onCheckedChange={handleCheckboxChange}
         />
         <Label htmlFor="isApproved" className="cursor-pointer">Approvato</Label>

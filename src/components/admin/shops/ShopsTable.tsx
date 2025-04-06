@@ -56,6 +56,14 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
         </TableRow>
       </TableHeader>
       <TableBody>
+        {shops.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+              Nessun negozio trovato
+            </TableCell>
+          </TableRow>
+        )}
+        
         {shops.map((shop) => (
           <TableRow key={shop.id}>
             <TableCell className="font-medium">{shop.name}</TableCell>

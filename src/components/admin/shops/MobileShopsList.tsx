@@ -54,6 +54,16 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
       </Button>
       
       <div className="space-y-4">
+        {shops.length === 0 && (
+          <div className="text-center py-8 bg-white rounded-lg border">
+            <p className="text-gray-500 mb-4">Nessun negozio trovato.</p>
+            <Button onClick={onAddShop} size="sm">
+              <Store className="mr-2 h-4 w-4" />
+              Aggiungi il primo negozio
+            </Button>
+          </div>
+        )}
+        
         {shops.map((shop) => (
           <div key={shop.id} className="border rounded-md overflow-hidden mb-4 bg-white shadow-sm">
             <div className="p-4">
@@ -143,16 +153,6 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
             </div>
           </div>
         ))}
-        
-        {shops.length === 0 && (
-          <div className="text-center py-8 bg-white rounded-lg border">
-            <p className="text-gray-500 mb-4">Nessun negozio trovato.</p>
-            <Button onClick={onAddShop} size="sm">
-              <Store className="mr-2 h-4 w-4" />
-              Aggiungi il primo negozio
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
