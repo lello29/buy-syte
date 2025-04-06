@@ -1,7 +1,9 @@
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, Upload, X } from "lucide-react";
+import { toast } from "sonner";
+import { initScanner, stopScanner, defaultScannerConfig, processImageFile } from "./utils/scannerUtils";
 
 interface BarcodeScannerProps {
   onDetected: (result: string) => void;
@@ -9,82 +11,50 @@ interface BarcodeScannerProps {
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onDetected, onClose }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const videoRef = useRef<HTMLDivElement | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const startCamera = async () => {
     try {
       setErrorMessage(null);
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }
-      });
       
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        setStream(mediaStream);
-        setIsScanning(true);
+      if (!videoRef.current) {
+        console.error("Video container reference not available");
+        return;
       }
+      
+      setIsScanning(true);
+      
+      await initScanner("barcode-scanner", defaultScannerConfig, (code) => {
+        // Stop scanner after successful detection
+        stopScanner();
+        setIsScanning(false);
+        onDetected(code);
+      });
     } catch (error) {
       console.error("Error accessing camera:", error);
       setErrorMessage("Impossibile accedere alla fotocamera. Assicurati di aver concesso i permessi necessari.");
-    }
-  };
-
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
       setIsScanning(false);
     }
   };
 
-  const captureImage = () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      
-      const context = canvas.getContext('2d');
-      if (context) {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // Simulate barcode detection (in a real app, we'd use a proper barcode library)
-        // For demo purposes, we'll generate a random barcode
-        setTimeout(() => {
-          const mockBarcode = Math.floor(Math.random() * 10000000000000).toString().padStart(13, '0');
-          onDetected(mockBarcode);
-          stopCamera();
-        }, 500);
-      }
+  const stopCamera = () => {
+    if (isScanning) {
+      stopScanner();
+      setIsScanning(false);
     }
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-      
-      if (context) {
-        const img = new Image();
-        img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          context.drawImage(img, 0, 0, img.width, img.height);
-          
-          // Simulate barcode detection from image
-          setTimeout(() => {
-            const mockBarcode = Math.floor(Math.random() * 10000000000000).toString().padStart(13, '0');
-            onDetected(mockBarcode);
-          }, 500);
-        };
-        img.src = URL.createObjectURL(file);
-      }
+    if (file) {
+      toast.loading("Analisi dell'immagine in corso...");
+      processImageFile(file, (code) => {
+        toast.dismiss();
+        toast.success("Codice rilevato: " + code);
+        onDetected(code);
+      });
     }
   };
 
@@ -110,15 +80,11 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onDetected, onClose }) 
           </div>
         )}
         
-        <div className="relative overflow-hidden rounded-lg aspect-video bg-gray-100 mb-4">
-          <video 
-            ref={videoRef}
-            autoPlay 
-            playsInline
-            className={`w-full h-full object-cover ${!isScanning ? 'hidden' : ''}`}
-          />
-          <canvas ref={canvasRef} className="hidden" />
-          
+        <div 
+          id="barcode-scanner"
+          ref={videoRef}
+          className="relative overflow-hidden rounded-lg aspect-video bg-gray-100 mb-4"
+        >
           {!isScanning && !errorMessage && (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
               <Camera className="h-12 w-12 mb-2" />
@@ -134,8 +100,8 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onDetected, onClose }) 
               Attiva Fotocamera
             </Button>
           ) : (
-            <Button onClick={captureImage} className="w-full bg-green-600 hover:bg-green-700">
-              Scansiona Codice
+            <Button onClick={stopCamera} className="w-full bg-red-600 hover:bg-red-700">
+              Ferma Scansione
             </Button>
           )}
           
