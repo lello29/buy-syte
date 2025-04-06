@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "../pages/Index";
@@ -19,7 +20,7 @@ import ConvertToShopPage from "../pages/dashboard/profile/ConvertToShopPage";
 import ConvertToCollaboratorPage from "../pages/dashboard/profile/ConvertToCollaboratorPage";
 import TasksPage from "../pages/dashboard/collaborator/TasksPage";
 import AdminDashboardPage from "../pages/dashboard/admin/AdminDashboardPage";
-import AdminShopsPage from "../pages/dashboard/admin/ShopsPage";
+import AdminShopsPage from "../pages/dashboard/admin/AdminShopsPage";
 import CollaboratorsPage from "../pages/dashboard/admin/CollaboratorsPage";
 import ProductsAdminPage from "../pages/dashboard/admin/ProductsPage";
 import UsersPage from "../pages/dashboard/admin/UsersPage";

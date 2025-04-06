@@ -2,6 +2,7 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const SHOP_CATEGORIES = [
@@ -26,7 +27,8 @@ interface ShopBasicInfoFieldsProps {
   phone: string;
   fiscalCode?: string;
   vatNumber?: string;
-  onShopChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  description?: string;
+  onShopChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onSelectChange?: (field: string, value: string) => void;
 }
 
@@ -38,6 +40,7 @@ const ShopBasicInfoFields: React.FC<ShopBasicInfoFieldsProps> = ({
   phone,
   fiscalCode,
   vatNumber,
+  description,
   onShopChange,
   onSelectChange
 }) => {
@@ -126,6 +129,17 @@ const ShopBasicInfoFields: React.FC<ShopBasicInfoFieldsProps> = ({
           value={vatNumber || ""}
           onChange={onShopChange}
           required
+        />
+      </div>
+      
+      <div className="flex flex-col space-y-1">
+        <Label htmlFor="description">Descrizione</Label>
+        <Textarea 
+          id="description"
+          name="description"
+          value={description || ""}
+          onChange={onShopChange}
+          rows={3}
         />
       </div>
     </>

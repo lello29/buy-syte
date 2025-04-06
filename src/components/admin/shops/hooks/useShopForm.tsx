@@ -59,7 +59,7 @@ export const useShopForm = (
     if (name === 'isApproved') {
       setSelectedShop(prev => {
         if (!prev) return prev;
-        return { ...prev, [name]: value === 'true' || value === true };
+        return { ...prev, [name]: value === 'true' || (typeof value === 'boolean' && value === true) };
       });
       return;
     }
