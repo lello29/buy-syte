@@ -5,7 +5,7 @@ import CustomerDialog from "./components/CustomerDialog";
 import CustomerHeader from "./components/CustomerHeader";
 import CustomersTable from "./components/CustomersTable";
 import MobileCustomerView from "./components/MobileCustomerView";
-import ShopAuthCheck from "./components/ShopAuthCheck";
+import ShopAuthCheck from "../components/ShopAuthCheck";
 import { useCustomerForm } from "./hooks/useCustomerForm";
 import { mockCustomers } from "./data/mockCustomers";
 
