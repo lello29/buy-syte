@@ -5,7 +5,8 @@ import { TabsContent } from "@/components/ui/tabs";
 import { 
   ArrowRight, 
   ArrowLeft, 
-  Save 
+  Save,
+  HelpCircle
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useProductForm } from "../ProductFormContext";
@@ -24,20 +25,27 @@ const MobileFormLayout: React.FC<MobileFormLayoutProps> = ({ onClose }) => {
     handlePrevious, 
     handleSubmit,
     showHelp,
-    setShowHelp
+    setShowHelp,
+    productData
   } = useProductForm();
+
+  // Fix for white page - ensure we have data to render
+  const currentStepInfo = steps[currentStep] || steps[0];
 
   return (
     <>
       <div className="mb-3">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-bold">
-            {currentStep === 0 ? "Inserimento" : steps[currentStep].label}
+            {currentStep === 0 ? "Inserimento" : currentStepInfo.label}
           </h2>
           
           <Sheet open={showHelp} onOpenChange={setShowHelp}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="sm">Aiuto</Button>
+              <Button variant="outline" size="sm">
+                <HelpCircle className="h-4 w-4 mr-1" />
+                Aiuto
+              </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[85vh]">
               <SheetHeader>
@@ -70,8 +78,12 @@ const MobileFormLayout: React.FC<MobileFormLayoutProps> = ({ onClose }) => {
       </div>
 
       <div className="border rounded-lg overflow-hidden mb-3">
-        <TabsContent value={steps[currentStep].id} className="m-0 p-3">
-          <FormStepContent onClose={onClose} isMobile />
+        <TabsContent value={currentStepInfo.id} className="m-0 p-3">
+          <FormStepContent 
+            onClose={onClose} 
+            isMobile={true} 
+            handleSkipToManualEntry={currentStep === 0 ? undefined : undefined} 
+          />
         </TabsContent>
       </div>
       

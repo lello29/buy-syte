@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ProductFormData } from "./types/productTypes";
 import { STEPS } from "./config/formSteps";
@@ -26,6 +26,8 @@ interface ProductFormContextType {
 const ProductFormContext = createContext<ProductFormContextType | undefined>(undefined);
 
 export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Store previous step for handling "go back" action
+  const [previousStep, setPreviousStep] = useState<number | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [showHelp, setShowHelp] = useState(false);
   const [productData, setProductData] = useState<ProductFormData>({
@@ -60,25 +62,34 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   const handleNext = () => {
-    // Valida il passo corrente prima di passare al successivo
+    // Save current step before moving
+    setPreviousStep(currentStep);
+    
+    // Validate the current step before proceeding to the next
     if (validateStep(currentStep, productData)) {
       if (currentStep < STEPS.length - 1) {
         setCurrentStep(currentStep + 1);
       }
     } else {
-      // Mostra un toast per l'errore
+      // Show a toast for the error
       toast.error("Controlla i campi obbligatori prima di procedere");
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      // Use the stored previous step or go back one step
+      const targetStep = previousStep !== null && previousStep < currentStep 
+        ? previousStep 
+        : currentStep - 1;
+      
+      setCurrentStep(targetStep);
+      setPreviousStep(null); // Reset previous step after using it
     }
   };
 
   const handleSubmit = async () => {
-    // Valida tutto il form prima dell'invio
+    // Validate the entire form before submission
     if (!validateCompleteForm(productData)) {
       toast.error("Alcuni campi obbligatori sono mancanti");
       return;
@@ -88,9 +99,17 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   const handleSkipToManualEntry = () => {
+    setPreviousStep(currentStep);
     setCurrentStep(1); // Skip to basic info step
     toast.info("Procedi con l'inserimento manuale del prodotto");
   };
+
+  // Effect to handle form reset if completely navigating away
+  useEffect(() => {
+    return () => {
+      // Clean up logic if needed
+    };
+  }, []);
 
   return (
     <ProductFormContext.Provider value={{
