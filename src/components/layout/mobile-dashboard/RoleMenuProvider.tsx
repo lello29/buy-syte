@@ -66,12 +66,12 @@ export const useRoleMenu = (role) => {
         { label: "Incarichi", icon: Briefcase, path: "/dashboard/tasks", available: true },
         { label: "Disponibilità", icon: Calendar, path: "/dashboard/availability", available: true },
         { label: "Recensioni", icon: Award, path: "/dashboard/reviews", available: true },
-        { label: "Impostazioni", icon: Settings, path: "/dashboard/settings", available: true }
+        { label: "Pagamenti", icon: CreditCard, path: "/dashboard/payments", available: false }
       );
       
       additionalOptions.push(
         { label: "Documenti", path: "/dashboard/documents", available: false },
-        { label: "Pagamenti", path: "/dashboard/payments", available: false }
+        { label: "Impostazioni", path: "/dashboard/settings", available: true }
       );
       
       actionButton = {

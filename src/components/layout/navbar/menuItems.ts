@@ -26,19 +26,19 @@ export const getMenuItems = (currentUser: User): MenuItem[] => {
         { icon: Store, label: "Negozio", path: "/dashboard" },
         { icon: Package, label: "Prodotti", path: "/dashboard/products" },
         { icon: Users, label: "Clienti", path: "/dashboard/customers" },
-        { icon: Settings, label: "Impostazioni", path: "/dashboard/shop-settings" },
+        { icon: Settings, label: "Impostazioni", path: "/dashboard/shop/settings" },
       ];
     case "collaborator":
       return [
         { icon: UserIcon, label: "Profilo", path: "/dashboard" },
-        { icon: Package, label: "Incarichi", path: "/dashboard/tasks" },
+        { icon: Briefcase, label: "Incarichi", path: "/dashboard/tasks" },
       ];
     case "admin":
       return [
         { icon: BarChart3, label: "Dashboard", path: "/dashboard/admin" },
-        { icon: Users, label: "Utenti", path: "/dashboard/users" },
-        { icon: Store, label: "Negozi", path: "/dashboard/admin-shops" },
-        { icon: Briefcase, label: "Collaboratori", path: "/dashboard/admin-collaborators" },
+        { icon: Users, label: "Utenti", path: "/dashboard/admin/users" },
+        { icon: Store, label: "Negozi", path: "/dashboard/admin/shops" },
+        { icon: Briefcase, label: "Collaboratori", path: "/dashboard/admin/collaborators" },
         { icon: Settings, label: "Impostazioni", path: "/dashboard/admin/settings" },
       ];
     default:

@@ -83,9 +83,6 @@ const MobileDashboard = () => {
               isLast={index === additionalOptions.length - 1}
               onUnavailable={handleNotAvailable}
             />
-            {index < additionalOptions.length - 1 && 
-              <div className="border-b border-gray-200 mx-4"></div>
-            }
           </React.Fragment>
         ))}
       </div>
