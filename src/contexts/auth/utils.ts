@@ -1,58 +1,127 @@
 
 import { Shop } from "../../types";
+import { shops } from "../../data/mockData";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { findNearestShops, findUserShop } from "./utils";
 
 /**
- * Calculates the distance between two coordinates using the haversine formula
+ * Get nearest shops based on location
  */
-export const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-};
-
-/**
- * Finds nearest shops based on coordinates and radius
- */
-export const findNearestShops = (shops: Shop[], lat: number, lng: number, radius = 10): Shop[] => {
-  return shops
-    .map(shop => {
-      const randomLat = lat + (Math.random() - 0.5) * 0.1;
-      const randomLng = lng + (Math.random() - 0.5) * 0.1;
-      const distance = calculateDistance(lat, lng, randomLat, randomLng);
+export const getNearestShopsHelper = async (lat: number, lng: number, radius = 10): Promise<Shop[]> => {
+  try {
+    if (isSupabaseConfigured) {
+      // This is a simple implementation - for a real app, you'd use a geoquery or spatial query
+      const { data, error } = await supabase
+        .from('shops')
+        .select('*')
+        .not('latitude', 'is', null)
+        .not('longitude', 'is', null);
       
-      return {
-        ...shop,
-        distance,
-        lat: randomLat,
-        lng: randomLng
-      };
-    })
-    .filter(shop => shop.distance <= radius)
-    .sort((a, b) => a.distance - b.distance);
+      if (error || !data) {
+        console.error("Get nearest shops error:", error?.message);
+        // Fallback to mock data
+        return findNearestShops(shops, lat, lng, radius);
+      }
+      
+      // Format shop data
+      const formattedShops: Shop[] = data.map(shop => ({
+        id: shop.id,
+        userId: shop.user_id,
+        name: shop.name,
+        description: shop.description,
+        address: shop.address,
+        phone: shop.phone,
+        email: shop.email,
+        products: [], // Would need a separate query to get products
+        offers: [], // Would need a separate query to get offers
+        aiCredits: shop.ai_credits,
+        isApproved: shop.is_approved,
+        lastUpdated: shop.last_updated,
+        createdAt: shop.created_at,
+        logoImage: shop.logo_image,
+        bannerImage: shop.banner_image,
+        websiteUrl: shop.website_url,
+        openingHours: shop.opening_hours,
+        aboutUs: shop.about_us,
+        categories: shop.categories,
+        fiscalCode: shop.fiscal_code,
+        vatNumber: shop.vat_number,
+        location: shop.latitude && shop.longitude ? {
+          latitude: shop.latitude,
+          longitude: shop.longitude
+        } : undefined,
+        category: shop.category,
+        socialLinks: shop.social_links
+      }));
+      
+      // Calculate distances and filter
+      return findNearestShops(formattedShops, lat, lng, radius);
+    }
+    
+    // Fallback to mock data when Supabase is not configured
+    return findNearestShops(shops, lat, lng, radius);
+  } catch (error) {
+    console.error("Get nearest shops exception:", error);
+    // Fallback to mock data
+    return findNearestShops(shops, lat, lng, radius);
+  }
 };
 
 /**
- * Finds a shop by user ID or email
+ * Get shop data for a specific user
  */
-export const findUserShop = (shops: Shop[], userId: string, userEmail: string): Shop | undefined => {
-  // For the Gelateria test account
-  if (userEmail === 'info@gelateriaartigianale.it') {
-    return shops.find(shop => shop.id === 'shop5');
+export const getUserShopHelper = async (userId: string, userEmail: string): Promise<Shop | undefined> => {
+  try {
+    if (isSupabaseConfigured) {
+      const { data, error } = await supabase
+        .from('shops')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+      
+      if (error || !data) {
+        console.error("Get user shop error:", error?.message);
+        // Fallback to mock data
+        return findUserShop(shops, userId, userEmail);
+      }
+      
+      // Format shop data
+      return {
+        id: data.id,
+        userId: data.user_id,
+        name: data.name,
+        description: data.description,
+        address: data.address,
+        phone: data.phone,
+        email: data.email,
+        products: [], // Would need a separate query to get products
+        offers: [], // Would need a separate query to get offers
+        aiCredits: data.ai_credits,
+        isApproved: data.is_approved,
+        lastUpdated: data.last_updated,
+        createdAt: data.created_at,
+        logoImage: data.logo_image,
+        bannerImage: data.banner_image,
+        websiteUrl: data.website_url,
+        openingHours: data.opening_hours,
+        aboutUs: data.about_us,
+        categories: data.categories,
+        fiscalCode: data.fiscal_code,
+        vatNumber: data.vat_number,
+        location: data.latitude && data.longitude ? {
+          latitude: data.latitude,
+          longitude: data.longitude
+        } : undefined,
+        category: data.category,
+        socialLinks: data.social_links
+      };
+    }
+    
+    // Fallback to mock data when Supabase is not configured
+    return findUserShop(shops, userId, userEmail);
+  } catch (error) {
+    console.error("Get user shop exception:", error);
+    // Fallback to mock data
+    return findUserShop(shops, userId, userEmail);
   }
-
-  // For the negozio@test.com test account
-  if (userEmail === 'negozio@test.com') {
-    return shops.find(shop => shop.name === 'Negozio Test') || shops[0];
-  }
-
-  // For other shop users, try to find by userId
-  return shops.find(shop => shop.userId === userId);
 };

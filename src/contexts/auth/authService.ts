@@ -51,6 +51,19 @@ export const authService = {
   },
 
   /**
+   * Handle user logout
+   */
+  logout: async (): Promise<void> => {
+    if (isSupabaseConfigured) {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Logout error:", error.message);
+        toast.error("Errore durante il logout");
+      }
+    }
+  },
+
+  /**
    * Handles user registration
    */
   register: async (name: string, email: string, password: string): Promise<User | null> => {
@@ -143,6 +156,70 @@ export const authService = {
       console.error("Role update exception:", error);
       toast.error("Si è verificato un errore durante l'aggiornamento del ruolo");
       return user;
+    }
+  },
+
+  /**
+   * Updates user favorites
+   */
+  updateUserFavorites: async (userId: string, favorites: string[]): Promise<User | null> => {
+    try {
+      // Update in Supabase if configured
+      if (isSupabaseConfigured) {
+        const { error } = await supabase
+          .from('users')
+          .update({ 
+            favorites,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', userId);
+        
+        if (error) {
+          console.error("Update favorites error:", error.message);
+          toast.error("Errore nell'aggiornamento dei preferiti");
+          return null;
+        }
+        
+        // Get updated user
+        const { data: userData, error: fetchError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', userId)
+          .single();
+          
+        if (fetchError || !userData) {
+          console.error("Fetch updated user error:", fetchError?.message);
+          return null;
+        }
+        
+        // Transform from snake_case to camelCase
+        return {
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          favorites: userData.favorites || [],
+          loyaltyPoints: userData.loyalty_points || 0,
+          isActive: userData.is_active,
+          createdAt: userData.created_at,
+          updatedAt: userData.updated_at,
+          fiscalCode: userData.fiscal_code,
+          vatNumber: userData.vat_number
+        };
+      }
+      
+      // For mock data, just get the user from localStorage and update
+      const storedUser = localStorage.getItem("currentUser");
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        return { ...user, favorites };
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Update favorites exception:", error);
+      toast.error("Si è verificato un errore nell'aggiornamento dei preferiti");
+      return null;
     }
   }
 };
