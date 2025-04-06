@@ -30,9 +30,9 @@ const AIStatusCheck: React.FC = () => {
         setAiStatus(mockResponse);
         
         if (!mockResponse.active) {
-          toast.warning("L'AI non è attiva. Prosegui con l'inserimento manuale.");
+          toast.error("L'AI non è attiva. Prosegui con l'inserimento manuale.");
         } else if (mockResponse.credits <= 0) {
-          toast.warning("Crediti AI esauriti. Prosegui con l'inserimento manuale.");
+          toast.error("Crediti AI esauriti. Prosegui con l'inserimento manuale.");
         }
       } catch (error) {
         console.error("Errore durante la verifica dello stato dell'AI:", error);

@@ -27,6 +27,7 @@ import UsersPage from "../pages/dashboard/admin/UsersPage";
 import SettingsPage from "../pages/dashboard/admin/SettingsPage";
 import ShopSettingsPage from "../pages/dashboard/shop/ShopSettingsPage";
 import AddProductForm from "../components/products/AddProductForm";
+import DashboardLayout from "../components/layout/DashboardLayout";
 
 // TODO: Implement auth handling with context
 const AppRoutes = () => {
@@ -40,7 +41,8 @@ const AppRoutes = () => {
       <Route path="/shops/nearest" element={<NearestShopsPage />} />
       <Route path="/offers" element={<OffersPage />} />
 
-      <Route path="/dashboard" element={<ProtectedRoute><DashboardIndex /></ProtectedRoute>}>
+      {/* Dashboard routes with layout */}
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route index element={<DashboardIndex />} />
         
         {/* Shop routes */}
@@ -57,10 +59,7 @@ const AppRoutes = () => {
         
         {/* Profile conversion routes */}
         <Route path="convert-to-shop" element={<ConvertToShopPage />} />
-        <Route
-          path="convert-to-collaborator"
-          element={<ConvertToCollaboratorPage />}
-        />
+        <Route path="convert-to-collaborator" element={<ConvertToCollaboratorPage />} />
         
         {/* Collaborator routes */}
         <Route path="tasks" element={<TasksPage />} />

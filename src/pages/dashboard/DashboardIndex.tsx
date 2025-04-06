@@ -5,12 +5,17 @@ import UserDashboard from "@/components/dashboard/user/UserDashboard";
 import ShopDashboard from "@/components/dashboard/shop/ShopDashboard";
 import CollaboratorDashboard from "@/components/dashboard/collaborator/CollaboratorDashboard";
 import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
+import { Navigate } from "react-router-dom";
 
 const DashboardIndex = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div>Caricamento...</div>;
+  }
   
   if (!currentUser) {
-    return <div>Caricamento...</div>;
+    return <Navigate to="/login" />;
   }
 
   const renderDashboardByRole = () => {
