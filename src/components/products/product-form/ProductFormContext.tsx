@@ -68,6 +68,7 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
     // Validate the current step before proceeding to the next
     if (validateStep(currentStep, productData)) {
       if (currentStep < STEPS.length - 1) {
+        // Directly set the next step
         setCurrentStep(currentStep + 1);
       }
     } else {
@@ -78,13 +79,8 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      // Use the stored previous step or go back one step
-      const targetStep = previousStep !== null && previousStep < currentStep 
-        ? previousStep 
-        : currentStep - 1;
-      
-      setCurrentStep(targetStep);
-      setPreviousStep(null); // Reset previous step after using it
+      // Always move to the previous step in sequence
+      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -100,7 +96,8 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const handleSkipToManualEntry = () => {
     setPreviousStep(currentStep);
-    setCurrentStep(1); // Skip to basic info step
+    // Skip directly to basic info step (step 1)
+    setCurrentStep(1);
     toast.info("Procedi con l'inserimento manuale del prodotto");
   };
 

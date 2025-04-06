@@ -2,9 +2,10 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload } from "lucide-react";
+import { Upload, Camera } from "lucide-react";
 import CameraCaptureButton from "./CameraCaptureButton";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
 
 interface ImageDragDropAreaProps {
   onFilesAdded: (files: File[]) => void;
@@ -84,7 +85,18 @@ const ImageDragDropArea: React.FC<ImageDragDropAreaProps> = ({ onFilesAdded }) =
       </div>
       
       {isMobile && (
-        <CameraCaptureButton onImageCaptured={handleCameraCapture} />
+        <div className="flex flex-col gap-2">
+          <CameraCaptureButton onImageCaptured={handleCameraCapture} />
+          <Button 
+            type="button" 
+            variant="outline" 
+            className="w-full flex items-center justify-center gap-2"
+            onClick={() => document.getElementById('image-upload')?.click()}
+          >
+            <Camera className="h-4 w-4" />
+            Scatta foto
+          </Button>
+        </div>
       )}
     </div>
   );

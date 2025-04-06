@@ -60,66 +60,42 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
     );
   };
 
-  let content;
-  switch (validStep) {
-    case 0:
-      content = <BarcodeStep isMobile={isMobile} handleSkipToManualEntry={skipToManual} />;
-      break;
-    case 1:
-      content = (
-        <ProductBasicInfo 
-          data={productData} 
-          updateData={updateProductData} 
-        />
-      );
-      break;
-    case 2:
-      content = (
-        <ProductDetails 
-          data={productData} 
-          updateData={updateProductData} 
-        />
-      );
-      break;
-    case 3:
-      content = (
-        <ProductImages 
-          data={productData} 
-          updateData={updateProductData} 
-        />
-      );
-      break;
-    case 4:
-      content = (
-        <ProductOptions 
-          data={productData} 
-          updateData={updateProductData} 
-        />
-      );
-      break;
-    case 5:
-      content = (
-        <ProductPublish 
-          data={productData}
-          updateData={updateProductData}
-          onSubmit={() => {
-            handleSubmit();
-            if (onClose) setTimeout(onClose, 2000);
-          }}
-        />
-      );
-      break;
-    default:
-      // Fallback to first step in case of invalid step
-      content = <BarcodeStep isMobile={isMobile} handleSkipToManualEntry={skipToManual} />;
-  }
+  // Create content based on step
+  const renderStepContent = () => {
+    switch (validStep) {
+      case 0:
+        return <BarcodeStep isMobile={isMobile} handleSkipToManualEntry={skipToManual} />;
+      case 1:
+        return <ProductBasicInfo data={productData} updateData={updateProductData} />;
+      case 2:
+        return <ProductDetails data={productData} updateData={updateProductData} />;
+      case 3:
+        return <ProductImages data={productData} updateData={updateProductData} />;
+      case 4:
+        return <ProductOptions data={productData} updateData={updateProductData} />;
+      case 5:
+        return (
+          <ProductPublish 
+            data={productData}
+            updateData={updateProductData}
+            onSubmit={() => {
+              handleSubmit();
+              if (onClose) setTimeout(onClose, 2000);
+            }}
+          />
+        );
+      default:
+        // Fallback to first step in case of invalid step
+        return <BarcodeStep isMobile={isMobile} handleSkipToManualEntry={skipToManual} />;
+    }
+  };
 
   return (
     <>
       {hasErrors && renderErrors()}
       {/* Mostra lo stato dell'AI solo nei passaggi rilevanti (non nella scansione barcode) */}
       {validStep > 0 && validStep < 5 && <AIStatusCheck />}
-      {content}
+      {renderStepContent()}
     </>
   );
 };
