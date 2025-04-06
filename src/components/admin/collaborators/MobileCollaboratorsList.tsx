@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Eye, Ban, Trash2, UserPlus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Collaborator } from '@/types';
-import { toast } from 'sonner';
 
 interface MobileCollaboratorsListProps {
   collaborators: Collaborator[];
@@ -21,12 +20,6 @@ const MobileCollaboratorsList: React.FC<MobileCollaboratorsListProps> = ({
   onDeleteCollaborator,
   onAddCollaborator
 }) => {
-  const handleDelete = (collaboratorId: string) => {
-    if (window.confirm('Sei sicuro di voler eliminare questo collaboratore?')) {
-      onDeleteCollaborator(collaboratorId);
-    }
-  };
-
   return (
     <div className="space-y-4">
       <Button 
@@ -76,7 +69,7 @@ const MobileCollaboratorsList: React.FC<MobileCollaboratorsListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-red-600 hover:bg-red-50"
-                onClick={() => handleDelete(collaborator.id)}
+                onClick={() => onDeleteCollaborator(collaborator.id)}
               >
                 <Trash2 className="h-5 w-5 mr-1" />
                 Elimina
