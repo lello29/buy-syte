@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Shop } from '@/types';
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 export const useShopForm = (
   selectedShop: Shop | null,
