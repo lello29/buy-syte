@@ -17,6 +17,17 @@ interface CustomersTableProps {
 }
 
 const CustomersTable: React.FC<CustomersTableProps> = ({ customers }) => {
+  // Helper function to format date
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return "N/A";
+    
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch (error) {
+      return dateString; // Fallback to displaying the string as is
+    }
+  };
+  
   return (
     <Card>
       <CardHeader>
@@ -39,9 +50,9 @@ const CustomersTable: React.FC<CustomersTableProps> = ({ customers }) => {
               <TableRow key={customer.id}>
                 <TableCell>{customer.name}</TableCell>
                 <TableCell>{customer.email}</TableCell>
-                <TableCell>{customer.orderCount}</TableCell>
-                <TableCell>€{customer.totalSpent.toFixed(2)}</TableCell>
-                <TableCell>{customer.lastOrderDate.toLocaleDateString()}</TableCell>
+                <TableCell>{customer.orderCount || 0}</TableCell>
+                <TableCell>€{(customer.totalSpent || 0).toFixed(2)}</TableCell>
+                <TableCell>{formatDate(customer.lastOrderDate)}</TableCell>
                 <TableCell className="text-right">
                   <Button size="sm" variant="outline">Contatta</Button>
                 </TableCell>

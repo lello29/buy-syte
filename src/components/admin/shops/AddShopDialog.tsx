@@ -10,7 +10,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { MapPin } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const SHOP_CATEGORIES = [
@@ -27,34 +27,30 @@ const SHOP_CATEGORIES = [
   "Altro"
 ];
 
-interface AddShopDialogProps {
+export interface AddShopDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   newShop: {
     name: string;
+    description: string;
     address: string;
-    email: string;
     phone: string;
-    aiCredits: number;
+    email: string;
     fiscalCode: string;
     vatNumber: string;
     category?: string;
-    latitude?: number;
-    longitude?: number;
   };
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onSelectChange?: (field: string, value: string) => void;
-  onGetLocation?: () => void;
   onCreateShop: () => void;
 }
 
 const AddShopDialog: React.FC<AddShopDialogProps> = ({
-  newShop,
   open,
   onOpenChange,
+  newShop,
   onInputChange,
   onSelectChange,
-  onGetLocation,
   onCreateShop
 }) => {
   return (
@@ -65,24 +61,34 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
         </DialogHeader>
         <div className="space-y-4">
           <div className="flex flex-col space-y-1">
-            <Label htmlFor="new-name">Nome <span className="text-red-500">*</span></Label>
+            <Label htmlFor="name">Nome <span className="text-red-500">*</span></Label>
             <Input 
-              id="new-name"
+              id="name"
               name="name"
               value={newShop.name}
               onChange={onInputChange}
-              placeholder="Nome del negozio"
               required
             />
           </div>
           
           <div className="flex flex-col space-y-1">
-            <Label htmlFor="new-category">Categoria <span className="text-red-500">*</span></Label>
+            <Label htmlFor="description">Descrizione <span className="text-red-500">*</span></Label>
+            <Textarea 
+              id="description"
+              name="description"
+              value={newShop.description}
+              onChange={onInputChange}
+              required
+            />
+          </div>
+          
+          <div className="flex flex-col space-y-1">
+            <Label htmlFor="category">Categoria <span className="text-red-500">*</span></Label>
             <Select 
-              value={newShop.category}
+              value={newShop.category || ""}
               onValueChange={(value) => onSelectChange && onSelectChange("category", value)}
             >
-              <SelectTrigger id="new-category">
+              <SelectTrigger id="category">
                 <SelectValue placeholder="Seleziona categoria" />
               </SelectTrigger>
               <SelectContent>
@@ -96,109 +102,57 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
           </div>
           
           <div className="flex flex-col space-y-1">
-            <Label htmlFor="new-address">Indirizzo <span className="text-red-500">*</span></Label>
+            <Label htmlFor="address">Indirizzo <span className="text-red-500">*</span></Label>
             <Input 
-              id="new-address"
+              id="address"
               name="address"
               value={newShop.address}
               onChange={onInputChange}
-              placeholder="Indirizzo"
               required
             />
           </div>
           
-          <div className="space-y-1">
-            <Label>Posizione Geografica</Label>
-            <div className="grid grid-cols-3 gap-2">
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="col-span-1"
-                onClick={onGetLocation}
-              >
-                <MapPin className="h-4 w-4 mr-1" /> Rileva
-              </Button>
-              <div className="col-span-1">
-                <Input
-                  name="latitude"
-                  placeholder="Latitudine"
-                  type="number"
-                  step="0.000001"
-                  value={newShop.latitude || ""}
-                  onChange={onInputChange}
-                />
-              </div>
-              <div className="col-span-1">
-                <Input
-                  name="longitude"
-                  placeholder="Longitudine"
-                  type="number"
-                  step="0.000001"
-                  value={newShop.longitude || ""}
-                  onChange={onInputChange}
-                />
-              </div>
-            </div>
-          </div>
-          
           <div className="flex flex-col space-y-1">
-            <Label htmlFor="new-email">Email <span className="text-red-500">*</span></Label>
+            <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
             <Input 
-              id="new-email"
+              id="email"
               name="email"
               type="email"
               value={newShop.email}
               onChange={onInputChange}
-              placeholder="Email"
               required
             />
           </div>
           
           <div className="flex flex-col space-y-1">
-            <Label htmlFor="new-phone">Telefono <span className="text-red-500">*</span></Label>
+            <Label htmlFor="phone">Telefono <span className="text-red-500">*</span></Label>
             <Input 
-              id="new-phone"
+              id="phone"
               name="phone"
               value={newShop.phone}
               onChange={onInputChange}
-              placeholder="Numero di telefono"
               required
             />
           </div>
           
           <div className="flex flex-col space-y-1">
-            <Label htmlFor="new-fiscalCode">Codice Fiscale <span className="text-red-500">*</span></Label>
+            <Label htmlFor="fiscalCode">Codice Fiscale <span className="text-red-500">*</span></Label>
             <Input 
-              id="new-fiscalCode"
+              id="fiscalCode"
               name="fiscalCode"
               value={newShop.fiscalCode}
               onChange={onInputChange}
-              placeholder="Codice Fiscale"
               required
             />
           </div>
           
           <div className="flex flex-col space-y-1">
-            <Label htmlFor="new-vatNumber">Partita IVA <span className="text-red-500">*</span></Label>
+            <Label htmlFor="vatNumber">Partita IVA <span className="text-red-500">*</span></Label>
             <Input 
-              id="new-vatNumber"
+              id="vatNumber"
               name="vatNumber"
               value={newShop.vatNumber}
               onChange={onInputChange}
-              placeholder="Partita IVA"
-              required
-            />
-          </div>
-          
-          <div className="flex flex-col space-y-1">
-            <Label htmlFor="new-aiCredits">Crediti AI <span className="text-red-500">*</span></Label>
-            <Input 
-              id="new-aiCredits"
-              name="aiCredits"
-              type="number" 
-              value={newShop.aiCredits}
-              onChange={onInputChange}
-              placeholder="Crediti AI"
               required
             />
           </div>

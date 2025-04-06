@@ -19,6 +19,16 @@ const AdminShopsPage: React.FC = () => {
   const [isEditShopOpen, setIsEditShopOpen] = useState(false);
   const [isViewShopOpen, setIsViewShopOpen] = useState(false);
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
+  const [newShop, setNewShop] = useState({
+    name: '',
+    description: '',
+    address: '',
+    phone: '',
+    email: '',
+    fiscalCode: '',
+    vatNumber: '',
+    category: '',
+  });
   
   const handleAddShop = () => {
     setIsAddShopOpen(true);
@@ -78,24 +88,38 @@ const AdminShopsPage: React.FC = () => {
       return;
     }
     
-    // Handle checkbox fields that might come as boolean
-    if (name === 'isApproved' && typeof e.target.value === 'boolean') {
-      setSelectedShop(prev => prev ? { ...prev, [name]: e.target.value } : prev);
-      return;
-    }
-    
     // Handle regular inputs
-    setSelectedShop(prev => prev ? { ...prev, [name]: value } : prev);
+    setSelectedShop(prev => {
+      if (!prev) return prev;
+      return { ...prev, [name]: value };
+    });
+  };
+  
+  // Handler for new shop form
+  const handleNewShopChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewShop(prev => ({ ...prev, [name]: value }));
   };
   
   const handleSelectChange = (field: string, value: string) => {
-    if (!selectedShop) return;
-    setSelectedShop(prev => prev ? { ...prev, [field]: value } : prev);
+    if (selectedShop) {
+      setSelectedShop(prev => {
+        if (!prev) return prev;
+        return { ...prev, [field]: value };
+      });
+    } else {
+      // For new shop form
+      setNewShop(prev => ({ ...prev, [field]: value }));
+    }
   };
   
   const handleCheckboxChange = (field: string, checked: boolean) => {
     if (!selectedShop) return;
-    setSelectedShop(prev => prev ? { ...prev, [field]: checked } : prev);
+    
+    setSelectedShop(prev => {
+      if (!prev) return prev;
+      return { ...prev, [field]: checked };
+    });
   };
   
   const handleGetLocation = () => {
@@ -121,6 +145,52 @@ const AdminShopsPage: React.FC = () => {
     } else {
       toast.error('Geolocalizzazione non supportata dal browser');
     }
+  };
+  
+  const handleCreateShop = () => {
+    // Validation
+    if (!newShop.name || !newShop.description || !newShop.address || 
+        !newShop.phone || !newShop.email || !newShop.fiscalCode || 
+        !newShop.vatNumber) {
+      toast.error('Compila tutti i campi obbligatori');
+      return;
+    }
+    
+    // Create new shop
+    const now = new Date().toISOString();
+    const newShopObj: Shop = {
+      id: `shop-${Date.now()}`,
+      userId: `user-${Date.now()}`,
+      name: newShop.name,
+      description: newShop.description,
+      address: newShop.address,
+      phone: newShop.phone,
+      email: newShop.email,
+      products: [],
+      offers: [],
+      aiCredits: 100, // Default credits
+      isActive: true,
+      isApproved: true,
+      lastUpdated: now,
+      createdAt: now,
+      fiscalCode: newShop.fiscalCode,
+      vatNumber: newShop.vatNumber,
+      category: newShop.category,
+    };
+    
+    setShopsList(prev => [...prev, newShopObj]);
+    setNewShop({
+      name: '',
+      description: '',
+      address: '',
+      phone: '',
+      email: '',
+      fiscalCode: '',
+      vatNumber: '',
+      category: '',
+    });
+    setIsAddShopOpen(false);
+    toast.success('Negozio creato con successo');
   };
   
   const handleSaveChanges = () => {
@@ -172,7 +242,11 @@ const AdminShopsPage: React.FC = () => {
       
       <AddShopDialog 
         open={isAddShopOpen} 
-        onOpenChange={setIsAddShopOpen} 
+        onOpenChange={setIsAddShopOpen}
+        newShop={newShop}
+        onInputChange={handleNewShopChange}
+        onSelectChange={handleSelectChange}
+        onCreateShop={handleCreateShop}
       />
       
       <ViewShopDialog 

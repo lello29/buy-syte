@@ -9,6 +9,7 @@ export const useCustomerForm = (initialCustomers: Customer[]) => {
   const [newCustomer, setNewCustomer] = useState({
     name: '',
     email: '',
+    phone: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,17 +23,21 @@ export const useCustomerForm = (initialCustomers: Customer[]) => {
       return;
     }
 
-    const newCustomerObj = {
+    const currentDate = new Date().toISOString();
+    
+    const newCustomerObj: Customer = {
       id: `cust-${Date.now()}`,
       name: newCustomer.name,
       email: newCustomer.email,
+      phone: newCustomer.phone,
       orderCount: 0,
       totalSpent: 0,
-      lastOrderDate: new Date(),
+      lastOrderDate: currentDate,
+      createdAt: currentDate
     };
 
     setCustomers(prev => [...prev, newCustomerObj]);
-    setNewCustomer({ name: '', email: '' });
+    setNewCustomer({ name: '', email: '', phone: '' });
     setIsAddDialogOpen(false);
     toast.success("Cliente aggiunto con successo");
   };

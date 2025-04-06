@@ -2,7 +2,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Pencil } from 'lucide-react';
+import { Eye, Pencil, Ban, Trash2 } from 'lucide-react';
 import { 
   Table, 
   TableBody, 
@@ -19,12 +19,16 @@ interface ShopsTableProps {
   shops: Shop[];
   onViewShop: (shop: Shop) => void;
   onEditShop: (shop: Shop) => void;
+  onToggleStatus?: (shopId: string, isActive: boolean) => void;
+  onDeleteShop?: (shopId: string) => void;
 }
 
 const ShopsTable: React.FC<ShopsTableProps> = ({ 
   shops, 
   onViewShop, 
-  onEditShop 
+  onEditShop,
+  onToggleStatus,
+  onDeleteShop 
 }) => {
   const isMobile = useIsMobile();
   
@@ -53,6 +57,11 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
               <Badge variant={shop.isApproved === false ? "warning" : "success"}>
                 {shop.isApproved === false ? "In attesa" : "Approvato"}
               </Badge>
+              {shop.isActive !== undefined && (
+                <Badge variant={shop.isActive ? "success" : "destructive"} className="ml-2">
+                  {shop.isActive ? "Attivo" : "Inattivo"}
+                </Badge>
+              )}
             </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">
@@ -70,6 +79,29 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                 >
                   <Pencil className="mr-1 h-4 w-4" /> {!isMobile && "Modifica"}
                 </Button>
+                {onToggleStatus && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => onToggleStatus(shop.id, !(shop.isActive))}
+                  >
+                    <Ban className="mr-1 h-4 w-4" /> {!isMobile && (shop.isActive ? "Disattiva" : "Attiva")}
+                  </Button>
+                )}
+                {onDeleteShop && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => {
+                      if (window.confirm('Sei sicuro di voler eliminare questo negozio?')) {
+                        onDeleteShop(shop.id);
+                      }
+                    }}
+                  >
+                    <Trash2 className="mr-1 h-4 w-4" /> {!isMobile && "Elimina"}
+                  </Button>
+                )}
               </div>
             </TableCell>
           </TableRow>
