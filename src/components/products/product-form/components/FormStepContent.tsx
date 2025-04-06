@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useProductForm } from "../ProductFormContext";
 import BarcodeStep from "./BarcodeStep";
 import ProductBasicInfo from "../ProductBasicInfo";
