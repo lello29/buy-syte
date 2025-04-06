@@ -22,6 +22,7 @@ interface ProductPublishProps {
   data: any;
   updateData: (data: any) => void;
   onSubmit: () => void;
+  isMobile?: boolean;
 }
 
 const ProductPublish: React.FC<ProductPublishProps> = ({ data, updateData, onSubmit }) => {

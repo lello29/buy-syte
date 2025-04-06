@@ -18,6 +18,7 @@ interface ProductBasicInfoProps {
   data: any;
   updateData: (data: any) => void;
   onScanBarcode?: () => void;
+  isMobile?: boolean;
 }
 
 const CATEGORIES = [
@@ -38,7 +39,8 @@ const CATEGORIES = [
 const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ 
   data, 
   updateData, 
-  onScanBarcode 
+  onScanBarcode,
+  isMobile
 }) => {
   const { getErrorForField, currentStep } = useProductForm();
   const [aiDescriptionStatus, setAiDescriptionStatus] = React.useState<'loading' | 'error' | 'success' | 'idle'>('idle');

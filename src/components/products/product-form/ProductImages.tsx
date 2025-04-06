@@ -11,6 +11,7 @@ import { toast } from "sonner";
 interface ProductImagesProps {
   data: any;
   updateData: (data: any) => void;
+  isMobile?: boolean;
 }
 
 const ProductImages: React.FC<ProductImagesProps> = ({ data, updateData }) => {

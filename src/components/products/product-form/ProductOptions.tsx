@@ -9,6 +9,7 @@ import { VARIANT_TYPES } from "./components/options/constants";
 interface ProductOptionsProps {
   data: any;
   updateData: (data: any) => void;
+  isMobile?: boolean;
 }
 
 const ProductOptions: React.FC<ProductOptionsProps> = ({ data, updateData }) => {

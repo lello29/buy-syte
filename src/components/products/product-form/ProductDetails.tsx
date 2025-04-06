@@ -26,6 +26,7 @@ const formSchema = z.object({
 interface ProductDetailsProps {
   data: any;
   updateData: (data: any) => void;
+  isMobile?: boolean;
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => {
