@@ -1,54 +1,96 @@
 
-import React from 'react';
-import ShopsTable from '@/components/admin/shops/ShopsTable';
-import MobileShopsList from '@/components/admin/shops/MobileShopsList';
-import { useIsMobile } from '@/hooks/use-mobile';
-import ShopsPageHeader from '@/components/admin/shops/ShopsPageHeader';
-import ShopDialogs from '@/components/admin/shops/ShopDialogs';
-import { useShopState } from '@/components/admin/shops/hooks/useShopState';
+import React, { useState } from "react";
+import { toast } from "@/components/ui/use-toast";
+import { shops } from "@/data/mockData";
+import { Shop } from "@/types";
+import ShopsHeader from "@/components/admin/shops/ShopsHeader";
+import ShopsSearchBar from "@/components/admin/shops/ShopsSearchBar";
+import ShopsListTable from "@/components/admin/shops/ShopsListTable";
+import ShopDetailsDialog from "@/components/admin/shops/ShopDetailsDialog";
+import DeleteShopDialog from "@/components/admin/shops/DeleteShopDialog";
 
-const AdminShopsPage: React.FC = () => {
-  const isMobile = useIsMobile();
+const AdminShopsPage = () => {
+  // State
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
-  const {
-    shopsList,
-    handleAddShop,
-    handleViewShop,
-    handleEditShop,
-    handleDeleteShop,
-    handleToggleStatus,
-    handleApproveShop,
-  } = useShopState();
-  
+  // Filter shops based on search term
+  const filteredShops = shops.filter(shop => 
+    shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    shop.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Handlers
+  const handleViewShop = (shop: Shop) => {
+    setSelectedShop(shop);
+    setIsViewDialogOpen(true);
+  };
+
+  const handleDeleteConfirmation = (shopId: string) => {
+    setConfirmDeleteId(shopId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDelete = () => {
+    if (confirmDeleteId) {
+      // In a real app, this would call an API to delete the shop
+      toast({
+        title: "Negozio eliminato",
+        description: "Il negozio è stato eliminato con successo.",
+      });
+      setIsDeleteDialogOpen(false);
+      setConfirmDeleteId(null);
+    }
+  };
+
+  const handleToggleApproval = (shop: Shop) => {
+    // In a real app, this would call an API to update the shop
+    toast({
+      title: shop.isApproved ? "Approvazione revocata" : "Negozio approvato",
+      description: shop.isApproved 
+        ? "Il negozio non è più approvato." 
+        : "Il negozio è ora approvato.",
+    });
+  };
+
   return (
     <div className="space-y-6">
-      <ShopsPageHeader 
-        handleAddShop={handleAddShop}
-        isMobile={isMobile || false}
+      {/* Header */}
+      <ShopsHeader 
+        title="Gestione Negozi"
+        description="Gestione e controllo dei negozi sulla piattaforma."
       />
       
-      {isMobile ? (
-        <MobileShopsList 
-          shops={shopsList} 
-          onViewShop={handleViewShop}
-          onEditShop={handleEditShop}
-          onToggleStatus={handleToggleStatus}
-          onDeleteShop={handleDeleteShop}
-          onAddShop={handleAddShop}
-          onApproveShop={handleApproveShop}
-        />
-      ) : (
-        <ShopsTable 
-          shops={shopsList} 
-          onViewShop={handleViewShop}
-          onEditShop={handleEditShop}
-          onToggleStatus={handleToggleStatus}
-          onDeleteShop={handleDeleteShop}
-          onApproveShop={handleApproveShop}
-        />
-      )}
+      {/* Search Bar */}
+      <ShopsSearchBar 
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
       
-      <ShopDialogs />
+      {/* Shops List Table */}
+      <ShopsListTable 
+        shops={filteredShops}
+        onViewShop={handleViewShop}
+        onToggleApproval={handleToggleApproval}
+        onDeleteShop={handleDeleteConfirmation}
+      />
+
+      {/* Shop Details Dialog */}
+      <ShopDetailsDialog 
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        selectedShop={selectedShop}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteShopDialog 
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onDelete={handleDelete}
+      />
     </div>
   );
 };
