@@ -57,7 +57,6 @@ const ProductsPage = () => {
     try {
       if (isMobile) {
         console.log("Tentativo di navigazione verso /dashboard/products su mobile");
-        // Modifichiamo qui il percorso di navigazione
         setShowAddModal(true);
       } else {
         setShowAddModal(true);
