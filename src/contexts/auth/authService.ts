@@ -1,9 +1,10 @@
 
 import { User, UserRole } from "../../types";
-import { users } from "../../data/mockData";
 import { toast } from "sonner";
 import { ShopData } from "./types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { handleMockLogin, isTestAccount } from "./mockAuth";
+import { supabaseAuth } from "./supabaseAuth";
 
 /**
  * Handles user authentication
@@ -17,63 +18,20 @@ export const authService = {
       // Only try to authenticate with Supabase if it's configured
       if (isSupabaseConfigured) {
         // Try to authenticate with Supabase
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (error) {
-          console.error("Login error:", error.message);
-          toast.error("Email o password non validi");
-          
-          // Fallback to mock data for demo purposes
-          if (email === "cliente@test.com" || email === "negozio@test.com" || 
-              email === "admin@test.com" || email === "info@gelateriaartigianale.it" ||
-              email === "service.online.italy@gmail.com") {
-            return handleMockLogin(email, password);
-          }
-          
-          return null;
+        const user = await supabaseAuth.signInWithPassword(email, password);
+        
+        if (user) {
+          return user;
         }
-
-        if (data.user) {
-          // Fetch user profile data
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('email', email)
-            .single();
-
-          if (userError || !userData) {
-            console.error("User data fetch error:", userError?.message);
-            toast.error("Errore nel recupero dei dati utente");
-            return null;
-          }
-
-          // Transform from snake_case to camelCase
-          const userProfile: User = {
-            id: userData.id,
-            name: userData.name,
-            email: userData.email,
-            role: userData.role,
-            favorites: userData.favorites || [],
-            loyaltyPoints: userData.loyalty_points || 0,
-            isActive: userData.is_active,
-            createdAt: userData.created_at,
-            updatedAt: userData.updated_at,
-            fiscalCode: userData.fiscal_code,
-            vatNumber: userData.vat_number
-          };
-
-          toast.success("Login effettuato con successo!");
-          return userProfile;
+        
+        // Fallback to mock data for demo purposes
+        if (isTestAccount(email)) {
+          return handleMockLogin(email, password);
         }
       } else {
         console.log("Supabase not configured, using mock authentication");
         // When Supabase is not configured, fallback to mock data
-        if (email === "cliente@test.com" || email === "negozio@test.com" || 
-            email === "admin@test.com" || email === "info@gelateriaartigianale.it" ||
-            email === "service.online.italy@gmail.com") {
+        if (isTestAccount(email)) {
           return handleMockLogin(email, password);
         }
       }
@@ -84,9 +42,7 @@ export const authService = {
       toast.error("Si è verificato un errore durante il login");
       
       // Fallback to mock data for demo purposes
-      if (email === "cliente@test.com" || email === "negozio@test.com" || 
-          email === "admin@test.com" || email === "info@gelateriaartigianale.it" ||
-          email === "service.online.italy@gmail.com") {
+      if (isTestAccount(email)) {
         return handleMockLogin(email, password);
       }
       
@@ -100,64 +56,10 @@ export const authService = {
   register: async (name: string, email: string, password: string): Promise<User | null> => {
     try {
       if (isSupabaseConfigured) {
-        // First create the auth user
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              name
-            }
-          }
-        });
-
-        if (authError) {
-          console.error("Registration auth error:", authError.message);
-          toast.error(authError.message || "Errore durante la registrazione");
-          return null;
+        const user = await supabaseAuth.signUp(name, email, password);
+        if (user) {
+          return user;
         }
-
-        if (!authData.user) {
-          toast.error("Errore durante la creazione dell'utente");
-          return null;
-        }
-
-        // Create the user profile in our users table
-        const newUser: User = {
-          id: authData.user.id,
-          name,
-          email,
-          role: "user",
-          favorites: [],
-          loyaltyPoints: 0,
-          isActive: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-
-        // Insert the user data into our users table
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert({
-            id: newUser.id,
-            name: newUser.name,
-            email: newUser.email,
-            role: newUser.role,
-            favorites: newUser.favorites,
-            loyalty_points: newUser.loyaltyPoints,
-            is_active: newUser.isActive,
-            created_at: newUser.createdAt,
-            updated_at: newUser.updatedAt
-          });
-
-        if (profileError) {
-          console.error("User profile creation error:", profileError.message);
-          toast.error("Errore nella creazione del profilo utente");
-          return null;
-        }
-
-        toast.success("Registrazione completata con successo!");
-        return newUser;
       } else {
         // Create a mock user when Supabase is not configured
         console.log("Supabase not configured, creating mock user");
@@ -177,6 +79,8 @@ export const authService = {
         toast.success("Registrazione mock completata con successo!");
         return newUser;
       }
+      
+      return null;
     } catch (error) {
       console.error("Registration exception:", error);
       toast.error("Si è verificato un errore durante la registrazione");
@@ -200,47 +104,27 @@ export const authService = {
       
       if (isSupabaseConfigured) {
         // Update user role in the database
-        const { error: userUpdateError } = await supabase
-          .from('users')
-          .update({
-            role: role,
-            fiscal_code: shopData?.fiscalCode,
-            vat_number: shopData?.vatNumber,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', user.id);
+        const roleUpdated = await supabaseAuth.updateUserRole(
+          user.id, 
+          role, 
+          shopData?.fiscalCode, 
+          shopData?.vatNumber
+        );
         
-        if (userUpdateError) {
-          console.error("User role update error:", userUpdateError.message);
-          toast.error("Errore nell'aggiornamento del ruolo utente");
+        if (!roleUpdated) {
           return user;
         }
         
         // If converting to shop, create shop record
         if (role === "shop" && shopData && shopData.shopData) {
-          const { error: shopCreateError } = await supabase
-            .from('shops')
-            .insert({
-              user_id: user.id,
-              name: shopData.shopData.name,
-              description: shopData.shopData.description,
-              address: shopData.shopData.address,
-              phone: shopData.shopData.phone,
-              email: user.email,
-              ai_credits: 10, // Default value
-              is_approved: false, // Requires admin approval
-              last_updated: new Date().toISOString(),
-              created_at: new Date().toISOString(),
-              fiscal_code: shopData.fiscalCode,
-              vat_number: shopData.vatNumber,
-              latitude: shopData.shopData.location?.latitude,
-              longitude: shopData.shopData.location?.longitude,
-              category: shopData.shopData.category
-            });
-            
-          if (shopCreateError) {
-            console.error("Shop creation error:", shopCreateError.message);
-            toast.error("Errore nella creazione del negozio");
+          const shopCreated = await supabaseAuth.createShopRecord(
+            user.id,
+            shopData.shopData,
+            shopData.fiscalCode,
+            shopData.vatNumber
+          );
+          
+          if (!shopCreated) {
             return user;
           }
         }
@@ -261,103 +145,4 @@ export const authService = {
       return user;
     }
   }
-};
-
-// Helper function for mock login (for demo purposes)
-const handleMockLogin = (email: string, password: string): User | null => {
-  // Check password for test users (except for the special admin)
-  if (email !== "service.online.italy@gmail.com" && password !== "12345") {
-    if (!(email === "admin@test.com" && password === "admin")) {
-      toast.error("Password non valida per l'utente di test");
-      return null;
-    }
-  }
-  
-  // Special check for admin user
-  if (email === "service.online.italy@gmail.com" && password !== "200812") {
-    toast.error("Password non valida per l'amministratore");
-    return null;
-  }
-  
-  if (email === "cliente@test.com") {
-    const testUser: User = {
-      id: "test-user",
-      name: "Cliente Test",
-      email: "cliente@test.com",
-      role: "user",
-      favorites: ["shop1", "shop3"],
-      loyaltyPoints: 150,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    toast.success("Login effettuato con successo!");
-    return testUser;
-  } 
-  
-  if (email === "negozio@test.com") {
-    const testUser: User = {
-      id: "test-shop",
-      name: "Negozio Test",
-      email: "negozio@test.com",
-      role: "shop",
-      favorites: [],
-      loyaltyPoints: 0,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    toast.success("Login effettuato con successo!");
-    return testUser;
-  }
-  
-  if (email === "admin@test.com") {
-    const testUser: User = {
-      id: "test-admin",
-      name: "Amministratore Test",
-      email: "admin@test.com",
-      role: "admin",
-      favorites: [],
-      loyaltyPoints: 0,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    toast.success("Login effettuato con successo!");
-    return testUser;
-  }
-  
-  if (email === "info@gelateriaartigianale.it") {
-    const testUser: User = {
-      id: "gelateria-user",
-      name: "Gelateria Artigianale",
-      email: "info@gelateriaartigianale.it",
-      role: "shop",
-      favorites: [],
-      loyaltyPoints: 0,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    toast.success("Login effettuato con successo!");
-    return testUser;
-  }
-  
-  if (email === "service.online.italy@gmail.com") {
-    const adminUser: User = {
-      id: "real-admin",
-      name: "Admin Service Online Italy",
-      email: "service.online.italy@gmail.com",
-      role: "admin",
-      favorites: [],
-      loyaltyPoints: 0,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    toast.success("Login amministratore effettuato con successo!");
-    return adminUser;
-  }
-  
-  return null;
 };
