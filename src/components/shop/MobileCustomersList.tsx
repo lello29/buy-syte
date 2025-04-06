@@ -1,90 +1,109 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Send, Phone, Mail, UserPlus } from 'lucide-react';
-import { toast } from 'sonner';
-
-interface Customer {
-  id: string;
-  name: string;
-  email: string;
-  orderCount: number;
-  totalSpent: number;
-  lastOrderDate: Date;
-}
+import { Pencil, Trash2, UserPlus, Phone, Mail } from 'lucide-react';
+import { Customer } from '@/pages/dashboard/shop/customers/types';
 
 interface MobileCustomersListProps {
   customers: Customer[];
-  onAddCustomer?: () => void;
+  onAddCustomer: () => void;
+  onEditCustomer?: (customer: Customer) => void;
+  onDeleteCustomer?: (customerId: string) => void;
 }
 
 const MobileCustomersList: React.FC<MobileCustomersListProps> = ({ 
-  customers,
-  onAddCustomer 
+  customers, 
+  onAddCustomer,
+  onEditCustomer,
+  onDeleteCustomer
 }) => {
-  const handleContactClick = (customer: Customer) => {
-    toast.info(`Contatto cliente: ${customer.name}`);
+  const handleDelete = (customerId: string) => {
+    if (onDeleteCustomer && window.confirm('Sei sicuro di voler eliminare questo cliente?')) {
+      onDeleteCustomer(customerId);
+    }
   };
 
   return (
     <div className="space-y-4">
-      {onAddCustomer && (
-        <Button 
-          className="w-full bg-[#0a3276] hover:bg-[#0a3276]/90 text-white font-bold py-3 rounded-md flex items-center justify-center"
-          onClick={onAddCustomer}
-        >
-          <UserPlus className="h-5 w-5 mr-2" />
-          Aggiungi nuovo cliente
-        </Button>
-      )}
+      <Button 
+        className="w-full bg-[#0a3276] hover:bg-[#0a3276]/90 text-white font-bold py-3 rounded-md flex items-center justify-center"
+        onClick={onAddCustomer}
+      >
+        <UserPlus className="h-5 w-5 mr-2" />
+        Aggiungi nuovo cliente
+      </Button>
       
-      {customers.length > 0 ? (
-        customers.map((customer) => (
-          <div key={customer.id} className="border rounded-md overflow-hidden bg-white mb-4">
+      <div className="space-y-1">
+        {customers.map((customer) => (
+          <div key={customer.id} className="border rounded-md overflow-hidden mb-4 bg-white">
             <div className="p-4">
               <div className="text-2xl font-bold">{customer.name}</div>
-              <div className="text-gray-800">{customer.email}</div>
+              
+              {customer.email && (
+                <div className="flex items-center text-gray-800 mt-1">
+                  <Mail className="h-4 w-4 mr-1 text-gray-500" />
+                  {customer.email}
+                </div>
+              )}
+              
+              {customer.phone && (
+                <div className="flex items-center text-gray-800 mt-1">
+                  <Phone className="h-4 w-4 mr-1 text-gray-500" />
+                  {customer.phone}
+                </div>
+              )}
+              
               <div className="text-sm text-gray-500 mt-1">
-                Ultimo ordine: {customer.lastOrderDate.toLocaleDateString()}
+                Ordini: {customer.orderCount || 0}
               </div>
-              <div className="mt-1 text-sm">
-                <span className="font-semibold">{customer.orderCount} ordini</span> - 
-                <span className="font-semibold ml-1">€{customer.totalSpent.toFixed(2)}</span>
+              
+              <div className="text-sm text-gray-500 mt-1">
+                Totale speso: €{customer.totalSpent?.toFixed(2) || '0.00'}
               </div>
+              
+              {customer.lastOrderDate && (
+                <div className="text-sm text-gray-500 mt-1">
+                  Ultimo ordine: {new Date(customer.lastOrderDate).toLocaleDateString()}
+                </div>
+              )}
             </div>
+            
             <div className="flex border-t">
-              <Button 
-                variant="ghost" 
-                className="flex-1 rounded-none h-12 py-2 justify-center text-gray-700 hover:bg-gray-100"
-                onClick={() => toast.info(`Chiamata a ${customer.name}`)}
-              >
-                <Phone className="h-4 w-4 mr-1" /> 
-                Chiama
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="flex-1 rounded-none h-12 py-2 justify-center text-gray-700 hover:bg-gray-100"
-                onClick={() => toast.info(`Email a ${customer.name}`)}
-              >
-                <Mail className="h-4 w-4 mr-1" /> 
-                Email
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="flex-1 rounded-none h-12 py-2 justify-center text-gray-700 hover:bg-gray-100"
-                onClick={() => handleContactClick(customer)}
-              >
-                <Send className="h-4 w-4 mr-1" /> 
-                Messaggio
-              </Button>
+              {onEditCustomer && (
+                <Button 
+                  variant="ghost" 
+                  className="flex-1 rounded-none h-12 text-blue-700 hover:bg-blue-50"
+                  onClick={() => onEditCustomer(customer)}
+                >
+                  <Pencil className="h-5 w-5 mr-1" />
+                  Modifica
+                </Button>
+              )}
+              
+              {onDeleteCustomer && (
+                <Button 
+                  variant="ghost" 
+                  className="flex-1 rounded-none h-12 text-red-600 hover:bg-red-50"
+                  onClick={() => handleDelete(customer.id)}
+                >
+                  <Trash2 className="h-5 w-5 mr-1" />
+                  Elimina
+                </Button>
+              )}
             </div>
           </div>
-        ))
-      ) : (
-        <div className="text-center py-10">
-          <p className="text-gray-500">Nessun cliente trovato</p>
-        </div>
-      )}
+        ))}
+        
+        {customers.length === 0 && (
+          <div className="text-center py-8 bg-white rounded-lg border">
+            <p className="text-gray-500 mb-4">Nessun cliente trovato.</p>
+            <Button onClick={onAddCustomer} size="sm">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Aggiungi il primo cliente
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

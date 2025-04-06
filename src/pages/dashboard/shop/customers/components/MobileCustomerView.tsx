@@ -6,11 +6,15 @@ import MobileCustomersList from "@/components/shop/MobileCustomersList";
 interface MobileCustomerViewProps {
   customers: Customer[];
   onAddCustomer: () => void;
+  onEditCustomer?: (customer: Customer) => void;
+  onDeleteCustomer?: (customerId: string) => void;
 }
 
 const MobileCustomerView: React.FC<MobileCustomerViewProps> = ({ 
   customers, 
-  onAddCustomer 
+  onAddCustomer,
+  onEditCustomer,
+  onDeleteCustomer
 }) => {
   return (
     <>
@@ -23,6 +27,8 @@ const MobileCustomerView: React.FC<MobileCustomerViewProps> = ({
       <MobileCustomersList 
         customers={customers} 
         onAddCustomer={onAddCustomer}
+        onEditCustomer={onEditCustomer}
+        onDeleteCustomer={onDeleteCustomer}
       />
     </>
   );
