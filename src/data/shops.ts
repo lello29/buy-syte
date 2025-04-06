@@ -1,3 +1,4 @@
+
 import { Shop } from "@/types";
 
 export const shops: Shop[] = [
@@ -12,6 +13,7 @@ export const shops: Shop[] = [
     products: [],
     offers: [],
     aiCredits: 100,
+    isActive: true,
     lastUpdated: "2023-01-15T10:30:00.000Z",
     createdAt: "2022-09-10T14:20:00.000Z",
     logoImage: "https://images.unsplash.com/photo-1506399558188-acca6f8cbf41?w=500&h=500&fit=crop",
@@ -44,6 +46,7 @@ export const shops: Shop[] = [
     products: [],
     offers: [],
     aiCredits: 85,
+    isActive: true,
     lastUpdated: "2023-02-20T16:45:00.000Z",
     createdAt: "2022-07-15T11:30:00.000Z",
     logoImage: "https://images.unsplash.com/photo-1589363460779-cbd8008e459d?w=500&h=500&fit=crop",
