@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { toast } from "sonner";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -28,6 +29,16 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   const validateForm = () => {
+    if (!name.trim()) {
+      toast.error("Inserisci il tuo nome completo");
+      return false;
+    }
+    
+    if (!email.trim() || !email.includes('@')) {
+      toast.error("Inserisci un indirizzo email valido");
+      return false;
+    }
+    
     if (password !== confirmPassword) {
       setPasswordError("Le password non corrispondono");
       return false;
@@ -50,10 +61,17 @@ const RegisterPage = () => {
     setLoading(true);
     
     try {
+      console.log("Attempting to register user:", { name, email });
       const success = await register(name, email, password);
+      
       if (success) {
+        console.log("Registration successful, redirecting to dashboard");
+        toast.success(`Benvenuto, ${name}! Registrazione completata.`);
         navigate("/dashboard");
       }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("Si è verificato un errore durante la registrazione");
     } finally {
       setLoading(false);
     }

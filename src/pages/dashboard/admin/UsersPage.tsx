@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -6,12 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getUsersByRole } from "@/data/users";
 import { toast } from "sonner";
-import { User as UserIcon, UserCheck, UserX, Ban, Trash2, Shield, UserPlus } from "lucide-react";
+import { User as UserIcon, UserCheck, UserX, Ban, Trash2, Shield, UserPlus, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -33,10 +33,12 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/lib/supabase";
 
 const UsersPage = () => {
   const { currentUser } = useAuth();
-  const [users, setUsers] = useState(getUsersByRole("user"));
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -47,6 +49,51 @@ const UsersPage = () => {
   });
   const isMobile = useIsMobile();
 
+  // Fetch users from the database
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (error) {
+          console.error("Error fetching users:", error.message);
+          toast.error("Errore nel caricamento degli utenti");
+          return;
+        }
+        
+        if (data) {
+          // Transform snake_case to camelCase
+          const formattedUsers: User[] = data.map(user => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            favorites: user.favorites || [],
+            loyaltyPoints: user.loyalty_points || 0,
+            isActive: user.is_active,
+            createdAt: user.created_at,
+            updatedAt: user.updated_at,
+            fiscalCode: user.fiscal_code,
+            vatNumber: user.vat_number
+          }));
+          
+          setUsers(formattedUsers);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        toast.error("Si è verificato un errore durante il caricamento degli utenti");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUsers();
+  }, []);
+
   if (!currentUser || currentUser.role !== "admin") {
     return (
       <div className="flex items-center justify-center h-full">
@@ -55,22 +102,60 @@ const UsersPage = () => {
     );
   }
 
-  const handleToggleUserStatus = (userId: string, isActive: boolean) => {
-    // In a real application, this would be an API call
-    const updatedUsers = users.map(user => 
-      user.id === userId ? { ...user, isActive: isActive } : user
-    );
-    setUsers(updatedUsers);
-    toast.success(`Stato dell'utente aggiornato con successo`);
+  const handleToggleUserStatus = async (userId: string, isActive: boolean) => {
+    try {
+      // Update user status in the database
+      const { error } = await supabase
+        .from('users')
+        .update({ 
+          is_active: isActive,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
+        
+      if (error) {
+        console.error("Error updating user status:", error.message);
+        toast.error("Errore nell'aggiornamento dello stato dell'utente");
+        return;
+      }
+      
+      // Update local state
+      const updatedUsers = users.map(user => 
+        user.id === userId ? { ...user, isActive: isActive } : user
+      );
+      
+      setUsers(updatedUsers);
+      toast.success(`Stato dell'utente aggiornato con successo`);
+    } catch (error) {
+      console.error("Error toggling user status:", error);
+      toast.error("Si è verificato un errore durante l'aggiornamento dello stato dell'utente");
+    }
   };
 
-  const handleDeleteUser = (userId: string) => {
-    // In a real application, this would be an API call
-    const updatedUsers = users.filter(user => user.id !== userId);
-    setUsers(updatedUsers);
-    setIsDeleteDialogOpen(false);
-    setSelectedUser(null);
-    toast.success(`Utente eliminato con successo`);
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      // Delete user from the database
+      const { error } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', userId);
+        
+      if (error) {
+        console.error("Error deleting user:", error.message);
+        toast.error("Errore nell'eliminazione dell'utente");
+        return;
+      }
+      
+      // Update local state
+      const updatedUsers = users.filter(user => user.id !== userId);
+      setUsers(updatedUsers);
+      setIsDeleteDialogOpen(false);
+      setSelectedUser(null);
+      toast.success(`Utente eliminato con successo`);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Si è verificato un errore durante l'eliminazione dell'utente");
+    }
   };
 
   const openAddDialog = () => {
@@ -92,30 +177,80 @@ const UsersPage = () => {
     setNewUser(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleAddUser = () => {
+  const handleAddUser = async () => {
     if (!newUser.name || !newUser.email) {
       toast.error("Inserisci nome e email");
       return;
     }
 
-    const newUserId = `user-${Date.now()}`;
-    const newUserObj: User = {
-      id: newUserId,
-      name: newUser.name,
-      email: newUser.email,
-      role: "user",
-      favorites: [],
-      loyaltyPoints: 0,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setUsers(prev => [...prev, newUserObj]);
-    setNewUser({ name: '', email: '' });
-    setIsAddDialogOpen(false);
-    toast.success("Utente aggiunto con successo");
+    try {
+      const newUserObj: User = {
+        id: `user-${Date.now()}`, // Temporary ID, will be replaced by Supabase
+        name: newUser.name,
+        email: newUser.email,
+        role: "user",
+        favorites: [],
+        loyaltyPoints: 0,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      // Insert the new user in the database
+      const { data, error } = await supabase
+        .from('users')
+        .insert({
+          name: newUserObj.name,
+          email: newUserObj.email,
+          role: newUserObj.role,
+          favorites: newUserObj.favorites,
+          loyalty_points: newUserObj.loyaltyPoints,
+          is_active: newUserObj.isActive,
+          created_at: newUserObj.createdAt,
+          updated_at: newUserObj.updatedAt
+        })
+        .select();
+        
+      if (error) {
+        console.error("Error adding user:", error.message);
+        toast.error("Errore nell'aggiunta dell'utente");
+        return;
+      }
+      
+      if (data && data.length > 0) {
+        // Update with the correct ID from the database
+        const insertedUser: User = {
+          id: data[0].id,
+          name: data[0].name,
+          email: data[0].email,
+          role: data[0].role,
+          favorites: data[0].favorites || [],
+          loyaltyPoints: data[0].loyalty_points || 0,
+          isActive: data[0].is_active,
+          createdAt: data[0].created_at,
+          updatedAt: data[0].updated_at
+        };
+        
+        setUsers(prev => [insertedUser, ...prev]);
+      }
+      
+      setNewUser({ name: '', email: '' });
+      setIsAddDialogOpen(false);
+      toast.success("Utente aggiunto con successo");
+    } catch (error) {
+      console.error("Error adding user:", error);
+      toast.error("Si è verificato un errore durante l'aggiunta dell'utente");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-gray-600">Caricamento utenti in corso...</p>
+      </div>
+    );
+  }
 
   const mobileHeader = (
     <div className="md:hidden">
@@ -159,70 +294,79 @@ const UsersPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UserIcon className="h-5 w-5 text-primary" />
-              Lista Utenti
+              Lista Utenti ({users.length})
             </CardTitle>
             <CardDescription>
               Elenco di tutti gli utenti registrati sulla piattaforma
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Registrato il</TableHead>
-                  <TableHead>Stato</TableHead>
-                  <TableHead className="text-right">Azioni</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-mono text-sm">{user.id.slice(0, 8)}</TableCell>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <Badge variant={user.isActive ? "success" : "destructive"}>
-                        {user.isActive ? "Attivo" : "Inattivo"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleToggleUserStatus(user.id, !user.isActive)}
-                        >
-                          {user.isActive ? (
-                            <><UserX className="mr-1 h-4 w-4" /> Disattiva</>
-                          ) : (
-                            <><UserCheck className="mr-1 h-4 w-4" /> Attiva</>
-                          )}
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => openViewDialog(user)}
-                        >
-                          Dettagli
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          className="text-red-600 hover:bg-red-100"
-                          onClick={() => openDeleteDialog(user)}
-                        >
-                          <Trash2 className="mr-1 h-4 w-4" /> Elimina
-                        </Button>
-                      </div>
-                    </TableCell>
+            {users.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Nessun utente trovato.</p>
+                <Button onClick={openAddDialog} className="mt-4">
+                  <UserPlus className="mr-2 h-5 w-5" /> Aggiungi il primo utente
+                </Button>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Registrato il</TableHead>
+                    <TableHead>Stato</TableHead>
+                    <TableHead className="text-right">Azioni</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {users.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-mono text-sm">{user.id.slice(0, 8)}</TableCell>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Badge variant={user.isActive ? "success" : "destructive"}>
+                          {user.isActive ? "Attivo" : "Inattivo"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleToggleUserStatus(user.id, !user.isActive)}
+                          >
+                            {user.isActive ? (
+                              <><UserX className="mr-1 h-4 w-4" /> Disattiva</>
+                            ) : (
+                              <><UserCheck className="mr-1 h-4 w-4" /> Attiva</>
+                            )}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openViewDialog(user)}
+                          >
+                            Dettagli
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="text-red-600 hover:bg-red-100"
+                            onClick={() => openDeleteDialog(user)}
+                          >
+                            <Trash2 className="mr-1 h-4 w-4" /> Elimina
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       )}
