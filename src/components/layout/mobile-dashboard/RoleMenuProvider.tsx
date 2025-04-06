@@ -2,7 +2,7 @@
 import React from "react";
 import { UserCircle, Heart, ShoppingBag, Award, Store, Package, CreditCard, 
   BellRing, Users, Briefcase, Calendar, BarChart3, Settings, FilePlus, User,
-  UserCog, ShoppingCart, MapPin, Database } from "lucide-react";
+  UserCog, ShoppingCart, MapPin, Database, Tag, Megaphone, BarChart } from "lucide-react";
 
 // The hook to get menu options based on role
 export const useRoleMenu = (role, isAdminDashboard = false) => {
@@ -64,14 +64,14 @@ export const useRoleMenu = (role, isAdminDashboard = false) => {
       case "shop":
         dashboardOptions.push(
           { label: "Prodotti", icon: Package, path: "/dashboard/products", available: true },
-          { label: "Ordini", icon: CreditCard, path: "/dashboard/shop-orders", available: true },
-          { label: "Offerte", icon: ShoppingCart, path: "/dashboard/offers", available: true },
+          { label: "Ordini", icon: ShoppingBag, path: "/dashboard/shop-orders", available: true },
+          { label: "Offerte", icon: Tag, path: "/dashboard/offers", available: true },
           { label: "Notifiche", icon: BellRing, path: "/dashboard/notifications", available: true }
         );
         
         additionalOptions.push(
           { label: "Clienti", path: "/dashboard/customers", available: true },
-          { label: "Collaboratori", path: "/dashboard/collaborators", available: true },
+          { label: "Statistiche", path: "/dashboard/shop/analytics", available: true },
           { label: "Impostazioni Negozio", path: "/dashboard/shop/settings", available: true }
         );
         

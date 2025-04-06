@@ -2,7 +2,7 @@
 import { User } from "@/types";
 import { 
   User as UserIcon, Store, Users, Package, BarChart3, Heart, ShoppingCart, 
-  Briefcase, Settings
+  Briefcase, Settings, BarChart
 } from "lucide-react";
 
 export interface MenuItem {
@@ -25,6 +25,8 @@ export const getMenuItems = (currentUser: User): MenuItem[] => {
       return [
         { icon: Store, label: "Negozio", path: "/dashboard" },
         { icon: Package, label: "Prodotti", path: "/dashboard/products" },
+        { icon: ShoppingCart, label: "Ordini", path: "/dashboard/shop-orders" },
+        { icon: BarChart, label: "Statistiche", path: "/dashboard/shop/analytics" },
         { icon: Users, label: "Clienti", path: "/dashboard/customers" },
         { icon: Settings, label: "Impostazioni", path: "/dashboard/shop/settings" },
       ];

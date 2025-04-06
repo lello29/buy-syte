@@ -26,6 +26,7 @@ import ProductsAdminPage from "../pages/dashboard/admin/ProductsPage";
 import UsersPage from "../pages/dashboard/admin/UsersPage";
 import SettingsPage from "../pages/dashboard/admin/SettingsPage";
 import ShopSettingsPage from "../pages/dashboard/shop/ShopSettingsPage";
+import ShopAnalyticsPage from "../pages/dashboard/shop/analytics/ShopAnalyticsPage";
 import AddProductForm from "../components/products/AddProductForm";
 import DashboardLayout from "../components/layout/DashboardLayout";
 
@@ -48,11 +49,15 @@ const AppRoutes = () => {
         <Route path="products" element={<ShopRoute><ProductsPage /></ShopRoute>} />
         <Route path="products/add" element={<ShopRoute><AddProductForm /></ShopRoute>} />
         <Route path="products/:id" element={<ShopRoute><AddProductForm /></ShopRoute>} />
+        <Route path="products/inventory" element={<ShopRoute><div>Gestione Inventario</div></ShopRoute>} />
         <Route path="customers" element={<ShopRoute><CustomersPage /></ShopRoute>} />
         <Route path="shop/settings" element={<ShopRoute><ShopSettingsPage /></ShopRoute>} />
-        <Route path="shop-orders" element={<ShopRoute><OrdersPage /></ShopRoute>} />
+        <Route path="shop/analytics" element={<ShopRoute><ShopAnalyticsPage /></ShopRoute>} />
+        <Route path="shop-orders" element={<ShopRoute><div>Ordini Negozio</div></ShopRoute>} />
+        <Route path="shop-orders/:id" element={<ShopRoute><div>Dettaglio Ordine</div></ShopRoute>} />
         <Route path="collaborators" element={<ShopRoute><div>Gestione collaboratori</div></ShopRoute>} />
         <Route path="offers" element={<ShopRoute><div>Gestione offerte</div></ShopRoute>} />
+        <Route path="offers/create" element={<ShopRoute><div>Crea Offerta</div></ShopRoute>} />
         <Route path="notifications" element={<ShopRoute><div>Notifiche</div></ShopRoute>} />
         
         {/* User routes */}
