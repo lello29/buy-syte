@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -114,6 +115,18 @@ const DashboardSidebar = () => {
               <Link to={currentUser.role === "admin" ? "/dashboard/admin/settings" : "/dashboard/settings"}>
                 <Settings className="h-5 w-5 mr-2" />
                 <span>Impostazioni</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              tooltip="Home"
+              className="font-semibold hover:text-primary transition-colors"
+            >
+              <Link to="/">
+                <Home className="h-5 w-5 mr-2" />
+                <span>Torna alla Home</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

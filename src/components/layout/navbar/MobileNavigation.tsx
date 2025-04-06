@@ -3,7 +3,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, LogIn, UserPlus, Home, AlertTriangle, Store, Tag, UserCircle } from "lucide-react";
+import { LogOut, LogIn, UserPlus, Home, Store, Tag, UserCircle, BarChart3 } from "lucide-react";
 import MobileNavbarUserMenu from "./MobileNavbarUserMenu";
 import { toast } from "@/hooks/use-toast";
 
@@ -38,6 +38,10 @@ const MobileNavigation = ({
     setMobileMenuOpen(false);
     if (currentUser?.role === "admin") {
       navigate("/dashboard/admin");
+    } else if (currentUser?.role === "shop") {
+      navigate("/dashboard");
+    } else if (currentUser?.role === "collaborator") {
+      navigate("/dashboard");
     } else {
       navigate("/dashboard");
     }
@@ -89,15 +93,26 @@ const MobileNavigation = ({
                   <MobileNavbarUserMenu setMobileMenuOpen={setMobileMenuOpen} />
                 </div>
               ) : (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full justify-start"
-                  onClick={handleDashboardClick}
-                >
-                  <UserCircle className="h-4 w-4 mr-2" />
-                  Dashboard
-                </Button>
+                <>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={handleDashboardClick}
+                  >
+                    {currentUser.role === "admin" ? (
+                      <>
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        Dashboard Admin
+                      </>
+                    ) : (
+                      <>
+                        <UserCircle className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </>
+                    )}
+                  </Button>
+                </>
               )}
               <Button variant="outline" size="sm" onClick={handleLogout} className="w-full justify-start">
                 <LogOut className="h-4 w-4 mr-2" />

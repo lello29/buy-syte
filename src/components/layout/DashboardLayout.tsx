@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -9,11 +10,11 @@ import {
 } from "@/components/ui/sidebar";
 import DashboardSidebar from "./DashboardSidebar";
 import MobileDashboard from "./MobileDashboard";
-import { Menu, Home, LogOut, ArrowLeft } from "lucide-react";
+import { Menu, Home, LogOut, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const DashboardLayout = () => {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, isLoading } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,6 +25,15 @@ const DashboardLayout = () => {
      location.pathname === "/dashboard/admin");
   
   const isSubPage = location.pathname !== "/dashboard" && location.pathname.startsWith("/dashboard");
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
+        <span className="text-lg">Caricamento...</span>
+      </div>
+    );
+  }
 
   const handleLogout = async () => {
     await logout();
@@ -53,6 +63,9 @@ const DashboardLayout = () => {
     if (location.pathname.includes("/admin/settings")) return "Impostazioni";
     if (location.pathname.includes("/products")) return "Prodotti";
     if (location.pathname.includes("/orders")) return "Ordini";
+    if (location.pathname.includes("/favorites")) return "Preferiti";
+    if (location.pathname.includes("/loyalty")) return "Punti Fedeltà";
+    if (location.pathname.includes("/tasks")) return "Incarichi";
     return "Dashboard";
   };
 
@@ -62,6 +75,7 @@ const DashboardLayout = () => {
         <div className="text-center">
           <p className="text-lg mb-4">Accesso negato</p>
           <p>Effettua il login per accedere alla dashboard</p>
+          <Button onClick={() => navigate("/login")} className="mt-4">Vai al Login</Button>
         </div>
       </div>
     );

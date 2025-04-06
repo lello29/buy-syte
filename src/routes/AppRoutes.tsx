@@ -50,6 +50,10 @@ const AppRoutes = () => {
         <Route path="products/:id" element={<ShopRoute><AddProductForm /></ShopRoute>} />
         <Route path="customers" element={<ShopRoute><CustomersPage /></ShopRoute>} />
         <Route path="shop/settings" element={<ShopRoute><ShopSettingsPage /></ShopRoute>} />
+        <Route path="shop-orders" element={<ShopRoute><OrdersPage /></ShopRoute>} />
+        <Route path="collaborators" element={<ShopRoute><div>Gestione collaboratori</div></ShopRoute>} />
+        <Route path="offers" element={<ShopRoute><div>Gestione offerte</div></ShopRoute>} />
+        <Route path="notifications" element={<ShopRoute><div>Notifiche</div></ShopRoute>} />
         
         {/* User routes */}
         <Route path="favorites" element={<FavoritesPage />} />
@@ -62,6 +66,8 @@ const AppRoutes = () => {
         
         {/* Collaborator routes */}
         <Route path="tasks" element={<CollaboratorRoute><TasksPage /></CollaboratorRoute>} />
+        <Route path="availability" element={<CollaboratorRoute><div>Disponibilità</div></CollaboratorRoute>} />
+        <Route path="reviews" element={<CollaboratorRoute><div>Recensioni</div></CollaboratorRoute>} />
         
         {/* Admin routes */}
         <Route path="admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
@@ -72,7 +78,7 @@ const AppRoutes = () => {
         <Route path="admin/products/:id" element={<AdminRoute><AddProductForm /></AdminRoute>} />
         <Route path="admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
         <Route path="admin/settings" element={<AdminRoute><SettingsPage /></AdminRoute>} />
-        <Route path="settings" element={<Navigate to="/dashboard/admin/settings" replace />} />
+        <Route path="settings" element={<ProtectedRoute><div>Impostazioni profilo</div></ProtectedRoute>} />
       </Route>
 
       <Route path="/404" element={<NotFound />} />

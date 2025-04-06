@@ -5,17 +5,29 @@ import UserDashboard from "@/components/dashboard/user/UserDashboard";
 import ShopDashboard from "@/components/dashboard/shop/ShopDashboard";
 import CollaboratorDashboard from "@/components/dashboard/collaborator/CollaboratorDashboard";
 import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 const DashboardIndex = () => {
   const { currentUser, isLoading } = useAuth();
+  const navigate = useNavigate();
   
   if (isLoading) {
-    return <div>Caricamento...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
+        <span className="text-lg">Caricamento...</span>
+      </div>
+    );
   }
   
   if (!currentUser) {
     return <Navigate to="/login" />;
+  }
+
+  // Redirect admin users to the admin dashboard
+  if (currentUser.role === "admin") {
+    return <Navigate to="/dashboard/admin" replace />;
   }
 
   const renderDashboardByRole = () => {
@@ -28,8 +40,6 @@ const DashboardIndex = () => {
         return <ShopDashboard userId={currentUser.id} />;
       case "collaborator":
         return <CollaboratorDashboard userId={currentUser.id} />;
-      case "admin":
-        return <AdminDashboard />;
       default:
         return <div>Ruolo non riconosciuto</div>;
     }
