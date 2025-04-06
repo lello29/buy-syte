@@ -15,14 +15,24 @@ import AddProductForm from "./AddProductForm";
 
 interface AddProductDialogProps {
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const AddProductDialog: React.FC<AddProductDialogProps> = ({ trigger }) => {
+const AddProductDialog: React.FC<AddProductDialogProps> = ({ 
+  trigger, 
+  open, 
+  onOpenChange 
+}) => {
   const isMobile = useIsMobile();
-  const [open, setOpen] = React.useState(false);
+  const [internalOpen, setInternalOpen] = React.useState(false);
+  
+  // Use either controlled or uncontrolled state
+  const isOpen = open !== undefined ? open : internalOpen;
+  const setIsOpen = onOpenChange || setInternalOpen;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (
           <Button>
@@ -42,7 +52,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({ trigger }) => {
             </DialogDescription>
           )}
         </DialogHeader>
-        <AddProductForm onClose={() => setOpen(false)} />
+        <AddProductForm onClose={() => setIsOpen(false)} />
       </DialogContent>
     </Dialog>
   );
