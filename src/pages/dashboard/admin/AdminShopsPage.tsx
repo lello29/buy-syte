@@ -27,6 +27,8 @@ const AdminShopsPage = () => {
     email: '',
     phone: '',
     aiCredits: 100,
+    fiscalCode: '',
+    vatNumber: ''
   });
 
   const handleViewShop = (shop: Shop) => {
@@ -76,7 +78,22 @@ const AdminShopsPage = () => {
     }
   };
 
+  const validateNewShop = () => {
+    const requiredFields = ['name', 'address', 'email', 'phone', 'fiscalCode', 'vatNumber'];
+    for (const field of requiredFields) {
+      if (!newShop[field as keyof typeof newShop]) {
+        toast.error(`Campo obbligatorio mancante: ${field}`);
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleCreateShop = () => {
+    if (!validateNewShop()) {
+      return;
+    }
+    
     const newShopWithId: Shop = {
       ...newShop,
       id: `shop-${Date.now()}`,
@@ -100,6 +117,8 @@ const AdminShopsPage = () => {
       email: '',
       phone: '',
       aiCredits: 100,
+      fiscalCode: '',
+      vatNumber: ''
     });
   };
 

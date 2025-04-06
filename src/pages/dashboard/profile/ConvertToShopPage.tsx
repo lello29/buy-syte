@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Store, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const ConvertToShopPage = () => {
   const { currentUser, updateUserRole } = useAuth();
@@ -14,21 +15,48 @@ const ConvertToShopPage = () => {
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [fiscalCode, setFiscalCode] = useState("");
+  const [vatNumber, setVatNumber] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   if (!currentUser) {
     return <div>Caricamento...</div>;
   }
 
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+    
+    if (!shopName.trim()) newErrors.shopName = "Nome negozio obbligatorio";
+    if (!description.trim()) newErrors.description = "Descrizione obbligatoria";
+    if (!address.trim()) newErrors.address = "Indirizzo obbligatorio";
+    if (!phone.trim()) newErrors.phone = "Telefono obbligatorio";
+    if (!fiscalCode.trim()) newErrors.fiscalCode = "Codice Fiscale obbligatorio";
+    if (!vatNumber.trim()) newErrors.vatNumber = "Partita IVA obbligatoria";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      toast.error("Compila tutti i campi obbligatori");
+      return;
+    }
+    
     setLoading(true);
     
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 800));
     
     // In a real app, this would create a shop profile in the database
-    updateUserRole("shop");
+    // with fiscalCode and vatNumber
+    updateUserRole("shop", {
+      fiscalCode,
+      vatNumber
+    });
     setLoading(false);
   };
 
@@ -53,18 +81,20 @@ const ConvertToShopPage = () => {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="shopName">Nome Negozio</Label>
+              <Label htmlFor="shopName">Nome Negozio <span className="text-red-500">*</span></Label>
               <Input
                 id="shopName"
                 placeholder="Es. Elettronica Store"
                 value={shopName}
                 onChange={(e) => setShopName(e.target.value)}
                 required
+                className={errors.shopName ? "border-red-500" : ""}
               />
+              {errors.shopName && <p className="text-red-500 text-sm">{errors.shopName}</p>}
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="description">Descrizione</Label>
+              <Label htmlFor="description">Descrizione <span className="text-red-500">*</span></Label>
               <Textarea
                 id="description"
                 placeholder="Descrivi brevemente la tua attività e i prodotti/servizi offerti"
@@ -72,30 +102,64 @@ const ConvertToShopPage = () => {
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 rows={4}
+                className={errors.description ? "border-red-500" : ""}
               />
+              {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="address">Indirizzo</Label>
+                <Label htmlFor="address">Indirizzo <span className="text-red-500">*</span></Label>
                 <Input
                   id="address"
                   placeholder="Es. Via Roma 123, Milano"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
+                  className={errors.address ? "border-red-500" : ""}
                 />
+                {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="phone">Telefono</Label>
+                <Label htmlFor="phone">Telefono <span className="text-red-500">*</span></Label>
                 <Input
                   id="phone"
                   placeholder="Es. +39 02 1234567"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
+                  className={errors.phone ? "border-red-500" : ""}
                 />
+                {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="fiscalCode">Codice Fiscale <span className="text-red-500">*</span></Label>
+                <Input
+                  id="fiscalCode"
+                  placeholder="Es. RSSMRA80A01H501U"
+                  value={fiscalCode}
+                  onChange={(e) => setFiscalCode(e.target.value)}
+                  required
+                  className={errors.fiscalCode ? "border-red-500" : ""}
+                />
+                {errors.fiscalCode && <p className="text-red-500 text-sm">{errors.fiscalCode}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="vatNumber">Partita IVA <span className="text-red-500">*</span></Label>
+                <Input
+                  id="vatNumber"
+                  placeholder="Es. 12345678901"
+                  value={vatNumber}
+                  onChange={(e) => setVatNumber(e.target.value)}
+                  required
+                  className={errors.vatNumber ? "border-red-500" : ""}
+                />
+                {errors.vatNumber && <p className="text-red-500 text-sm">{errors.vatNumber}</p>}
               </div>
             </div>
             

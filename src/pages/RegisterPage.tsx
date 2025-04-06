@@ -6,15 +6,23 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Store, Loader2 } from "lucide-react";
+import { Store, Loader2, ChevronsUpDown } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [fiscalCode, setFiscalCode] = useState("");
+  const [vatNumber, setVatNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [showBusinessFields, setShowBusinessFields] = useState(false);
   
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -117,6 +125,47 @@ const RegisterPage = () => {
                 <p className="text-sm text-red-500 mt-1">{passwordError}</p>
               )}
             </div>
+            
+            <Collapsible
+              open={showBusinessFields}
+              onOpenChange={setShowBusinessFields}
+              className="border rounded-md p-2"
+            >
+              <CollapsibleTrigger asChild>
+                <div className="flex items-center justify-between cursor-pointer p-2">
+                  <p className="text-sm font-medium">Informazioni Aziendali (opzionali)</p>
+                  <Button variant="ghost" size="sm" className="p-0 h-8 w-8">
+                    <ChevronsUpDown className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-3 pt-3">
+                <div className="space-y-2">
+                  <Label htmlFor="fiscalCode">Codice Fiscale</Label>
+                  <Input
+                    id="fiscalCode"
+                    placeholder="Inserisci il codice fiscale"
+                    value={fiscalCode}
+                    onChange={(e) => setFiscalCode(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Obbligatorio solo per i negozianti
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="vatNumber">Partita IVA</Label>
+                  <Input
+                    id="vatNumber"
+                    placeholder="Inserisci la partita IVA"
+                    value={vatNumber}
+                    onChange={(e) => setVatNumber(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Obbligatorio solo per i negozianti
+                  </p>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={loading}>

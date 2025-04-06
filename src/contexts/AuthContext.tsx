@@ -4,12 +4,17 @@ import { User, UserRole, Shop } from "../types";
 import { users, shops } from "../data/mockData";
 import { toast } from "sonner";
 
+interface ShopData {
+  fiscalCode: string;
+  vatNumber: string;
+}
+
 interface AuthContextType {
   currentUser: User | null;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<boolean>;
-  updateUserRole: (role: UserRole) => void;
+  updateUserRole: (role: UserRole, shopData?: ShopData) => void;
   updateUserFavorites: (favorites: string[]) => void;
   getNearestShops: (lat: number, lng: number, radius?: number) => Shop[];
   isLoading: boolean;
@@ -149,12 +154,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return true;
   };
 
-  const updateUserRole = (role: UserRole) => {
+  const updateUserRole = (role: UserRole, shopData?: ShopData) => {
     if (currentUser) {
-      const updatedUser = { ...currentUser, role };
+      const updatedUser = { 
+        ...currentUser, 
+        role,
+        // Add fiscal code and VAT number only if provided (for shop role)
+        ...(shopData ? {
+          fiscalCode: shopData.fiscalCode,
+          vatNumber: shopData.vatNumber
+        } : {})
+      };
       setCurrentUser(updatedUser);
       localStorage.setItem("currentUser", JSON.stringify(updatedUser));
-      toast.success(`Profilo convertito in ${role} con successo!`);
+      
+      // For shop role, create a new shop entry
+      if (role === "shop" && shopData) {
+        // In a real app, this would be an API call to create a shop
+        toast.success(`Profilo convertito in ${role} con successo! Codice Fiscale e Partita IVA registrati.`);
+      } else {
+        toast.success(`Profilo convertito in ${role} con successo!`);
+      }
     }
   };
 

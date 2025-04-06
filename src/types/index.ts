@@ -1,3 +1,4 @@
+
 export type UserRole = 'user' | 'shop' | 'collaborator' | 'admin';
 
 export interface User {
@@ -10,6 +11,8 @@ export interface User {
   isActive?: boolean;
   createdAt: string;
   updatedAt: string;
+  fiscalCode?: string; // Optional for normal users
+  vatNumber?: string; // Optional for normal users
 }
 
 export interface Shop {
@@ -34,6 +37,8 @@ export interface Shop {
   openingHours?: string;
   aboutUs?: string;
   categories?: string[];
+  fiscalCode: string; // Required for shops
+  vatNumber: string; // Required for shops
   socialLinks?: {
     facebook?: string;
     instagram?: string;
