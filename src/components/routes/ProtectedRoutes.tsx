@@ -31,7 +31,8 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     });
   }, [location.pathname, isLoading, currentUser, isMobile]);
   
-  if (isLoading) {
+  // Show loading while authentication or mobile detection is in progress
+  if (isLoading || isMobile === null) {
     return <LoadingScreen />;
   }
   
@@ -39,7 +40,7 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   
-  // Return children directly without conditional wrapping for mobile
+  // Return children directly
   return children;
 };
 
@@ -58,7 +59,8 @@ export const AdminRoute = ({ children }: { children: JSX.Element }) => {
     });
   }, [location.pathname, isLoading, currentUser, isMobile]);
   
-  if (isLoading) {
+  // Show loading while authentication or mobile detection is in progress
+  if (isLoading || isMobile === null) {
     return <LoadingScreen />;
   }
   
@@ -66,15 +68,17 @@ export const AdminRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/dashboard" state={{ from: location }} replace />;
   }
   
-  // Return children directly without conditional wrapping for mobile
+  // Return children directly
   return children;
 };
 
 export const ShopRoute = ({ children }: { children: JSX.Element }) => {
   const { currentUser, isLoading } = useAuth();
   const location = useLocation();
+  const isMobile = useIsMobile();
   
-  if (isLoading) {
+  // Show loading while authentication or mobile detection is in progress
+  if (isLoading || isMobile === null) {
     return <LoadingScreen />;
   }
   
@@ -89,8 +93,10 @@ export const ShopRoute = ({ children }: { children: JSX.Element }) => {
 export const CollaboratorRoute = ({ children }: { children: JSX.Element }) => {
   const { currentUser, isLoading } = useAuth();
   const location = useLocation();
+  const isMobile = useIsMobile();
   
-  if (isLoading) {
+  // Show loading while authentication or mobile detection is in progress
+  if (isLoading || isMobile === null) {
     return <LoadingScreen />;
   }
   

@@ -9,8 +9,8 @@ export const useRoleMenu = (role) => {
   console.log("useRoleMenu called with role:", role);
   
   // Default user menu
-  let dashboardOptions = [];
-  let additionalOptions = [];
+  const dashboardOptions = [];
+  const additionalOptions = [];
   let actionButton = {
     label: "",
     path: "",
@@ -20,18 +20,18 @@ export const useRoleMenu = (role) => {
   // Set options based on role
   switch (role) {
     case "user":
-      dashboardOptions = [
+      dashboardOptions.push(
         { label: "Preferiti", icon: Heart, path: "/dashboard/favorites", available: true },
         { label: "I Miei Ordini", icon: ShoppingBag, path: "/dashboard/orders", available: true },
         { label: "Punti Fedeltà", icon: Award, path: "/dashboard/loyalty", available: true },
         { label: "Negozi Vicini", icon: MapPin, path: "/shops/nearest", available: true }
-      ];
+      );
       
-      additionalOptions = [
+      additionalOptions.push(
         { label: "Diventa Negozio", path: "/dashboard/convert-to-shop", available: true },
         { label: "Diventa Collaboratore", path: "/dashboard/convert-to-collaborator", available: true },
         { label: "Impostazioni", path: "/dashboard/settings", available: true }
-      ];
+      );
       
       actionButton = {
         label: "Esplora Offerte",
@@ -41,18 +41,18 @@ export const useRoleMenu = (role) => {
       break;
     
     case "shop":
-      dashboardOptions = [
+      dashboardOptions.push(
         { label: "Prodotti", icon: Package, path: "/dashboard/products", available: true },
         { label: "Ordini", icon: CreditCard, path: "/dashboard/shop-orders", available: true },
         { label: "Offerte", icon: ShoppingCart, path: "/dashboard/offers", available: true },
         { label: "Notifiche", icon: BellRing, path: "/dashboard/notifications", available: true }
-      ];
+      );
       
-      additionalOptions = [
+      additionalOptions.push(
         { label: "Clienti", path: "/dashboard/customers", available: true },
         { label: "Collaboratori", path: "/dashboard/collaborators", available: true },
         { label: "Impostazioni Negozio", path: "/dashboard/shop/settings", available: true }
-      ];
+      );
       
       actionButton = {
         label: "Aggiungi Prodotto",
@@ -62,17 +62,17 @@ export const useRoleMenu = (role) => {
       break;
     
     case "collaborator":
-      dashboardOptions = [
+      dashboardOptions.push(
         { label: "Incarichi", icon: Briefcase, path: "/dashboard/tasks", available: true },
         { label: "Disponibilità", icon: Calendar, path: "/dashboard/availability", available: true },
         { label: "Recensioni", icon: Award, path: "/dashboard/reviews", available: true },
         { label: "Impostazioni", icon: Settings, path: "/dashboard/settings", available: true }
-      ];
+      );
       
-      additionalOptions = [
+      additionalOptions.push(
         { label: "Documenti", path: "/dashboard/documents", available: false },
         { label: "Pagamenti", path: "/dashboard/payments", available: false }
-      ];
+      );
       
       actionButton = {
         label: "Cerca Incarichi",
@@ -82,17 +82,17 @@ export const useRoleMenu = (role) => {
       break;
     
     case "admin":
-      dashboardOptions = [
+      dashboardOptions.push(
         { label: "Dashboard", icon: BarChart3, path: "/dashboard/admin", available: true },
         { label: "Utenti", icon: Users, path: "/dashboard/admin/users", available: true },
         { label: "Negozi", icon: Store, path: "/dashboard/admin/shops", available: true },
         { label: "Prodotti", icon: Package, path: "/dashboard/admin/products", available: true }
-      ];
+      );
       
-      additionalOptions = [
+      additionalOptions.push(
         { label: "Collaboratori", path: "/dashboard/admin/collaborators", available: true },
         { label: "Impostazioni", path: "/dashboard/admin/settings", available: true }
-      ];
+      );
       
       actionButton = {
         label: "Aggiungi Prodotto",
@@ -102,10 +102,10 @@ export const useRoleMenu = (role) => {
       break;
       
     default:
-      dashboardOptions = [
+      dashboardOptions.push(
         { label: "Profilo", icon: UserCircle, path: "/dashboard", available: true },
         { label: "Impostazioni", icon: Settings, path: "/dashboard/settings", available: true }
-      ];
+      );
       
       actionButton = {
         label: "Esplora Negozi",

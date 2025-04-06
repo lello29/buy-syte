@@ -4,19 +4,15 @@ import * as React from "react"
 const MOBILE_BREAKPOINT = 768
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean>(false)
-  const [initialized, setInitialized] = React.useState<boolean>(false)
+  // Use null as initial state to indicate "not determined yet"
+  const [isMobile, setIsMobile] = React.useState<boolean | null>(null)
 
   React.useEffect(() => {
     // Initial check
     const checkMobile = () => {
       const isMobileView = window.innerWidth < MOBILE_BREAKPOINT;
       setIsMobile(isMobileView);
-      
-      if (!initialized) {
-        console.log("Mobile detection initialized:", isMobileView);
-        setInitialized(true);
-      }
+      console.log("Mobile status updated:", isMobileView);
     };
     
     // Run immediately
@@ -42,7 +38,7 @@ export function useIsMobile() {
       // Cleanup
       return () => window.removeEventListener("resize", onChange);
     }
-  }, [initialized])
+  }, []) // Remove initialized dependency
 
-  return isMobile
+  return isMobile;
 }

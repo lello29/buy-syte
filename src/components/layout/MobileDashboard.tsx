@@ -3,8 +3,6 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
-
-// Import the smaller components
 import MobileDashboardItem from "./mobile-dashboard/MobileDashboardItem";
 import ActionButton from "./mobile-dashboard/ActionButton";
 import AdditionalOption from "./mobile-dashboard/AdditionalOption";
@@ -20,7 +18,23 @@ const MobileDashboard = () => {
     return () => console.log("MobileDashboard unmounted");
   }, [currentUser]);
 
-  if (!currentUser) return null;
+  if (!currentUser) {
+    console.log("MobileDashboard: No user found");
+    return (
+      <div className="p-4 text-center">
+        <div className="bg-white rounded-lg shadow p-4">
+          <p className="text-lg font-semibold mb-2">Sessione scaduta</p>
+          <p className="mb-4">Effettua il login per continuare</p>
+          <button 
+            onClick={() => navigate("/login")}
+            className="bg-primary text-white px-4 py-2 rounded"
+          >
+            Vai al login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Show a toast for features that are not yet available
   const handleNotAvailable = (featureName: string) => {
@@ -40,9 +54,9 @@ const MobileDashboard = () => {
       <div className="grid grid-cols-2 gap-4">
         {dashboardOptions.map((option, index) => (
           <MobileDashboardItem
-            key={index}
+            key={`dashboard-option-${index}`}
             label={option.label}
-            icon={option.icon}
+            icon={<option.icon className="h-6 w-6 text-[#0a3276]" />}
             path={option.path}
             available={option.available}
             onUnavailable={handleNotAvailable}
@@ -61,7 +75,7 @@ const MobileDashboard = () => {
       {/* Lista opzioni aggiuntive */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         {additionalOptions.map((option, index) => (
-          <React.Fragment key={index}>
+          <React.Fragment key={`additional-option-${index}`}>
             <AdditionalOption
               label={option.label}
               path={option.path}

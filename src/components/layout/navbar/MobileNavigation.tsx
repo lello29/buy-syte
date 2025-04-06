@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,14 @@ const MobileNavigation = ({
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log("MobileNavigation rendered", { 
+      isOpen: mobileMenuOpen, 
+      simplified,
+      hasUser: !!currentUser
+    });
+  }, [mobileMenuOpen, simplified, currentUser]);
+
   if (!mobileMenuOpen) return null;
 
   // Function to show toast for unavailable features
@@ -39,7 +47,6 @@ const MobileNavigation = ({
       setMobileMenuOpen(false);
       
       // Ensure we navigate to the correct dashboard based on role
-      // with a slight delay to ensure the menu closes first
       setTimeout(() => {
         if (currentUser?.role === "admin") {
           navigate("/dashboard/admin");
@@ -89,7 +96,10 @@ const MobileNavigation = ({
             <>
               {simplified ? (
                 <div className="flex flex-col space-y-2">
-                  <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+                  <Link 
+                    to="/" 
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Button variant="ghost" size="sm" className="w-full justify-start">
                       <Home className="h-4 w-4 mr-2" />
                       Home
@@ -119,7 +129,15 @@ const MobileNavigation = ({
                   </Button>
                 </>
               )}
-              <Button variant="outline" size="sm" onClick={handleLogout} className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }} 
+                className="w-full justify-start"
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
               </Button>

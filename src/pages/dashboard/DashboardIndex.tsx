@@ -4,7 +4,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import UserDashboard from "@/components/dashboard/user/UserDashboard";
 import ShopDashboard from "@/components/dashboard/shop/ShopDashboard";
 import CollaboratorDashboard from "@/components/dashboard/collaborator/CollaboratorDashboard";
-import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -15,15 +14,18 @@ const DashboardIndex = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   
-  // Use a useEffect to ensure client-side rendering is complete
+  // Use a useEffect to log component state
   useEffect(() => {
-    // Ensure we have a valid user and the DOM is ready
-    if (!isLoading && currentUser && isMobile !== undefined) {
-      console.log("Dashboard mounted: ", { isMobile, role: currentUser?.role });
-    }
+    console.log("DashboardIndex state:", { 
+      isMobile, 
+      isLoading, 
+      hasUser: !!currentUser,
+      userRole: currentUser?.role 
+    });
   }, [isLoading, currentUser, isMobile]);
   
-  if (isLoading) {
+  // Show loading state while authentication or mobile detection is in progress
+  if (isLoading || isMobile === null) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
@@ -41,13 +43,9 @@ const DashboardIndex = () => {
     return <Navigate to="/dashboard/admin" replace />;
   }
 
-  // For mobile devices, directly render the MobileDashboard component
-  if (isMobile) {
-    return (
-      <div className="pt-2">
-        <MobileDashboard />
-      </div>
-    );
+  // For mobile devices, render the MobileDashboard component
+  if (isMobile === true) {
+    return <MobileDashboard />;
   }
 
   const renderDashboardByRole = () => {

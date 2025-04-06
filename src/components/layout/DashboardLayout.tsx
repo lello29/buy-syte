@@ -9,7 +9,6 @@ import {
   SidebarTrigger
 } from "@/components/ui/sidebar";
 import DashboardSidebar from "./DashboardSidebar";
-import MobileDashboard from "./MobileDashboard";
 import { Menu, Home, LogOut, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -29,18 +28,25 @@ const DashboardLayout = () => {
     });
   }, [isMobile, location.pathname, isLoading, currentUser]);
   
-  // Check if this is exactly the main dashboard path without any sub-routes
-  const shouldShowMobileDashboard = isMobile && 
-    (location.pathname === "/dashboard" || 
-     location.pathname === "/dashboard/admin");
-  
-  const isSubPage = location.pathname !== "/dashboard" && location.pathname.startsWith("/dashboard");
-
-  if (isLoading) {
+  // Handle loading states for auth and mobile detection
+  if (isLoading || isMobile === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
         <span className="text-lg">Caricamento...</span>
+      </div>
+    );
+  }
+
+  // Check if user is authenticated
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg mb-4">Accesso negato</p>
+          <p>Effettua il login per accedere alla dashboard</p>
+          <Button onClick={() => navigate("/login")} className="mt-4">Vai al Login</Button>
+        </div>
       </div>
     );
   }
@@ -83,20 +89,12 @@ const DashboardLayout = () => {
     return "Dashboard";
   };
 
-  if (!currentUser) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg mb-4">Accesso negato</p>
-          <p>Effettua il login per accedere alla dashboard</p>
-          <Button onClick={() => navigate("/login")} className="mt-4">Vai al Login</Button>
-        </div>
-      </div>
-    );
-  }
-
   // Rendering for mobile devices
-  if (isMobile) {
+  if (isMobile === true) {
+    const isSubPage = location.pathname !== "/dashboard" && 
+                      location.pathname !== "/dashboard/admin" && 
+                      location.pathname.startsWith("/dashboard");
+                      
     return (
       <div className="flex flex-col min-h-screen bg-gray-100">
         {/* Header blu */}
@@ -135,15 +133,9 @@ const DashboardLayout = () => {
           </div>
         </header>
         
-        {/* Ensure content is rendered statically, not conditionally */}
+        {/* Content area with padding for the fixed header */}
         <main className="flex-1 pt-20 pb-6 px-4">
-          {shouldShowMobileDashboard ? (
-            <MobileDashboard key="mobile-dashboard" />
-          ) : (
-            <div key="outlet-container">
-              <Outlet />
-            </div>
-          )}
+          <Outlet />
         </main>
       </div>
     );

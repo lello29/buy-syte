@@ -14,7 +14,7 @@ const MobileStepNav: React.FC = () => {
 
   // Scroll to active step when it changes
   useEffect(() => {
-    if (scrollContainerRef.current) {
+    if (scrollContainerRef.current && steps && steps.length > 0) {
       const scrollContainer = scrollContainerRef.current;
       const activeButton = scrollContainer.querySelector(`[data-step="${currentStep}"]`);
       
@@ -32,6 +32,11 @@ const MobileStepNav: React.FC = () => {
       }
     }
   }, [currentStep, steps]);
+
+  // Safe render check
+  if (!steps || steps.length === 0) {
+    return null;
+  }
 
   // Safer click handler
   const handleStepClick = (index: number) => {
