@@ -60,14 +60,10 @@ const ProductsPage = () => {
 
   const handleAddProduct = () => {
     try {
-      if (isMobile) {
-        navigate("/dashboard/admin/products/add");
-        console.log("Navigazione verso /dashboard/admin/products/add");
-      } else {
-        navigate("/dashboard/admin/products/add");
-      }
+      navigate("/dashboard/admin/products/add");
+      console.log("Navigating to /dashboard/admin/products/add");
     } catch (error) {
-      console.error("Errore durante la navigazione:", error);
+      console.error("Error during navigation:", error);
       toast.error("Impossibile accedere alla pagina di aggiunta prodotto");
     }
   };

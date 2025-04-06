@@ -93,9 +93,9 @@ export const useRoleMenu = (role) => {
       ];
       
       actionButton = {
-        label: "Aggiungi Negozio",
-        path: "/dashboard/admin/shops/add",
-        available: false
+        label: "Aggiungi Prodotto",
+        path: "/dashboard/admin/products/add",
+        available: true
       };
       break;
       

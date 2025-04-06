@@ -8,7 +8,7 @@ const MobileStepNav: React.FC = () => {
 
   return (
     <div className="overflow-x-auto pb-1 mt-2 -mx-1">
-      <div className="flex space-x-1 px-1">
+      <div className="flex space-x-1 px-1 min-w-fit">
         {steps.map((step, index) => (
           <Button
             key={step.id}
