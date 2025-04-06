@@ -36,8 +36,12 @@ const DashboardLayout = () => {
   }
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/login");
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Errore durante il logout:", error);
+    }
   };
 
   const handleHomeClick = () => {
@@ -96,7 +100,10 @@ const DashboardLayout = () => {
                 <ArrowLeft className="h-6 w-6" />
               </button>
             ) : (
-              <button className="p-1 rounded-full hover:bg-blue-700 active:bg-blue-800 transition-colors">
+              <button 
+                onClick={() => {}}
+                className="p-1 rounded-full hover:bg-blue-700 active:bg-blue-800 transition-colors"
+              >
                 <Menu className="h-6 w-6" />
               </button>
             )}

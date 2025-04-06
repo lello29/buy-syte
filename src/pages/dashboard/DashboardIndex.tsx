@@ -7,10 +7,12 @@ import CollaboratorDashboard from "@/components/dashboard/collaborator/Collabora
 import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const DashboardIndex = () => {
   const { currentUser, isLoading } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   
   if (isLoading) {
     return (
@@ -45,6 +47,21 @@ const DashboardIndex = () => {
     }
   };
 
+  // Apply specific mobile wrapper for better mobile rendering
+  const renderContent = () => {
+    const dashboardContent = renderDashboardByRole();
+    
+    if (isMobile) {
+      return (
+        <div className="bg-gray-50 min-h-screen">
+          {dashboardContent}
+        </div>
+      );
+    }
+    
+    return dashboardContent;
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -52,7 +69,7 @@ const DashboardIndex = () => {
         Benvenuto, {currentUser.name}! Questa è la tua dashboard personale.
       </p>
       
-      {renderDashboardByRole()}
+      {renderContent()}
     </div>
   );
 };

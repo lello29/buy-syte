@@ -35,20 +35,25 @@ const MobileNavigation = ({
   };
 
   const handleDashboardClick = () => {
-    setMobileMenuOpen(false);
-    if (currentUser?.role === "admin") {
-      navigate("/dashboard/admin");
-    } else if (currentUser?.role === "shop") {
-      navigate("/dashboard");
-    } else if (currentUser?.role === "collaborator") {
-      navigate("/dashboard");
-    } else {
-      navigate("/dashboard");
+    try {
+      setMobileMenuOpen(false);
+      
+      if (currentUser?.role === "admin") {
+        navigate("/dashboard/admin");
+      } else if (currentUser?.role === "shop") {
+        navigate("/dashboard");
+      } else if (currentUser?.role === "collaborator") {
+        navigate("/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Errore durante la navigazione:", error);
     }
   };
 
   return (
-    <div className="md:hidden bg-white border-t border-gray-200 py-2">
+    <div className="md:hidden bg-white border-t border-gray-200 py-2 z-50">
       <div className="container mx-auto px-4">
         <div className="flex flex-col space-y-3">
           {!simplified && (
