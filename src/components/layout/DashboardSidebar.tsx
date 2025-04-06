@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,8 +37,8 @@ const DashboardSidebar = () => {
           { icon: Heart, label: "Preferiti", path: "/dashboard/favorites" },
           { icon: ShoppingBag, label: "Ordini", path: "/dashboard/orders" },
           { icon: Award, label: "Punti Fedeltà", path: "/dashboard/loyalty" },
-          { icon: Store, label: "Diventa Negozio", path: "/dashboard/convert-shop" },
-          { icon: Briefcase, label: "Diventa Collaboratore", path: "/dashboard/convert-collaborator" },
+          { icon: Store, label: "Diventa Negozio", path: "/dashboard/convert-to-shop" },
+          { icon: Briefcase, label: "Diventa Collaboratore", path: "/dashboard/convert-to-collaborator" },
         ];
         break;
       case "shop":
@@ -61,10 +62,10 @@ const DashboardSidebar = () => {
       case "admin":
         links = [
           { icon: BarChart3, label: "Dashboard Admin", path: "/dashboard/admin" },
-          { icon: Users, label: "Utenti", path: "/dashboard/users" },
-          { icon: Store, label: "Negozi", path: "/dashboard/admin-shops" },
-          { icon: Briefcase, label: "Collaboratori", path: "/dashboard/admin-collaborators" },
-          { icon: Package, label: "Prodotti", path: "/dashboard/admin-products" },
+          { icon: Users, label: "Utenti", path: "/dashboard/admin/users" },
+          { icon: Store, label: "Negozi", path: "/dashboard/admin/shops" },
+          { icon: Briefcase, label: "Collaboratori", path: "/dashboard/admin/collaborators" },
+          { icon: Package, label: "Prodotti", path: "/dashboard/admin/products" },
         ];
         break;
       default:

@@ -61,12 +61,10 @@ const ProductsPage = () => {
   const handleAddProduct = () => {
     try {
       if (isMobile) {
-        // Per admin, potremmo voler reindirizzare a una pagina specifica di admin
         navigate("/dashboard/admin/products/add");
         console.log("Navigazione verso /dashboard/admin/products/add");
       } else {
-        // Per desktop, potremmo utilizzare un dialog esistente o creare uno specifico per admin
-        toast.info("Funzionalità in sviluppo per desktop");
+        navigate("/dashboard/admin/products/add");
       }
     } catch (error) {
       console.error("Errore durante la navigazione:", error);

@@ -38,8 +38,11 @@ const DashboardLayout = () => {
 
   const getPageTitle = () => {
     if (location.pathname === "/dashboard") return "Dashboard";
-    if (location.pathname.includes("/users")) return "Admin";
-    if (location.pathname.includes("/shops")) return "Negozi";
+    if (location.pathname.includes("/admin/users")) return "Utenti";
+    if (location.pathname.includes("/admin/shops")) return "Negozi";
+    if (location.pathname.includes("/admin/products")) return "Prodotti";
+    if (location.pathname.includes("/admin/collaborators")) return "Collaboratori";
+    if (location.pathname.includes("/admin")) return "Admin";
     if (location.pathname.includes("/products")) return "Prodotti";
     if (location.pathname.includes("/orders")) return "Ordini";
     return "Dashboard";

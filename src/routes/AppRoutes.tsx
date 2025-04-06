@@ -20,7 +20,7 @@ import ConvertToShopPage from "../pages/dashboard/profile/ConvertToShopPage";
 import ConvertToCollaboratorPage from "../pages/dashboard/profile/ConvertToCollaboratorPage";
 import TasksPage from "../pages/dashboard/collaborator/TasksPage";
 import AdminDashboardPage from "../pages/dashboard/admin/AdminDashboardPage";
-import AdminShopsPage from "../pages/dashboard/admin/AdminShopsPage";
+import AdminShopsPage from "../pages/dashboard/admin/ShopsPage";
 import CollaboratorsPage from "../pages/dashboard/admin/CollaboratorsPage";
 import ProductsAdminPage from "../pages/dashboard/admin/ProductsPage";
 import UsersPage from "../pages/dashboard/admin/UsersPage";
@@ -68,6 +68,7 @@ const AppRoutes = () => {
         <Route path="admin/shops" element={<AdminShopsPage />} />
         <Route path="admin/collaborators" element={<CollaboratorsPage />} />
         <Route path="admin/products" element={<ProductsAdminPage />} />
+        <Route path="admin/products/add" element={<AddProductForm />} />
         <Route path="admin/products/:id" element={<AddProductForm />} />
         <Route path="admin/users" element={<UsersPage />} />
         <Route path="admin/settings" element={<SettingsPage />} />

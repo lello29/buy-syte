@@ -21,7 +21,7 @@ const AdminDashboard: React.FC = () => {
           description="Utenti registrati"
           value={allUsers.toString()}
           icon={<Users className="h-8 w-8 text-blue-600" />}
-          linkTo="/dashboard/users"
+          linkTo="/dashboard/admin/users"
         />
         
         <DashboardCard
@@ -29,7 +29,7 @@ const AdminDashboard: React.FC = () => {
           description="Negozi attivi"
           value={allShops.toString()}
           icon={<Store className="h-8 w-8 text-green-600" />}
-          linkTo="/dashboard/shops"
+          linkTo="/dashboard/admin/shops"
         />
         
         <DashboardCard
@@ -37,7 +37,7 @@ const AdminDashboard: React.FC = () => {
           description="Collaboratori registrati"
           value={collaborators.length.toString()}
           icon={<User className="h-8 w-8 text-purple-600" />}
-          linkTo="/dashboard/admin-collaborators"
+          linkTo="/dashboard/admin/collaborators"
         />
         
         <DashboardCard
@@ -45,7 +45,7 @@ const AdminDashboard: React.FC = () => {
           description="Prodotti totali"
           value={allProducts.toString()}
           icon={<Package className="h-8 w-8 text-orange-600" />}
-          linkTo="/dashboard/admin-products"
+          linkTo="/dashboard/admin/products"
         />
       </div>
 
