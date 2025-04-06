@@ -10,7 +10,12 @@ const ShopAuthCheck: React.FC<ShopAuthCheckProps> = ({ children }) => {
   const { currentUser, getUserShop } = useAuth();
   
   if (!currentUser || currentUser.role !== "shop") {
-    return <div>Accesso non autorizzato</div>;
+    return <div className="text-center py-12">
+      <h2 className="text-2xl font-bold mb-2">Accesso non autorizzato</h2>
+      <p className="text-muted-foreground">
+        Questa sezione è riservata agli account negozio.
+      </p>
+    </div>;
   }
   
   const shop = getUserShop();

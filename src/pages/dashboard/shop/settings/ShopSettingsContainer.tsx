@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { shops } from "@/data/mockData";
+import { shops } from "@/data/shops";
 import { toast } from "sonner";
 import { 
   Card, 
@@ -27,6 +27,8 @@ import SocialTab from "./components/SocialTab";
 const ShopSettingsContainer: React.FC = () => {
   const { currentUser } = useAuth();
   
+  // Questa verifica dovrebbe essere già gestita dal componente ShopAuthCheck
+  // ma la manteniamo per sicurezza
   if (!currentUser || currentUser.role !== "shop") {
     return <div>Accesso non autorizzato</div>;
   }

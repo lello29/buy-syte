@@ -1,38 +1,18 @@
+import { users } from "./users";
+import { tasks } from "./tasks";
+import { products } from "./products";
+import { categories } from "./categories";
+import { orders } from "./orders";
+import { offers } from "./offers";
 
-// This file is kept for backward compatibility
-// It re-exports everything from the modularized data files
+import { shops } from "./shops";
 
-import {
-  users,
-  shops,
-  products,
-  offers,
-  collaborators,
-  tasks,
-  orders,
-  getUsersByRole,
-  getShopById,
-  getProductsByShopId,
-  getOffersByShopId,
-  getTasksByCollaboratorId,
-  getOrdersByUserId,
-  getOrdersByShopId
-} from './index';
-
-// Re-export everything
 export {
   users,
-  shops,
-  products,
-  offers,
-  collaborators,
   tasks,
+  products,
+  categories,
   orders,
-  getUsersByRole,
-  getShopById,
-  getProductsByShopId,
-  getOffersByShopId,
-  getTasksByCollaboratorId,
-  getOrdersByUserId,
-  getOrdersByShopId
+  offers,
+  shops
 };
