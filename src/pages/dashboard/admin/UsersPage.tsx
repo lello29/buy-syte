@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -10,7 +11,7 @@ import { useAuth } from "@/contexts/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { User as UserIcon, UserCheck, UserX, Ban, Trash2, Shield, UserPlus, Loader2 } from "lucide-react";
+import { User as UserIcon, UserCheck, UserX, Ban, Trash2, Shield, UserPlus, Loader2, Edit } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { User } from "@/types";
 import MobileUsersList from "@/components/admin/users/MobileUsersList";
+import EditUserDialog from "@/components/admin/users/EditUserDialog";
 import {
   Table,
   TableBody,
@@ -43,6 +45,7 @@ const UsersPage = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     name: '',
     email: '',
@@ -167,8 +170,20 @@ const UsersPage = () => {
     }
   };
 
+  const handleUserUpdate = (updatedUser: User) => {
+    const updatedUsers = users.map(user => 
+      user.id === updatedUser.id ? updatedUser : user
+    );
+    setUsers(updatedUsers);
+  };
+
   const openAddDialog = () => {
     setIsAddDialogOpen(true);
+  };
+
+  const openEditDialog = (user: User) => {
+    setSelectedUser(user);
+    setIsEditDialogOpen(true);
   };
 
   const openViewDialog = (user: User) => {
@@ -285,6 +300,7 @@ const UsersPage = () => {
             onToggleStatus={handleToggleUserStatus}
             onDeleteUser={handleDeleteUser}
             onAddUser={openAddDialog}
+            onEditUser={openEditDialog}
           />
         </>
       ) : (
@@ -313,6 +329,7 @@ const UsersPage = () => {
                     <TableHead>ID</TableHead>
                     <TableHead>Nome</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Ruolo</TableHead>
                     <TableHead>Registrato il</TableHead>
                     <TableHead>Stato</TableHead>
                     <TableHead className="text-right">Azioni</TableHead>
@@ -324,6 +341,7 @@ const UsersPage = () => {
                       <TableCell className="font-mono text-sm">{user.id.slice(0, 8)}</TableCell>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
+                      <TableCell className="capitalize">{user.role}</TableCell>
                       <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Badge variant={user.isActive ? "success" : "destructive"}>
@@ -332,6 +350,13 @@ const UsersPage = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openEditDialog(user)}
+                          >
+                            <Edit className="mr-1 h-4 w-4" /> Modifica
+                          </Button>
                           <Button 
                             size="sm" 
                             variant="outline"
@@ -412,6 +437,14 @@ const UsersPage = () => {
                   <p>{selectedUser.loyaltyPoints}</p>
                 </div>
                 <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Codice Fiscale</p>
+                  <p>{selectedUser.fiscalCode || "—"}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Partita IVA</p>
+                  <p>{selectedUser.vatNumber || "—"}</p>
+                </div>
+                <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500">Creato il</p>
                   <p>{new Date(selectedUser.createdAt).toLocaleDateString()}</p>
                 </div>
@@ -436,6 +469,15 @@ const UsersPage = () => {
                   onClick={() => setIsViewDialogOpen(false)}
                 >
                   Chiudi
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setIsViewDialogOpen(false);
+                    openEditDialog(selectedUser);
+                  }}
+                >
+                  <Edit className="mr-1 h-4 w-4" /> Modifica
                 </Button>
                 <Button 
                   variant="outline"
@@ -524,6 +566,14 @@ const UsersPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog per modificare l'utente */}
+      <EditUserDialog
+        user={selectedUser}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onUserUpdated={handleUserUpdate}
+      />
     </div>
   );
 };

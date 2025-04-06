@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Ban, Trash2, UserPlus } from 'lucide-react';
+import { Ban, Trash2, UserPlus, Edit } from 'lucide-react';
 import { User } from '@/types';
 import { toast } from 'sonner';
 
@@ -10,13 +10,15 @@ interface MobileUsersListProps {
   onToggleStatus: (userId: string, isActive: boolean) => void;
   onDeleteUser: (userId: string) => void;
   onAddUser: () => void;
+  onEditUser: (user: User) => void;
 }
 
 const MobileUsersList: React.FC<MobileUsersListProps> = ({ 
   users, 
   onToggleStatus, 
   onDeleteUser,
-  onAddUser
+  onAddUser,
+  onEditUser
 }) => {
   const handleDelete = (userId: string) => {
     if (window.confirm('Sei sicuro di voler eliminare questo utente?')) {
@@ -40,11 +42,14 @@ const MobileUsersList: React.FC<MobileUsersListProps> = ({
             <div className="p-4">
               <div className="text-2xl font-bold">{user.name}</div>
               <div className="text-gray-800">{user.email}</div>
+              <div className="text-sm text-gray-600 mt-1 capitalize">
+                Ruolo: {user.role}
+              </div>
               <div className="text-sm text-gray-500 mt-1">
                 Registrato il {new Date(user.createdAt).toLocaleDateString()}
               </div>
             </div>
-            <div className="flex border-t">
+            <div className="flex flex-wrap border-t">
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-gray-700 hover:bg-gray-100"
@@ -58,6 +63,14 @@ const MobileUsersList: React.FC<MobileUsersListProps> = ({
                 className={`flex-1 rounded-none h-12 ${user.isActive ? "text-green-700 bg-green-100 hover:bg-green-200" : "text-red-700 bg-red-100 hover:bg-red-200"}`}
               >
                 {user.isActive ? "Attivo" : "Inattivo"}
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="flex-1 rounded-none h-12 text-blue-600 hover:bg-blue-50"
+                onClick={() => onEditUser(user)}
+              >
+                <Edit className="h-5 w-5 mr-1" />
+                Modifica
               </Button>
               <Button 
                 variant="ghost" 
