@@ -1,8 +1,10 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Barcode, Info, Scan } from "lucide-react";
 import { useProductForm } from "../ProductFormContext";
+import BarcodeScanner from "@/components/products/barcode/BarcodeScanner";
+import { toast } from "sonner";
 
 interface BarcodeStepProps {
   isMobile?: boolean;
@@ -10,11 +12,21 @@ interface BarcodeStepProps {
 }
 
 const BarcodeStep: React.FC<BarcodeStepProps> = ({ isMobile, handleSkipToManualEntry }) => {
-  const { steps, setCurrentStep } = useProductForm();
+  const { steps, setCurrentStep, updateProductData } = useProductForm();
+  const [showScanner, setShowScanner] = useState(false);
 
   const handleScanBarcode = () => {
-    const barcodeStep = steps.findIndex(step => step.id === "details");
-    setCurrentStep(barcodeStep);
+    setShowScanner(true);
+  };
+
+  const handleBarcodeDetected = (barcode: string) => {
+    updateProductData({ barcode });
+    setShowScanner(false);
+    toast.success(`Codice ${barcode} rilevato con successo`);
+    
+    // Navigate to the details step
+    const detailsStep = steps.findIndex(step => step.id === "details");
+    setCurrentStep(detailsStep);
   };
 
   if (isMobile) {
@@ -50,6 +62,13 @@ const BarcodeStep: React.FC<BarcodeStepProps> = ({ isMobile, handleSkipToManualE
             Prodotti con codice a barre vengono salvati in archivio condiviso
           </p>
         </div>
+
+        {showScanner && (
+          <BarcodeScanner 
+            onDetected={handleBarcodeDetected} 
+            onClose={() => setShowScanner(false)} 
+          />
+        )}
       </div>
     );
   }
@@ -86,6 +105,13 @@ const BarcodeStep: React.FC<BarcodeStepProps> = ({ isMobile, handleSkipToManualE
           Nota: i prodotti con codice a barre vengono salvati in un archivio condiviso per facilitare l'inserimento da parte di altri utenti.
         </p>
       </div>
+
+      {showScanner && (
+        <BarcodeScanner 
+          onDetected={handleBarcodeDetected} 
+          onClose={() => setShowScanner(false)} 
+        />
+      )}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Barcode, Scan, Tag, AlertCircle, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import BarcodeScanner from "@/components/products/barcode/BarcodeScanner";
 
 const formSchema = z.object({
   sku: z.string().optional(),
@@ -35,7 +35,7 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => {
-  const [isScanning, setIsScanning] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
   const [foundProduct, setFoundProduct] = useState<any>(null);
   const [showProductDialog, setShowProductDialog] = useState(false);
 
@@ -56,19 +56,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => 
   };
 
   const handleScanBarcode = () => {
-    setIsScanning(true);
-    toast.info("Accesso alla fotocamera in corso...");
+    setShowScanner(true);
+  };
+
+  const handleBarcodeDetected = (barcodeValue: string) => {
+    form.setValue("barcode", barcodeValue);
+    setShowScanner(false);
+    toast.success("Codice a barre scansionato con successo");
+    onSubmit(form.getValues());
     
-    // Simulate a successful scan after 1.5 seconds
-    setTimeout(() => {
-      const mockedBarcodeData = "8001120329394";
-      form.setValue("barcode", mockedBarcodeData);
-      setIsScanning(false);
-      toast.success("Codice a barre scansionato con successo");
-      
-      // After scanning, search for the product
-      handleSearchBarcode(mockedBarcodeData);
-    }, 1500);
+    // After scanning, search for the product
+    handleSearchBarcode(barcodeValue);
   };
 
   const handleSearchBarcode = (barcodeValue?: string) => {
@@ -83,7 +81,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => 
     
     // Simulate product search in the shared database
     setTimeout(() => {
-      if (codeToSearch === "8001120329394") {
+      if (codeToSearch.startsWith("8001") || codeToSearch.startsWith("978")) {
         // Product found in the central database
         const productData = {
           name: "Pasta Barilla Spaghetti N.5",
@@ -260,13 +258,8 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => 
                             size="icon" 
                             variant="outline"
                             onClick={handleScanBarcode}
-                            disabled={isScanning}
                           >
-                            {isScanning ? (
-                              <span className="animate-pulse">...</span>
-                            ) : (
-                              <Scan className="h-4 w-4" />
-                            )}
+                            <Scan className="h-4 w-4" />
                           </Button>
                         </div>
                         <div className="flex justify-between mt-2">
@@ -361,6 +354,14 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ data, updateData }) => 
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Barcode Scanner Component */}
+      {showScanner && (
+        <BarcodeScanner 
+          onDetected={handleBarcodeDetected} 
+          onClose={() => setShowScanner(false)} 
+        />
+      )}
     </div>
   );
 };
