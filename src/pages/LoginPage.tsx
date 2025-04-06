@@ -1,12 +1,13 @@
 
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Store, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import AuthLayout from "@/components/auth/AuthLayout";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -30,72 +31,57 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <div className="flex justify-center mb-4">
-            <Store className="h-12 w-12 text-primary" />
+    <AuthLayout
+      title="Accedi al tuo account"
+      description="Inserisci le tue credenziali per accedere"
+      footerText="Non hai un account?"
+      footerLink={{ text: "Registrati", to: "/register" }}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="nome@esempio.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+              Password dimenticata?
+            </Link>
           </div>
-          <CardTitle className="text-2xl text-center">Accedi al tuo account</CardTitle>
-          <CardDescription className="text-center">
-            Inserisci le tue credenziali per accedere
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="nome@esempio.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                  Password dimenticata?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-            {/* Demo accounts info */}
-            <div className="bg-blue-50 p-3 rounded-md text-sm text-blue-800 border border-blue-200">
-              <p className="font-semibold mb-1">Account demo funzionanti:</p>
-              <p>- Cliente: cliente@test.com</p>
-              <p>- Negozio: negozio@test.com</p>
-              <p>- Gelateria: info@gelateriaartigianale.it</p>
-              <p>- Admin: admin@test.com</p>
-              <p className="mt-1 text-xs italic">Usa qualsiasi password</p>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Accedi
-            </Button>
-            <div className="text-center text-sm">
-              Non hai un account?{" "}
-              <Link to="/register" className="text-primary hover:underline">
-                Registrati
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+        {/* Demo accounts info */}
+        <div className="bg-blue-50 p-3 rounded-md text-sm text-blue-800 border border-blue-200">
+          <p className="font-semibold mb-1">Account demo funzionanti:</p>
+          <p>- Cliente: cliente@test.com</p>
+          <p>- Negozio: negozio@test.com</p>
+          <p>- Gelateria: info@gelateriaartigianale.it</p>
+          <p>- Admin: admin@test.com</p>
+          <p className="mt-1 text-xs italic">Usa qualsiasi password</p>
+        </div>
+        
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Accedi
+        </Button>
+      </form>
+    </AuthLayout>
   );
 };
 
