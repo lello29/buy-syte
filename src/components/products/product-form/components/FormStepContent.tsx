@@ -64,15 +64,30 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
   const renderStepContent = () => {
     switch (validStep) {
       case 0:
-        return <BarcodeStep isMobile={isMobile} handleSkipToManualEntry={skipToManual} />;
+        return <BarcodeStep 
+          isMobile={isMobile} 
+          handleSkipToManualEntry={skipToManual} 
+        />;
       case 1:
-        return <ProductBasicInfo data={productData} updateData={updateProductData} />;
+        return <ProductBasicInfo 
+          data={productData} 
+          updateData={updateProductData} 
+        />;
       case 2:
-        return <ProductDetails data={productData} updateData={updateProductData} />;
+        return <ProductDetails 
+          data={productData} 
+          updateData={updateProductData} 
+        />;
       case 3:
-        return <ProductImages data={productData} updateData={updateProductData} />;
+        return <ProductImages 
+          data={productData} 
+          updateData={updateProductData} 
+        />;
       case 4:
-        return <ProductOptions data={productData} updateData={updateProductData} />;
+        return <ProductOptions 
+          data={productData} 
+          updateData={updateProductData} 
+        />;
       case 5:
         return (
           <ProductPublish 
@@ -86,7 +101,10 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
         );
       default:
         // Fallback to first step in case of invalid step
-        return <BarcodeStep isMobile={isMobile} handleSkipToManualEntry={skipToManual} />;
+        return <BarcodeStep 
+          isMobile={isMobile} 
+          handleSkipToManualEntry={skipToManual} 
+        />;
     }
   };
 

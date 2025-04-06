@@ -46,7 +46,31 @@ const ImageDragDropArea: React.FC<ImageDragDropAreaProps> = ({ onFilesAdded }) =
   };
 
   const handleCameraCapture = (file: File) => {
-    onFilesAdded([file]);
+    if (file) {
+      onFilesAdded([file]);
+    }
+  };
+
+  const openFilePicker = () => {
+    document.getElementById('image-upload')?.click();
+  };
+
+  const openCamera = () => {
+    if (isMobile) {
+      const inputElement = document.createElement('input');
+      inputElement.type = 'file';
+      inputElement.accept = 'image/*';
+      inputElement.capture = 'environment';
+      
+      inputElement.onchange = (e) => {
+        const target = e.target as HTMLInputElement;
+        if (target.files && target.files.length > 0) {
+          onFilesAdded(Array.from(target.files));
+        }
+      };
+      
+      inputElement.click();
+    }
   };
 
   return (
@@ -87,15 +111,26 @@ const ImageDragDropArea: React.FC<ImageDragDropAreaProps> = ({ onFilesAdded }) =
       {isMobile && (
         <div className="flex flex-col gap-2">
           <CameraCaptureButton onImageCaptured={handleCameraCapture} />
-          <Button 
-            type="button" 
-            variant="outline" 
-            className="w-full flex items-center justify-center gap-2"
-            onClick={() => document.getElementById('image-upload')?.click()}
-          >
-            <Camera className="h-4 w-4" />
-            Scatta foto
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="flex items-center justify-center gap-2"
+              onClick={openFilePicker}
+            >
+              <Upload className="h-4 w-4" />
+              Galleria
+            </Button>
+            <Button 
+              type="button" 
+              variant="secondary" 
+              className="flex items-center justify-center gap-2"
+              onClick={openCamera}
+            >
+              <Camera className="h-4 w-4" />
+              Scatta foto
+            </Button>
+          </div>
         </div>
       )}
     </div>

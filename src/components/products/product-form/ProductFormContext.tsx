@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ProductFormData } from "./types/productTypes";
@@ -79,8 +78,14 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      // Always move to the previous step in sequence
-      setCurrentStep(currentStep - 1);
+      // If we have a previous step stored, use it
+      if (previousStep !== null && previousStep < currentStep) {
+        setCurrentStep(previousStep);
+        setPreviousStep(null); // Reset after use
+      } else {
+        // Otherwise just go back one step
+        setCurrentStep(currentStep - 1);
+      }
     }
   };
 
@@ -95,9 +100,13 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   const handleSkipToManualEntry = () => {
+    // Store current step for possible "back" action
     setPreviousStep(currentStep);
+    
     // Skip directly to basic info step (step 1)
     setCurrentStep(1);
+    
+    // Show a toast message
     toast.info("Procedi con l'inserimento manuale del prodotto");
   };
 
