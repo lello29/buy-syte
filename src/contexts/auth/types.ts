@@ -4,6 +4,17 @@ import { User, UserRole, Shop } from "../../types";
 export interface ShopData {
   fiscalCode: string;
   vatNumber: string;
+  shopData?: {
+    name: string;
+    description: string;
+    address: string;
+    phone: string;
+    category?: string;
+    location?: {
+      latitude: number;
+      longitude: number;
+    };
+  };
 }
 
 export interface AuthContextType {
