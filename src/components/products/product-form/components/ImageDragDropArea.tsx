@@ -6,6 +6,7 @@ import { Upload, Camera } from "lucide-react";
 import CameraCaptureButton from "./CameraCaptureButton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface ImageDragDropAreaProps {
   onFilesAdded: (files: File[]) => void;
@@ -42,12 +43,14 @@ const ImageDragDropArea: React.FC<ImageDragDropAreaProps> = ({ onFilesAdded }) =
     if (files.length > 0) {
       const imageFiles = files.filter(file => file.type.startsWith("image/"));
       onFilesAdded(imageFiles);
+      toast.success(`${imageFiles.length} immagini caricate con successo`);
     }
   };
 
   const handleCameraCapture = (file: File) => {
     if (file) {
       onFilesAdded([file]);
+      toast.success("Immagine dalla fotocamera caricata con successo");
     }
   };
 
@@ -57,19 +60,25 @@ const ImageDragDropArea: React.FC<ImageDragDropAreaProps> = ({ onFilesAdded }) =
 
   const openCamera = () => {
     if (isMobile) {
-      const inputElement = document.createElement('input');
-      inputElement.type = 'file';
-      inputElement.accept = 'image/*';
-      inputElement.capture = 'environment';
-      
-      inputElement.onchange = (e) => {
-        const target = e.target as HTMLInputElement;
-        if (target.files && target.files.length > 0) {
-          onFilesAdded(Array.from(target.files));
-        }
-      };
-      
-      inputElement.click();
+      try {
+        const inputElement = document.createElement('input');
+        inputElement.type = 'file';
+        inputElement.accept = 'image/*';
+        inputElement.capture = 'environment';
+        
+        inputElement.onchange = (e) => {
+          const target = e.target as HTMLInputElement;
+          if (target.files && target.files.length > 0) {
+            onFilesAdded(Array.from(target.files));
+            toast.success("Foto scattata con successo");
+          }
+        };
+        
+        inputElement.click();
+      } catch (error) {
+        console.error("Errore nell'apertura della fotocamera:", error);
+        toast.error("Impossibile accedere alla fotocamera");
+      }
     }
   };
 

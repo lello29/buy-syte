@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ProductFormData } from "./types/productTypes";
@@ -110,12 +111,15 @@ export const ProductFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
     toast.info("Procedi con l'inserimento manuale del prodotto");
   };
 
-  // Effect to handle form reset if completely navigating away
   useEffect(() => {
+    // Effect to handle form reset if completely navigating away
+    console.log("Current step:", currentStep);
+    console.log("Product data:", productData);
+    
     return () => {
       // Clean up logic if needed
     };
-  }, []);
+  }, [currentStep, productData]);
 
   return (
     <ProductFormContext.Provider value={{
