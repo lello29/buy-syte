@@ -8,7 +8,7 @@ import AboutTab from "./components/AboutTab";
 import SocialTab from "./components/SocialTab";
 import { DatabaseMigrationCard } from "@/components/admin/settings/DatabaseMigrationCard";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 const ShopSettingsContainer: React.FC = () => {
   // General tab state
@@ -111,14 +111,11 @@ const ShopSettingsContainer: React.FC = () => {
     console.log("Dati appearance da salvare:", shopAppearance);
   };
 
-  // Verifica connessione a Supabase
-  const isSupabaseConnected = !!supabase && !!supabase.supabaseUrl && !!supabase.supabaseKey;
-
   return (
     <div className="container max-w-5xl mx-auto py-8">
       <h1 className="text-3xl font-bold mb-6">Impostazioni Negozio</h1>
       
-      {!isSupabaseConnected && (
+      {!isSupabaseConfigured && (
         <div className="bg-yellow-50 p-4 rounded-md mb-6 text-yellow-800 border border-yellow-200">
           <p className="font-medium">Configurazione Supabase mancante</p>
           <p className="text-sm mt-1">
