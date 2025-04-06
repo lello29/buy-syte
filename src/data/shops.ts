@@ -21,6 +21,8 @@ export const shops: Shop[] = [
     openingHours: "Lun-Ven: 9:00-19:00\nSab: 9:30-18:00\nDom: Chiuso",
     aboutUs: "Elettronica Moderna è un negozio specializzato in prodotti di tecnologia all'avanguardia. Fondato nel 2015, offriamo una vasta gamma di dispositivi elettronici dei migliori marchi.\n\nIl nostro team di esperti è sempre disponibile per consigliarti il prodotto più adatto alle tue esigenze.",
     categories: ["Elettronica", "Informatica", "Smartphone", "Accessori"],
+    fiscalCode: "BRTMRC80A01F205P",
+    vatNumber: "12345678901",
     socialLinks: {
       facebook: "https://facebook.com/elettronicamoderna",
       instagram: "https://instagram.com/elettronica_moderna",
@@ -45,6 +47,8 @@ export const shops: Shop[] = [
     openingHours: "Lun-Sab: 10:00-20:00\nDom: 15:00-19:00",
     aboutUs: "Moda Italiana è un marchio di abbigliamento che celebra lo stile e l'artigianato italiano. Fondata nel 2010, la nostra boutique offre capi di alta qualità realizzati da stilisti italiani emergenti e affermati.",
     categories: ["Abbigliamento", "Accessori", "Scarpe"],
+    fiscalCode: "RSSMRA75B02H501L",
+    vatNumber: "09876543210",
     socialLinks: {
       instagram: "https://instagram.com/moda_italiana",
       facebook: "https://facebook.com/modaitaliana"
@@ -68,6 +72,8 @@ export const shops: Shop[] = [
     openingHours: "Lun-Dom: 12:00-15:00, 19:00-23:00",
     aboutUs: "Il Ristorante Bella Napoli offre un'esperienza culinaria unica con piatti tradizionali napoletani preparati con ingredienti freschi e di alta qualità. La nostra pizza è cotta nel forno a legna secondo l'antica tradizione.",
     categories: ["Ristoranti", "Pizza", "Cucina Napoletana"],
+    fiscalCode: "VRDLGI68C10F839H",
+    vatNumber: "07654321098",
   },
   {
     id: "shop4",
@@ -82,6 +88,8 @@ export const shops: Shop[] = [
     aiCredits: 78,
     lastUpdated: "2023-04-05T09:15:00.000Z",
     createdAt: "2023-01-20T10:00:00.000Z",
+    fiscalCode: "BNCLCA72D45F205Z",
+    vatNumber: "05432109876",
   },
   {
     id: "shop5",
@@ -96,6 +104,8 @@ export const shops: Shop[] = [
     aiCredits: 65,
     lastUpdated: "2023-05-15T14:30:00.000Z",
     createdAt: "2023-02-28T16:00:00.000Z",
+    fiscalCode: "GLLNNA84E64H501Y",
+    vatNumber: "04321098765",
   },
   {
     id: "shop6",
@@ -110,6 +120,8 @@ export const shops: Shop[] = [
     aiCredits: 50,
     lastUpdated: "2023-06-20T17:45:00.000Z",
     createdAt: "2023-03-15T12:00:00.000Z",
+    fiscalCode: "FRRPLA65H12A944X",
+    vatNumber: "03210987654",
   },
   {
     id: "shop7",
@@ -124,6 +136,8 @@ export const shops: Shop[] = [
     aiCredits: 110,
     lastUpdated: "2023-07-01T11:00:00.000Z",
     createdAt: "2023-04-01T08:00:00.000Z",
+    fiscalCode: "RSSGNN77L08L219T",
+    vatNumber: "02109876543",
   },
   {
     id: "shop8",
@@ -138,6 +152,8 @@ export const shops: Shop[] = [
     aiCredits: 95,
     lastUpdated: "2023-08-10T15:15:00.000Z",
     createdAt: "2023-05-10T14:00:00.000Z",
+    fiscalCode: "MRCSFN82P12H501K",
+    vatNumber: "01098765432",
   },
   {
     id: "shop9",
@@ -152,6 +168,8 @@ export const shops: Shop[] = [
     aiCredits: 80,
     lastUpdated: "2023-09-01T13:30:00.000Z",
     createdAt: "2023-06-01T10:00:00.000Z",
+    fiscalCode: "BNCSVT70S18L781P",
+    vatNumber: "09876543215",
   },
   {
     id: "shop10",
@@ -166,6 +184,8 @@ export const shops: Shop[] = [
     aiCredits: 70,
     lastUpdated: "2023-10-15T16:00:00.000Z",
     createdAt: "2023-07-15T18:00:00.000Z",
+    fiscalCode: "MRRFNC74P07D612S",
+    vatNumber: "08765432109",
   },
 ];
 

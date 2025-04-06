@@ -45,6 +45,14 @@ const ViewShopDialog: React.FC<ViewShopDialogProps> = ({
             <span>{shop.phone}</span>
           </div>
           <div className="flex flex-col space-y-1">
+            <span className="text-sm font-medium text-gray-500">Codice Fiscale</span>
+            <span>{shop.fiscalCode}</span>
+          </div>
+          <div className="flex flex-col space-y-1">
+            <span className="text-sm font-medium text-gray-500">Partita IVA</span>
+            <span>{shop.vatNumber}</span>
+          </div>
+          <div className="flex flex-col space-y-1">
             <span className="text-sm font-medium text-gray-500">Crediti AI</span>
             <span>{shop.aiCredits}</span>
           </div>

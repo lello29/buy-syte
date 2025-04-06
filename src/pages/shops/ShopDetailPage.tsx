@@ -4,7 +4,8 @@ import { useParams, Link } from "react-router-dom";
 import { getShopById, getProductsByShopId } from "@/data/mockData";
 import { 
   MapPin, Phone, Mail, Clock, ExternalLink, 
-  ChevronLeft, Instagram, Facebook, Twitter 
+  ChevronLeft, Instagram, Facebook, Twitter,
+  Briefcase, CreditCard 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -126,6 +127,16 @@ const ShopDetailPage = () => {
                 <div className="flex items-center">
                   <Mail className="h-5 w-5 text-muted-foreground shrink-0 mr-3" />
                   <span>{shop.email}</span>
+                </div>
+                
+                <div className="flex items-center">
+                  <Briefcase className="h-5 w-5 text-muted-foreground shrink-0 mr-3" />
+                  <span>P.IVA: {shop.vatNumber}</span>
+                </div>
+                
+                <div className="flex items-center">
+                  <CreditCard className="h-5 w-5 text-muted-foreground shrink-0 mr-3" />
+                  <span>C.F.: {shop.fiscalCode}</span>
                 </div>
                 
                 {shop.openingHours && (
