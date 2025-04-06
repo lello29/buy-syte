@@ -14,11 +14,20 @@ import AddProductDialog from "@/components/products/AddProductDialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ProductCategoriesManager from "@/components/products/ProductCategoriesManager";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 
 const ProductsPage = () => {
   const { currentUser, getUserShop } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const isMobile = useIsMobile();
   
   if (!currentUser || currentUser.role !== "shop") {
@@ -40,10 +49,20 @@ const ProductsPage = () => {
   }
   
   const products = getProductsByShopId(shop.id);
-  const filteredProducts = products.filter(product => 
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  
+  // Extract unique categories from products
+  const categories = ["all", ...Array.from(new Set(products.map(p => p.category)))];
+  
+  const filteredProducts = products.filter(product => {
+    // Apply search filter
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.category.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Apply category filter if not "all"
+    const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  });
 
   const handleAddProduct = () => {
     setShowAddModal(true);
@@ -53,11 +72,38 @@ const ProductsPage = () => {
     setSearchTerm("");
   };
 
+  const handleCategoryChange = (category: string) => {
+    setCategoryFilter(category);
+  };
+
   return (
     <div className="space-y-5">
       <ProductsHeader onAddProduct={handleAddProduct} />
       
-      <ProductsSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <ProductsSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        
+        <div className="flex gap-2 w-full sm:w-auto">
+          {isMobile ? (
+            <Select value={categoryFilter} onValueChange={handleCategoryChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Filtra per categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tutte le categorie</SelectItem>
+                {categories.filter(c => c !== "all").map(category => (
+                  <SelectItem key={category} value={category}>{category}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <ProductCategoriesManager 
+              categories={categories.filter(c => c !== "all")} 
+              onCategoryChange={handleCategoryChange}
+            />
+          )}
+        </div>
+      </div>
       
       {filteredProducts.length > 0 ? (
         <ProductsTable products={filteredProducts} />

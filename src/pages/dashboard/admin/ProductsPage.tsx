@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Card,
@@ -11,7 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Package, Eye, Edit, Check, X, Plus } from "lucide-react";
+import { Package, Eye, Edit, Check, X, Plus, Filter } from "lucide-react";
 import { products, shops } from "@/data/mockData";
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileProductsList from "@/components/products/MobileProductsList";
@@ -23,6 +22,14 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import ProductCategoriesManager from "@/components/products/ProductCategoriesManager";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 const ProductsPage = () => {
   const { currentUser } = useAuth();
@@ -41,7 +48,7 @@ const ProductsPage = () => {
   }
 
   // Get unique categories
-  const categories = Array.from(new Set(products.map(product => product.category)));
+  const categories = ["all", ...Array.from(new Set(products.map(product => product.category)))];
 
   const handleToggleProductStatus = (id: string, isActive: boolean) => {
     toast.success(`Stato del prodotto aggiornato con successo`);
@@ -69,6 +76,10 @@ const ProductsPage = () => {
 
   const handleAddProduct = () => {
     toast.info("Funzionalità in sviluppo");
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setCategoryFilter(category);
   };
 
   const mobileHeader = (
@@ -126,26 +137,17 @@ const ProductsPage = () => {
             
             <div>
               <h3 className="text-sm font-medium mb-2">Categoria</h3>
-              <div className="flex overflow-x-auto gap-2 pb-2">
-                <Button 
-                  size="sm"
-                  variant={categoryFilter === "all" ? "default" : "outline"} 
-                  onClick={() => setCategoryFilter("all")}
-                >
-                  Tutte
-                </Button>
-                {categories.map(category => (
-                  <Button 
-                    key={category}
-                    size="sm"
-                    className="whitespace-nowrap"
-                    variant={categoryFilter === category ? "default" : "outline"} 
-                    onClick={() => setCategoryFilter(category)}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
+              <Select value={categoryFilter} onValueChange={handleCategoryChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filtra per categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tutte le categorie</SelectItem>
+                  {categories.filter(c => c !== "all").map(category => (
+                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           
@@ -187,27 +189,12 @@ const ProductsPage = () => {
               </div>
             </div>
 
-            <div>
+            <div className="md:ml-auto">
               <h3 className="text-sm font-medium mb-2">Categoria</h3>
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  size="sm"
-                  variant={categoryFilter === "all" ? "default" : "outline"} 
-                  onClick={() => setCategoryFilter("all")}
-                >
-                  Tutte
-                </Button>
-                {categories.map(category => (
-                  <Button 
-                    key={category}
-                    size="sm"
-                    variant={categoryFilter === category ? "default" : "outline"} 
-                    onClick={() => setCategoryFilter(category)}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
+              <ProductCategoriesManager 
+                categories={categories.filter(c => c !== "all")} 
+                onCategoryChange={handleCategoryChange}
+              />
             </div>
           </div>
 
