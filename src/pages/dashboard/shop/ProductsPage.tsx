@@ -1,7 +1,8 @@
 
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { getProductsByShopId } from "@/data/mockData";
+import { getProductsByShopId } from "@/data/products";
+import { shops } from "@/data/mockData";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";

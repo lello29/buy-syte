@@ -11,6 +11,7 @@ import {
   TableBody,
   TableRow
 } from "@/components/ui/table";
+import { useNavigate } from "react-router-dom";
 
 interface ProductsTableProps {
   products: any[];
@@ -27,6 +28,8 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   onViewProduct,
   onAddProduct
 }) => {
+  const navigate = useNavigate();
+  
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">

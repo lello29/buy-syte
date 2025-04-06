@@ -1,14 +1,20 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Eye } from "lucide-react";
 import { Product } from "@/types";
 
 interface ProductsTableProps {
   products: Product[];
+  onToggleProductStatus?: (id: string, isActive: boolean) => void;
+  onViewProduct?: (product: any) => void;
 }
 
-const ProductsTable: React.FC<ProductsTableProps> = ({ products }) => {
+const ProductsTable: React.FC<ProductsTableProps> = ({ 
+  products,
+  onToggleProductStatus,
+  onViewProduct
+}) => {
   return (
     <div className="bg-white rounded-lg border overflow-hidden">
       <div className="overflow-x-auto">
@@ -55,12 +61,24 @@ const ProductsTable: React.FC<ProductsTableProps> = ({ products }) => {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-2">
+                    {onViewProduct && (
+                      <Button size="icon" variant="ghost" onClick={() => onViewProduct(product)}>
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    )}
                     <Button size="icon" variant="ghost">
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button size="icon" variant="ghost" className="text-red-500">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {onToggleProductStatus && (
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        className="text-red-500"
+                        onClick={() => onToggleProductStatus(product.id, !product.isActive)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </td>
               </tr>

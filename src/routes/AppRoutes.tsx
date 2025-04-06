@@ -29,7 +29,6 @@ import ShopSettingsPage from "../pages/dashboard/shop/ShopSettingsPage";
 import AddProductForm from "../components/products/AddProductForm";
 import DashboardLayout from "../components/layout/DashboardLayout";
 
-// TODO: Implement auth handling with context
 const AppRoutes = () => {
   return (
     <Routes>
@@ -69,6 +68,7 @@ const AppRoutes = () => {
         <Route path="admin/shops" element={<AdminShopsPage />} />
         <Route path="admin/collaborators" element={<CollaboratorsPage />} />
         <Route path="admin/products" element={<ProductsAdminPage />} />
+        <Route path="admin/products/:id" element={<AddProductForm />} />
         <Route path="admin/users" element={<UsersPage />} />
         <Route path="admin/settings" element={<SettingsPage />} />
       </Route>

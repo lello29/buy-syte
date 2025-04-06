@@ -54,7 +54,11 @@ const ProductsContent: React.FC<ProductsContentProps> = ({
           <MobileAddButton onClick={onAddProduct} />
         </>
       ) : (
-        <ProductsTable products={filteredProducts} />
+        <ProductsTable 
+          products={filteredProducts}
+          onToggleProductStatus={handleToggleProductStatus}
+          onViewProduct={handleViewProduct}
+        />
       )}
     </>
   );
