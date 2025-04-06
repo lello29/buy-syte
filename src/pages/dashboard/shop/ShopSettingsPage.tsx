@@ -1,6 +1,6 @@
 
 import React from "react";
-import ShopAuthCheck from "../customers/components/ShopAuthCheck";
+import ShopAuthCheck from "./components/ShopAuthCheck";
 import ShopSettingsContainer from "./settings/ShopSettingsContainer";
 
 const ShopSettingsPage: React.FC = () => {
