@@ -10,7 +10,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getUsersByRole } from "@/data/mockData";
+import { getUsersByRole } from "@/data/users";
 import { toast } from "sonner";
 import { User as UserIcon, UserCheck, UserX, Ban, Trash2, Shield } from "lucide-react";
 import {
@@ -23,6 +23,14 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { User } from "@/types";
 import MobileUsersList from "@/components/admin/users/MobileUsersList";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const UsersPage = () => {
   const { currentUser } = useAuth();
@@ -68,93 +76,107 @@ const UsersPage = () => {
     setIsDeleteDialogOpen(true);
   };
 
+  const mobileHeader = (
+    <div className="md:hidden">
+      <h1 className="text-3xl font-bold mb-2">Lista Utenti</h1>
+      <p className="text-gray-600 mb-6">
+        Elenco di tutti gli utenti registrati sulla piattaforma
+      </p>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Gestione Utenti</h1>
-      <p className="text-gray-600">
-        Visualizza e gestisci gli utenti registrati sulla piattaforma.
-      </p>
+      {!isMobile && (
+        <>
+          <h1 className="text-3xl font-bold">Gestione Utenti</h1>
+          <p className="text-gray-600">
+            Visualizza e gestisci gli utenti registrati sulla piattaforma.
+          </p>
+        </>
+      )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserIcon className="h-5 w-5 text-primary" />
-            Lista Utenti
-          </CardTitle>
-          <CardDescription>
-            Elenco di tutti gli utenti registrati sulla piattaforma
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isMobile ? (
-            <MobileUsersList 
-              users={users}
-              onToggleStatus={handleToggleUserStatus}
-              onDeleteUser={handleDeleteUser}
-            />
-          ) : (
-            <div className="rounded-md border">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left">ID</th>
-                    <th className="px-4 py-3 text-left">Nome</th>
-                    <th className="px-4 py-3 text-left">Email</th>
-                    <th className="px-4 py-3 text-left">Registrato il</th>
-                    <th className="px-4 py-3 text-left">Stato</th>
-                    <th className="px-4 py-3 text-right">Azioni</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {users.map((user) => (
-                    <tr key={user.id}>
-                      <td className="px-4 py-3 font-mono text-sm">{user.id.slice(0, 8)}</td>
-                      <td className="px-4 py-3">{user.name}</td>
-                      <td className="px-4 py-3">{user.email}</td>
-                      <td className="px-4 py-3">{new Date(user.createdAt).toLocaleDateString()}</td>
-                      <td className="px-4 py-3">
-                        <Badge variant={user.isActive ? "success" : "destructive"}>
-                          {user.isActive ? "Attivo" : "Inattivo"}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleToggleUserStatus(user.id, !user.isActive)}
-                          >
-                            {user.isActive ? (
-                              <><UserX className="mr-1 h-4 w-4" /> Disattiva</>
-                            ) : (
-                              <><UserCheck className="mr-1 h-4 w-4" /> Attiva</>
-                            )}
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => openViewDialog(user)}
-                          >
-                            Dettagli
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            className="text-red-600 hover:bg-red-100"
-                            onClick={() => openDeleteDialog(user)}
-                          >
-                            <Trash2 className="mr-1 h-4 w-4" /> Elimina
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {isMobile ? (
+        <>
+          {mobileHeader}
+          <MobileUsersList 
+            users={users}
+            onToggleStatus={handleToggleUserStatus}
+            onDeleteUser={handleDeleteUser}
+          />
+        </>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserIcon className="h-5 w-5 text-primary" />
+              Lista Utenti
+            </CardTitle>
+            <CardDescription>
+              Elenco di tutti gli utenti registrati sulla piattaforma
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Registrato il</TableHead>
+                  <TableHead>Stato</TableHead>
+                  <TableHead className="text-right">Azioni</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-mono text-sm">{user.id.slice(0, 8)}</TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      <Badge variant={user.isActive ? "success" : "destructive"}>
+                        {user.isActive ? "Attivo" : "Inattivo"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleToggleUserStatus(user.id, !user.isActive)}
+                        >
+                          {user.isActive ? (
+                            <><UserX className="mr-1 h-4 w-4" /> Disattiva</>
+                          ) : (
+                            <><UserCheck className="mr-1 h-4 w-4" /> Attiva</>
+                          )}
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => openViewDialog(user)}
+                        >
+                          Dettagli
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="text-red-600 hover:bg-red-100"
+                          onClick={() => openDeleteDialog(user)}
+                        >
+                          <Trash2 className="mr-1 h-4 w-4" /> Elimina
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
       {/* View User Details Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>

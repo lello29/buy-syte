@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Send, ChevronRight, Phone, Mail } from 'lucide-react';
+import { Send, Phone, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Customer {
@@ -22,61 +22,42 @@ const MobileCustomersList: React.FC<MobileCustomersListProps> = ({ customers }) 
     toast.info(`Contatto cliente: ${customer.name}`);
   };
 
-  const handleCustomerClick = (customer: Customer) => {
-    toast.info(`Visualizza dettagli cliente: ${customer.name}`);
-  };
-
   return (
     <div className="space-y-4">
       {customers.length > 0 ? (
         customers.map((customer) => (
-          <div key={customer.id} className="border rounded-md overflow-hidden">
-            <div 
-              className="p-4"
-              onClick={() => handleCustomerClick(customer)}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-lg font-semibold">{customer.name}</h3>
-                  <p className="text-gray-600 text-sm">{customer.email}</p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+          <div key={customer.id} className="border rounded-md overflow-hidden bg-white mb-4">
+            <div className="p-4">
+              <div className="text-2xl font-bold">{customer.name}</div>
+              <div className="text-gray-800">{customer.email}</div>
+              <div className="text-sm text-gray-500 mt-1">
+                Ultimo ordine: {customer.lastOrderDate.toLocaleDateString()}
               </div>
-              <div className="mt-2 flex justify-between text-sm">
-                <div>
-                  <span className="text-gray-500">Ultimo ordine: </span>
-                  <span>{customer.lastOrderDate.toLocaleDateString()}</span>
-                </div>
-                <div className="font-semibold">
-                  €{customer.totalSpent.toFixed(2)}
-                </div>
-              </div>
-              <div className="mt-1 text-xs text-gray-500">
-                {customer.orderCount} ordini totali
+              <div className="mt-1 text-sm">
+                <span className="font-semibold">{customer.orderCount} ordini</span> - 
+                <span className="font-semibold ml-1">€{customer.totalSpent.toFixed(2)}</span>
               </div>
             </div>
             <div className="flex border-t">
               <Button 
                 variant="ghost" 
-                className="flex-1 rounded-none h-12 py-2 justify-center"
+                className="flex-1 rounded-none h-12 py-2 justify-center text-gray-700 hover:bg-gray-100"
                 onClick={() => toast.info(`Chiamata a ${customer.name}`)}
               >
                 <Phone className="h-4 w-4 mr-1" /> 
                 Chiama
               </Button>
-              <div className="w-px bg-gray-200"></div>
               <Button 
                 variant="ghost" 
-                className="flex-1 rounded-none h-12 py-2 justify-center"
+                className="flex-1 rounded-none h-12 py-2 justify-center text-gray-700 hover:bg-gray-100"
                 onClick={() => toast.info(`Email a ${customer.name}`)}
               >
                 <Mail className="h-4 w-4 mr-1" /> 
                 Email
               </Button>
-              <div className="w-px bg-gray-200"></div>
               <Button 
                 variant="ghost" 
-                className="flex-1 rounded-none h-12 py-2 justify-center"
+                className="flex-1 rounded-none h-12 py-2 justify-center text-gray-700 hover:bg-gray-100"
                 onClick={() => handleContactClick(customer)}
               >
                 <Send className="h-4 w-4 mr-1" /> 
