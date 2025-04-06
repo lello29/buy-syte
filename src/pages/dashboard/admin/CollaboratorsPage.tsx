@@ -29,6 +29,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useIsMobile } from "@/hooks/use-mobile";
+import MobileCollaboratorsList from "@/components/admin/collaborators/MobileCollaboratorsList";
 
 const CollaboratorsPage = () => {
   const { currentUser } = useAuth();
@@ -37,6 +39,7 @@ const CollaboratorsPage = () => {
   const [selectedCollaborator, setSelectedCollaborator] = useState<Collaborator | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   if (!currentUser || currentUser.role !== "admin") {
     return (
@@ -70,6 +73,10 @@ const CollaboratorsPage = () => {
   const openDeleteDialog = (collaborator: Collaborator) => {
     setSelectedCollaborator(collaborator);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleAddCollaborator = () => {
+    toast.info("Funzionalità di aggiunta collaboratore non ancora implementata");
   };
 
   const filteredCollaborators = statusFilter === "all"
@@ -106,83 +113,93 @@ const CollaboratorsPage = () => {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5 text-primary" />
-            Lista Collaboratori
-          </CardTitle>
-          <CardDescription>
-            Elenco di tutti i collaboratori registrati sulla piattaforma
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Area di Copertura</TableHead>
-                  <TableHead>Valutazione</TableHead>
-                  <TableHead>Stato</TableHead>
-                  <TableHead className="text-right">Azioni</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredCollaborators.map((collaborator) => (
-                  <TableRow key={collaborator.id}>
-                    <TableCell>{collaborator.name}</TableCell>
-                    <TableCell>{collaborator.email}</TableCell>
-                    <TableCell>{collaborator.coverageArea}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                        {collaborator.rating.toFixed(1)}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={collaborator.isActive ? "success" : "destructive"}>
-                        {collaborator.isActive ? "Attivo" : "Inattivo"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleToggleStatus(collaborator.id, !collaborator.isActive)}
-                        >
-                          {collaborator.isActive ? (
-                            <><UserX className="mr-1 h-4 w-4" /> Disattiva</>
-                          ) : (
-                            <><UserCheck className="mr-1 h-4 w-4" /> Attiva</>
-                          )}
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => openViewDialog(collaborator)}
-                        >
-                          <Eye className="mr-1 h-4 w-4" /> Dettagli
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          className="text-red-600 hover:bg-red-100"
-                          onClick={() => openDeleteDialog(collaborator)}
-                        >
-                          <Trash2 className="mr-1 h-4 w-4" /> Elimina
-                        </Button>
-                      </div>
-                    </TableCell>
+      {isMobile ? (
+        <MobileCollaboratorsList 
+          collaborators={filteredCollaborators}
+          onViewCollaborator={openViewDialog}
+          onToggleStatus={handleToggleStatus}
+          onDeleteCollaborator={handleDeleteCollaborator}
+          onAddCollaborator={handleAddCollaborator}
+        />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5 text-primary" />
+              Lista Collaboratori
+            </CardTitle>
+            <CardDescription>
+              Elenco di tutti i collaboratori registrati sulla piattaforma
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Area di Copertura</TableHead>
+                    <TableHead>Valutazione</TableHead>
+                    <TableHead>Stato</TableHead>
+                    <TableHead className="text-right">Azioni</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {filteredCollaborators.map((collaborator) => (
+                    <TableRow key={collaborator.id}>
+                      <TableCell>{collaborator.name}</TableCell>
+                      <TableCell>{collaborator.email}</TableCell>
+                      <TableCell>{collaborator.coverageArea}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                          {collaborator.rating.toFixed(1)}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={collaborator.isActive ? "success" : "destructive"}>
+                          {collaborator.isActive ? "Attivo" : "Inattivo"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleToggleStatus(collaborator.id, !collaborator.isActive)}
+                          >
+                            {collaborator.isActive ? (
+                              <><UserX className="mr-1 h-4 w-4" /> Disattiva</>
+                            ) : (
+                              <><UserCheck className="mr-1 h-4 w-4" /> Attiva</>
+                            )}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openViewDialog(collaborator)}
+                          >
+                            <Eye className="mr-1 h-4 w-4" /> Dettagli
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="text-red-600 hover:bg-red-100"
+                            onClick={() => openDeleteDialog(collaborator)}
+                          >
+                            <Trash2 className="mr-1 h-4 w-4" /> Elimina
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* View Collaborator Details Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
