@@ -4,9 +4,11 @@ import { toast } from 'sonner';
 import { AlertCircle, Sparkles } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useProductForm } from '../ProductFormContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const AIStatusCheck: React.FC = () => {
   const { productData, currentStep } = useProductForm();
+  const isMobile = useIsMobile();
   const [aiStatus, setAiStatus] = useState<{
     available: boolean;
     credits: number;
@@ -59,29 +61,36 @@ const AIStatusCheck: React.FC = () => {
     return null;
   }
   
+  // Stile più compatto per dispositivi mobili
+  const alertClassName = isMobile ? "mb-3 text-sm" : "mb-4";
+  
   if (aiStatus.available && aiStatus.active && aiStatus.credits > 0) {
     return (
-      <Alert className="mb-4 bg-green-50 border-green-200">
+      <Alert className={`${alertClassName} bg-green-50 border-green-200`}>
         <Sparkles className="h-4 w-4 text-green-500" />
         <AlertTitle className="text-green-700">AI attiva</AlertTitle>
         <AlertDescription className="text-green-600">
-          L'assistente AI è attivo e pronto ad aiutarti. Crediti disponibili: {aiStatus.credits}
+          {isMobile ? (
+            `${aiStatus.credits} crediti disponibili`
+          ) : (
+            `L'assistente AI è attivo e pronto ad aiutarti. Crediti disponibili: ${aiStatus.credits}`
+          )}
         </AlertDescription>
       </Alert>
     );
   }
   
   return (
-    <Alert variant="default" className="mb-4">
+    <Alert variant="default" className={alertClassName}>
       <AlertCircle className="h-4 w-4" />
-      <AlertTitle>Funzionalità AI limitate</AlertTitle>
+      <AlertTitle>{isMobile ? "AI limitata" : "Funzionalità AI limitate"}</AlertTitle>
       <AlertDescription>
         {!aiStatus.active ? (
-          "L'AI non è attiva per il tuo account. Prosegui con l'inserimento manuale."
+          "AI non attiva. Inserimento manuale."
         ) : aiStatus.credits <= 0 ? (
-          "I crediti AI sono esauriti. Prosegui con l'inserimento manuale o contatta l'amministratore."
+          "Crediti AI esauriti."
         ) : (
-          "Servizio AI momentaneamente non disponibile. Prosegui con l'inserimento manuale."
+          "AI non disponibile."
         )}
       </AlertDescription>
     </Alert>

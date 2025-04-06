@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import AIStatusCheck from "./AIStatusCheck";
 import BarcodeScanner from "@/components/products/barcode/BarcodeScanner";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FormStepContentProps {
   onClose?: () => void;
@@ -21,7 +22,7 @@ interface FormStepContentProps {
 
 const FormStepContent: React.FC<FormStepContentProps> = ({ 
   onClose, 
-  isMobile,
+  isMobile: propIsMobile,
   handleSkipToManualEntry 
 }) => {
   const { 
@@ -35,6 +36,10 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
   } = useProductForm();
   
   const [showScanner, setShowScanner] = useState(false);
+  const detectedIsMobile = useIsMobile();
+  
+  // Use provided prop or detected mobile state
+  const isMobile = propIsMobile !== undefined ? propIsMobile : detectedIsMobile;
 
   // Use provided function or the one from context
   const skipToManual = handleSkipToManualEntry || contextSkipToManual;
@@ -87,21 +92,25 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
           data={productData} 
           updateData={updateProductData}
           onScanBarcode={handleScanBarcode} 
+          isMobile={isMobile}
         />;
       case 2:
         return <ProductDetails 
           data={productData} 
           updateData={updateProductData} 
+          isMobile={isMobile}
         />;
       case 3:
         return <ProductImages 
           data={productData} 
           updateData={updateProductData} 
+          isMobile={isMobile}
         />;
       case 4:
         return <ProductOptions 
           data={productData} 
           updateData={updateProductData} 
+          isMobile={isMobile}
         />;
       case 5:
         return (
@@ -112,6 +121,7 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
               handleSubmit();
               if (onClose) setTimeout(onClose, 2000);
             }}
+            isMobile={isMobile}
           />
         );
       default:
