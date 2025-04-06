@@ -1,35 +1,27 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getProductsByShopId } from "@/data/mockData";
 import { toast } from "sonner";
-
-import ProductsHeader from "@/components/products/ProductsHeader";
-import ProductsSearch from "@/components/products/ProductsSearch";
-import ProductsTable from "@/components/products/ProductsTable";
-import EmptyProductsState from "@/components/products/EmptyProductsState";
-import ProductsMetrics from "@/components/products/ProductsMetrics";
-import ProductsSalesHints from "@/components/products/ProductsSalesHints";
-import AddProductDialog from "@/components/products/AddProductDialog";
-import { Button } from "@/components/ui/button";
-import { Plus, Edit, ArrowLeft } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import ProductCategoriesManager from "@/components/products/ProductCategoriesManager";
-import MobileProductsList from "@/components/products/MobileProductsList";
 import { useNavigate } from "react-router-dom";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+// UI Components
+import ProductsHeader from "@/components/products/ProductsHeader";
+import AddProductDialog from "@/components/products/AddProductDialog";
+import ProductCategoriesManager from "@/components/products/ProductCategoriesManager";
+
+// Refactored Components
+import ProductsPageHeader from "./components/ProductsPageHeader";
+import ProductsFilterBar from "./components/ProductsFilterBar";
+import ProductsContent from "./components/ProductsContent";
+import ProductsMetricsSection from "./components/ProductsMetricsSection";
 
 const ProductsPage = () => {
   const { currentUser, getUserShop } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   
@@ -52,25 +44,18 @@ const ProductsPage = () => {
   }
   
   const products = getProductsByShopId(shop.id);
-  
-  // Extract unique categories from products
   const categories = ["all", ...Array.from(new Set(products.map(p => p.category)))];
   
   const filteredProducts = products.filter(product => {
-    // Apply search filter
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.category.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // Apply category filter if not "all"
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
-    
     return matchesSearch && matchesCategory;
   });
 
   const handleAddProduct = () => {
     try {
       if (isMobile) {
-        // Log per debug
         console.log("Tentativo di navigazione verso /dashboard/products/add su mobile");
         navigate("/dashboard/products/add");
       } else {
@@ -86,12 +71,7 @@ const ProductsPage = () => {
     setSearchTerm("");
   };
 
-  const handleCategoryChange = (category: string) => {
-    setCategoryFilter(category);
-  };
-
   const openCategoryManager = () => {
-    // Find and click the hidden manage-categories-button
     const manageCategoriesButton = document.getElementById("manage-categories-button");
     if (manageCategoriesButton) {
       manageCategoriesButton.click();
@@ -100,7 +80,6 @@ const ProductsPage = () => {
     }
   };
 
-  // Per il componente mobile
   const shopNames = { [shop.id]: shop.name };
   
   const handleToggleProductStatus = (id: string, newStatus: boolean) => {
@@ -113,110 +92,39 @@ const ProductsPage = () => {
 
   return (
     <div className="space-y-5">
-      {isMobile ? (
-        <>
-          <div className="flex flex-col space-y-4">
-            <ProductsSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-            
-            <div className="flex gap-2 w-full">
-              <Select value={categoryFilter} onValueChange={handleCategoryChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Filtra per categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tutte le categorie</SelectItem>
-                  {categories.filter(c => c !== "all").map(category => (
-                    <SelectItem key={category} value={category}>{category}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              <Button 
-                variant="outline" 
-                className="shrink-0"
-                onClick={openCategoryManager}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            {filteredProducts.length > 0 ? (
-              <MobileProductsList 
-                products={filteredProducts}
-                shopNames={shopNames}
-                onToggleProductStatus={handleToggleProductStatus}
-                onAddProduct={handleAddProduct}
-                onViewProduct={handleViewProduct}
-              />
-            ) : (
-              <EmptyProductsState 
-                searchTerm={searchTerm} 
-                onAddProduct={handleAddProduct}
-                onClearSearch={clearSearch} 
-              />
-            )}
-          </div>
-        </>
-      ) : (
-        <>
-          <ProductsHeader onAddProduct={handleAddProduct} />
-          
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <ProductsSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-            
-            <div className="flex gap-2 w-full sm:w-auto">
-              <ProductCategoriesManager 
-                categories={categories.filter(c => c !== "all")} 
-                onCategoryChange={handleCategoryChange}
-                dropdownOnly={true}
-              />
-              
-              <Button 
-                variant="outline" 
-                onClick={openCategoryManager}
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                Gestione Categorie
-              </Button>
-            </div>
-          </div>
-          
-          {filteredProducts.length > 0 ? (
-            <ProductsTable products={filteredProducts} />
-          ) : (
-            <EmptyProductsState 
-              searchTerm={searchTerm} 
-              onAddProduct={handleAddProduct}
-              onClearSearch={clearSearch} 
-            />
-          )}
-          
-          <ProductsMetrics products={products} />
-          
-          <ProductsSalesHints />
-        </>
-      )}
+      <ProductsPageHeader shopName={shop.name} />
+      
+      {!isMobile && <ProductsHeader onAddProduct={handleAddProduct} />}
+      
+      <ProductsFilterBar 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        categories={categories}
+        openCategoryManager={openCategoryManager}
+      />
+      
+      <ProductsContent 
+        products={products}
+        filteredProducts={filteredProducts}
+        searchTerm={searchTerm}
+        onAddProduct={handleAddProduct}
+        onClearSearch={clearSearch}
+        handleToggleProductStatus={handleToggleProductStatus}
+        handleViewProduct={handleViewProduct}
+        shopNames={shopNames}
+      />
+      
+      {!isMobile && <ProductsMetricsSection products={products} />}
 
       {/* Hidden component for managing categories */}
       <div className="hidden">
         <ProductCategoriesManager 
           categories={categories.filter(c => c !== "all")} 
-          onCategoryChange={handleCategoryChange}
+          onCategoryChange={setCategoryFilter}
         />
       </div>
-
-      {/* Mobile Floating Action Button */}
-      {isMobile && (
-        <div className="fixed bottom-6 right-6 z-10">
-          <Button 
-            size="icon" 
-            className="h-14 w-14 rounded-full shadow-lg bg-primary text-white"
-            onClick={handleAddProduct}
-          >
-            <Plus className="h-6 w-6" />
-          </Button>
-        </div>
-      )}
 
       {/* Add Product Dialog for desktop */}
       {!isMobile && showAddModal && (
