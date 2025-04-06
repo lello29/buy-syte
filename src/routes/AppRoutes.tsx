@@ -61,6 +61,11 @@ const AppRoutes = () => {
               <ProductsPage />
             </ShopRoute>
           } />
+          <Route path="products/:productId" element={
+            <ShopRoute>
+              <ProductsPage />
+            </ShopRoute>
+          } />
           <Route path="customers" element={
             <ShopRoute>
               <CustomersPage />

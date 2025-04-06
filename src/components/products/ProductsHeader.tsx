@@ -1,7 +1,8 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, Barcode, Edit } from "lucide-react";
+import { Upload, Barcode, Edit, Plus } from "lucide-react";
+import { Link } from "react-router-dom";
 import AddProductDialog from "./AddProductDialog";
 import ProductCategoriesManager from "./ProductCategoriesManager";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -39,9 +40,17 @@ const ProductsHeader: React.FC<ProductsHeaderProps> = ({ onAddProduct }) => {
       </div>
       
       <div className="flex flex-wrap gap-4">
-        <AddProductDialog />
-        {!isMobile && (
+        {isMobile ? (
+          <Button 
+            className="bg-[#0a3276] hover:bg-[#0a3276]/90"
+            onClick={onAddProduct}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Nuovo Prodotto
+          </Button>
+        ) : (
           <>
+            <AddProductDialog />
             <Button variant="outline">
               <Barcode className="h-4 w-4 mr-2" />
               Scansiona Codice

@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getProductsByShopId } from "@/data/mockData";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNavigate } from "react-router-dom";
 
 // UI Components
 import ProductsHeader from "@/components/products/ProductsHeader";
@@ -54,16 +54,10 @@ const ProductsPage = () => {
   });
 
   const handleAddProduct = () => {
-    try {
-      if (isMobile) {
-        console.log("Tentativo di navigazione verso /dashboard/products su mobile");
-        setShowAddModal(true);
-      } else {
-        setShowAddModal(true);
-      }
-    } catch (error) {
-      console.error("Errore durante la navigazione:", error);
-      toast.error("Impossibile accedere alla pagina di aggiunta prodotto");
+    if (isMobile) {
+      setShowAddModal(true);
+    } else {
+      setShowAddModal(true);
     }
   };
 

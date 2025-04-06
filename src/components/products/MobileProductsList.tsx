@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Eye, Check, X, Plus, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 interface Product {
   id: string;
