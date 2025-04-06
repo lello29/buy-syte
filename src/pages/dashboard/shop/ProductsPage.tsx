@@ -1,11 +1,11 @@
 
-import React, { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth";
 import { getProductsByShopId } from "@/data/products";
-import { shops } from "@/data/mockData";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
+import { Shop } from "@/types";
 
 // UI Components
 import ProductsHeader from "@/components/products/ProductsHeader";
@@ -17,39 +17,97 @@ import ProductsPageHeader from "./components/ProductsPageHeader";
 import ProductsFilterBar from "./components/ProductsFilterBar";
 import ProductsContent from "./components/ProductsContent";
 import ProductsMetricsSection from "./components/ProductsMetricsSection";
+import ShopAuthCheck from "./components/ShopAuthCheck";
 
 const ProductsPage = () => {
   const { currentUser, getUserShop } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [shop, setShop] = useState<Shop | null>(null);
+  const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   
-  if (!currentUser || currentUser.role !== "shop") {
-    return <div>Accesso non autorizzato</div>;
-  }
+  useEffect(() => {
+    const fetchShop = async () => {
+      if (currentUser && currentUser.role === "shop") {
+        try {
+          const shopData = await getUserShop();
+          setShop(shopData || null);
+        } catch (error) {
+          console.error("Error fetching shop data:", error);
+          toast.error("Errore nel caricamento dei dati del negozio");
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+    
+    fetchShop();
+  }, [currentUser, getUserShop]);
   
-  const shop = getUserShop();
+  // Use ShopAuthCheck component to handle authentication and shop validation
+  return (
+    <ShopAuthCheck>
+      {shop && (
+        <div className="space-y-5">
+          <ProductsPageHeader shopName={shop.name} />
+          
+          {!isMobile && <ProductsHeader onAddProduct={handleAddProduct} />}
+          
+          <ProductsFilterBar 
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            categoryFilter={categoryFilter}
+            setCategoryFilter={setCategoryFilter}
+            categories={categories}
+            openCategoryManager={openCategoryManager}
+          />
+          
+          <ProductsContent 
+            products={products}
+            filteredProducts={filteredProducts}
+            searchTerm={searchTerm}
+            onAddProduct={handleAddProduct}
+            onClearSearch={clearSearch}
+            handleToggleProductStatus={handleToggleProductStatus}
+            handleViewProduct={handleViewProduct}
+            shopNames={shopNames}
+          />
+          
+          {!isMobile && <ProductsMetricsSection products={products} />}
+
+          {/* Hidden component for managing categories */}
+          <div className="hidden">
+            <ProductCategoriesManager 
+              categories={categories.filter(c => c !== "all")} 
+              onCategoryChange={setCategoryFilter}
+            />
+          </div>
+
+          {/* Add Product Dialog for desktop */}
+          {showAddModal && (
+            <AddProductDialog 
+              trigger={<div className="hidden" />} 
+              open={showAddModal}
+              onOpenChange={(open) => setShowAddModal(open)}
+            />
+          )}
+        </div>
+      )}
+    </ShopAuthCheck>
+  );
   
-  if (!shop) {
-    return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold mb-2">Negozio non configurato</h2>
-        <p className="text-muted-foreground mb-6">
-          Il tuo account negozio non è ancora associato a un profilo negozio. 
-          Contatta l'amministratore per configurare il tuo profilo.
-        </p>
-      </div>
-    );
-  }
-  
-  const products = getProductsByShopId(shop.id);
+  // Move all the derived values and handlers inside the component body
+  const products = shop ? getProductsByShopId(shop.id) : [];
   const categories = ["all", ...Array.from(new Set(products.map(p => p.category)))];
   
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.category.toLowerCase().includes(searchTerm.toLowerCase());
+                          product.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
@@ -75,7 +133,7 @@ const ProductsPage = () => {
     }
   };
 
-  const shopNames = { [shop.id]: shop.name };
+  const shopNames = shop ? { [shop.id]: shop.name } : {};
   
   const handleToggleProductStatus = (id: string, newStatus: boolean) => {
     toast.success(`Prodotto ${newStatus ? 'attivato' : 'disattivato'} con successo`);
@@ -84,53 +142,6 @@ const ProductsPage = () => {
   const handleViewProduct = (product: any) => {
     navigate(`/dashboard/products/${product.id}`);
   };
-
-  return (
-    <div className="space-y-5">
-      <ProductsPageHeader shopName={shop.name} />
-      
-      {!isMobile && <ProductsHeader onAddProduct={handleAddProduct} />}
-      
-      <ProductsFilterBar 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        categories={categories}
-        openCategoryManager={openCategoryManager}
-      />
-      
-      <ProductsContent 
-        products={products}
-        filteredProducts={filteredProducts}
-        searchTerm={searchTerm}
-        onAddProduct={handleAddProduct}
-        onClearSearch={clearSearch}
-        handleToggleProductStatus={handleToggleProductStatus}
-        handleViewProduct={handleViewProduct}
-        shopNames={shopNames}
-      />
-      
-      {!isMobile && <ProductsMetricsSection products={products} />}
-
-      {/* Hidden component for managing categories */}
-      <div className="hidden">
-        <ProductCategoriesManager 
-          categories={categories.filter(c => c !== "all")} 
-          onCategoryChange={setCategoryFilter}
-        />
-      </div>
-
-      {/* Add Product Dialog for desktop */}
-      {showAddModal && (
-        <AddProductDialog 
-          trigger={<div className="hidden" />} 
-          open={showAddModal}
-          onOpenChange={(open) => setShowAddModal(open)}
-        />
-      )}
-    </div>
-  );
 };
 
 export default ProductsPage;
