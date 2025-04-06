@@ -26,12 +26,14 @@ interface ProductCategoriesManagerProps {
   categories: string[];
   onCategoryChange?: (category: string) => void;
   className?: string;
+  dropdownOnly?: boolean;
 }
 
 const ProductCategoriesManager: React.FC<ProductCategoriesManagerProps> = ({
   categories,
   onCategoryChange,
   className,
+  dropdownOnly = false,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newCategory, setNewCategory] = useState("");
@@ -100,8 +102,21 @@ const ProductCategoriesManager: React.FC<ProductCategoriesManagerProps> = ({
     }
   };
 
+  // Hidden button to trigger the categories management dialog directly
+  const manageCategoriesButton = (
+    <Button 
+      id="manage-categories-button" 
+      className="hidden" 
+      onClick={() => setIsDialogOpen(true)}
+    >
+      Gestisci Categorie
+    </Button>
+  );
+
   return (
     <>
+      {manageCategoriesButton}
+      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className={className}>
@@ -122,11 +137,15 @@ const ProductCategoriesManager: React.FC<ProductCategoriesManagerProps> = ({
             </DropdownMenuItem>
           ))}
           
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
-            <Edit className="mr-2 h-4 w-4" />
-            Gestisci Categorie
-          </DropdownMenuItem>
+          {!dropdownOnly && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Gestisci Categorie
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

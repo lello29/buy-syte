@@ -12,7 +12,7 @@ import ProductsMetrics from "@/components/products/ProductsMetrics";
 import ProductsSalesHints from "@/components/products/ProductsSalesHints";
 import AddProductDialog from "@/components/products/AddProductDialog";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ProductCategoriesManager from "@/components/products/ProductCategoriesManager";
 import { 
@@ -28,6 +28,7 @@ const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const isMobile = useIsMobile();
   
   if (!currentUser || currentUser.role !== "shop") {
@@ -76,6 +77,14 @@ const ProductsPage = () => {
     setCategoryFilter(category);
   };
 
+  const openCategoryManager = () => {
+    // Find and click the hidden manage-categories-button
+    const manageCategoriesButton = document.getElementById("manage-categories-button");
+    if (manageCategoriesButton) {
+      manageCategoriesButton.click();
+    }
+  };
+
   return (
     <div className="space-y-5">
       <ProductsHeader onAddProduct={handleAddProduct} />
@@ -100,10 +109,23 @@ const ProductsPage = () => {
             <ProductCategoriesManager 
               categories={categories.filter(c => c !== "all")} 
               onCategoryChange={handleCategoryChange}
+              dropdownOnly={true}
             />
           )}
         </div>
       </div>
+      
+      {/* Mobile category management button */}
+      {isMobile && (
+        <Button 
+          variant="outline" 
+          className="w-full"
+          onClick={openCategoryManager}
+        >
+          <Edit className="h-4 w-4 mr-2" />
+          Gestisci Categorie
+        </Button>
+      )}
       
       {filteredProducts.length > 0 ? (
         <ProductsTable products={filteredProducts} />
@@ -118,6 +140,14 @@ const ProductsPage = () => {
       <ProductsMetrics products={products} />
       
       {isMobile ? null : <ProductsSalesHints />}
+
+      {/* Hidden component for managing categories */}
+      <div className="hidden">
+        <ProductCategoriesManager 
+          categories={categories.filter(c => c !== "all")} 
+          onCategoryChange={handleCategoryChange}
+        />
+      </div>
 
       {/* Mobile Floating Action Button */}
       {isMobile && (

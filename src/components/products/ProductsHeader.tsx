@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, Barcode } from "lucide-react";
+import { Upload, Barcode, Edit } from "lucide-react";
 import AddProductDialog from "./AddProductDialog";
 import ProductCategoriesManager from "./ProductCategoriesManager";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -50,10 +50,23 @@ const ProductsHeader: React.FC<ProductsHeaderProps> = ({ onAddProduct }) => {
               <Upload className="h-4 w-4 mr-2" />
               Importa CSV
             </Button>
+            {/* Dropdown for category selection */}
             <ProductCategoriesManager 
               categories={categories}
               className="hidden lg:flex"
+              dropdownOnly={true}
             />
+            {/* Dedicated button for category management */}
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                const categoriesManager = document.getElementById("manage-categories-button");
+                if (categoriesManager) categoriesManager.click();
+              }}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Gestione Categorie
+            </Button>
           </>
         )}
       </div>

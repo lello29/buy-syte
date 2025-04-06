@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Card,
@@ -82,6 +83,14 @@ const ProductsPage = () => {
     setCategoryFilter(category);
   };
 
+  const openCategoryManager = () => {
+    // Find and click the hidden manage-categories-button
+    const manageCategoriesButton = document.getElementById("manage-categories-button");
+    if (manageCategoriesButton) {
+      manageCategoriesButton.click();
+    }
+  };
+
   const mobileHeader = (
     <div className="md:hidden">
       <h1 className="text-3xl font-bold mb-2">Gestione Prodotti</h1>
@@ -151,6 +160,16 @@ const ProductsPage = () => {
             </div>
           </div>
           
+          {/* Mobile category management button */}
+          <Button 
+            variant="outline" 
+            className="w-full mb-4"
+            onClick={openCategoryManager}
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            Gestisci Categorie
+          </Button>
+          
           <MobileProductsList 
             products={filteredProducts}
             shopNames={shopNames}
@@ -191,10 +210,20 @@ const ProductsPage = () => {
 
             <div className="md:ml-auto">
               <h3 className="text-sm font-medium mb-2">Categoria</h3>
-              <ProductCategoriesManager 
-                categories={categories.filter(c => c !== "all")} 
-                onCategoryChange={handleCategoryChange}
-              />
+              <div className="flex items-center gap-2">
+                <ProductCategoriesManager 
+                  categories={categories.filter(c => c !== "all")} 
+                  onCategoryChange={handleCategoryChange}
+                  dropdownOnly={true}
+                />
+                <Button 
+                  variant="outline" 
+                  onClick={openCategoryManager}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Gestione Categorie
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -246,6 +275,14 @@ const ProductsPage = () => {
           </Card>
         </>
       )}
+
+      {/* Hidden component for managing categories */}
+      <div className="hidden">
+        <ProductCategoriesManager 
+          categories={categories.filter(c => c !== "all")} 
+          onCategoryChange={handleCategoryChange}
+        />
+      </div>
 
       {/* View Product Details Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
