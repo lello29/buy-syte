@@ -167,7 +167,7 @@ export const useShopForm = (
     setShopsList(prev => 
       prev.map(shop => 
         shop.id === selectedShop.id 
-          ? selectedShop 
+          ? { ...selectedShop, lastUpdated: new Date().toISOString() } 
           : shop
       )
     );

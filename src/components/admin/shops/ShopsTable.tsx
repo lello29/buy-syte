@@ -2,7 +2,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Pencil, Ban, Trash2 } from 'lucide-react';
+import { Eye, Pencil, CheckCircle, Ban, Trash2 } from 'lucide-react';
 import { 
   Table, 
   TableBody, 
@@ -14,6 +14,7 @@ import {
 import { getProductsByShopId } from '@/data/products';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Shop } from '@/types';
+import { toast } from 'sonner';
 
 interface ShopsTableProps {
   shops: Shop[];
@@ -21,6 +22,7 @@ interface ShopsTableProps {
   onEditShop: (shop: Shop) => void;
   onToggleStatus?: (shopId: string, isActive: boolean) => void;
   onDeleteShop?: (shopId: string) => void;
+  onApproveShop?: (shopId: string, isApproved: boolean) => void;
 }
 
 const ShopsTable: React.FC<ShopsTableProps> = ({ 
@@ -28,9 +30,17 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
   onViewShop, 
   onEditShop,
   onToggleStatus,
-  onDeleteShop 
+  onDeleteShop,
+  onApproveShop
 }) => {
   const isMobile = useIsMobile();
+  
+  const handleApproveShop = (shopId: string, isCurrentlyApproved: boolean) => {
+    if (onApproveShop) {
+      onApproveShop(shopId, !isCurrentlyApproved);
+      toast.success(`Negozio ${!isCurrentlyApproved ? 'approvato' : 'sospeso'} con successo`);
+    }
+  };
   
   return (
     <Table>
@@ -86,6 +96,16 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                     onClick={() => onToggleStatus(shop.id, !(shop.isActive))}
                   >
                     <Ban className="mr-1 h-4 w-4" /> {!isMobile && (shop.isActive ? "Disattiva" : "Attiva")}
+                  </Button>
+                )}
+                {onApproveShop && shop.isApproved === false && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="text-green-500 hover:text-green-700"
+                    onClick={() => handleApproveShop(shop.id, false)}
+                  >
+                    <CheckCircle className="mr-1 h-4 w-4" /> {!isMobile && "Approva"}
                   </Button>
                 )}
                 {onDeleteShop && (

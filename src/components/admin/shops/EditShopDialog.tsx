@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription
 } from '@/components/ui/dialog';
 import { Shop } from '@/types';
 import ShopBasicInfoFields from './components/ShopBasicInfoFields';
@@ -40,6 +41,7 @@ const EditShopDialog: React.FC<EditShopDialogProps> = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Modifica Negozio</DialogTitle>
+          <DialogDescription>Modifica i dettagli del negozio selezionato.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <ShopBasicInfoFields

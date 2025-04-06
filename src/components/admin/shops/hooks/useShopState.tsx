@@ -1,15 +1,57 @@
 
 import { useState } from 'react';
 import { Shop } from '@/types';
-import { shops } from '@/data/shops';
+import { shops as initialShops } from '@/data/mock-data/shops-data';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
-export const useShopState = () => {
-  const [shopsList, setShopsList] = useState<Shop[]>(shops);
-  const [isAddShopOpen, setIsAddShopOpen] = useState(false);
-  const [isEditShopOpen, setIsEditShopOpen] = useState(false);
-  const [isViewShopOpen, setIsViewShopOpen] = useState(false);
+interface UseShopStateReturnType {
+  shopsList: Shop[];
+  setShopsList: React.Dispatch<React.SetStateAction<Shop[]>>;
+  selectedShop: Shop | null;
+  setSelectedShop: React.Dispatch<React.SetStateAction<Shop | null>>;
+  isViewShopOpen: boolean;
+  setIsViewShopOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isEditShopOpen: boolean;
+  setIsEditShopOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isAddShopOpen: boolean;
+  setIsAddShopOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  newShop: {
+    name: string;
+    description: string;
+    address: string;
+    phone: string;
+    email: string;
+    fiscalCode: string;
+    vatNumber: string;
+    category: string;
+  };
+  setNewShop: React.Dispatch<React.SetStateAction<{
+    name: string;
+    description: string;
+    address: string;
+    phone: string;
+    email: string;
+    fiscalCode: string;
+    vatNumber: string;
+    category: string;
+  }>>;
+  handleAddShop: () => void;
+  handleViewShop: (shop: Shop) => void;
+  handleEditShop: (shop: Shop) => void;
+  handleDeleteShop: (shopId: string) => void;
+  handleToggleStatus: (shopId: string, isActive: boolean) => void;
+  handleApproveShop: (shopId: string, isApproved: boolean) => void;
+}
+
+export const useShopState = (): UseShopStateReturnType => {
+  const [shopsList, setShopsList] = useState<Shop[]>(initialShops);
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
+  const [isViewShopOpen, setIsViewShopOpen] = useState(false);
+  const [isEditShopOpen, setIsEditShopOpen] = useState(false);
+  const [isAddShopOpen, setIsAddShopOpen] = useState(false);
+  const navigate = useNavigate();
+  
   const [newShop, setNewShop] = useState({
     name: '',
     description: '',
@@ -20,7 +62,7 @@ export const useShopState = () => {
     vatNumber: '',
     category: '',
   });
-
+  
   const handleAddShop = () => {
     setIsAddShopOpen(true);
   };
@@ -36,33 +78,37 @@ export const useShopState = () => {
   };
   
   const handleDeleteShop = (shopId: string) => {
-    // Implementation would connect to backend in a real app
     setShopsList(prev => prev.filter(shop => shop.id !== shopId));
     toast.success('Negozio eliminato con successo');
   };
   
   const handleToggleStatus = (shopId: string, isActive: boolean) => {
-    // Implementation would connect to backend in a real app
     setShopsList(prev => 
       prev.map(shop => 
-        shop.id === shopId 
-          ? { ...shop, isActive } 
-          : shop
+        shop.id === shopId ? { ...shop, isActive, lastUpdated: new Date().toISOString() } : shop
       )
     );
   };
-
+  
+  const handleApproveShop = (shopId: string, isApproved: boolean) => {
+    setShopsList(prev => 
+      prev.map(shop => 
+        shop.id === shopId ? { ...shop, isApproved, lastUpdated: new Date().toISOString() } : shop
+      )
+    );
+  };
+  
   return {
     shopsList,
     setShopsList,
-    isAddShopOpen,
-    setIsAddShopOpen,
-    isEditShopOpen,
-    setIsEditShopOpen,
-    isViewShopOpen,
-    setIsViewShopOpen,
     selectedShop,
     setSelectedShop,
+    isViewShopOpen,
+    setIsViewShopOpen,
+    isEditShopOpen,
+    setIsEditShopOpen,
+    isAddShopOpen,
+    setIsAddShopOpen,
     newShop,
     setNewShop,
     handleAddShop,
@@ -70,5 +116,6 @@ export const useShopState = () => {
     handleEditShop,
     handleDeleteShop,
     handleToggleStatus,
+    handleApproveShop
   };
 };

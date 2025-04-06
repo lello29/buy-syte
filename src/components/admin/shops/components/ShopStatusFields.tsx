@@ -21,7 +21,7 @@ const ShopStatusFields: React.FC<ShopStatusFieldsProps> = ({
     if (onCheckboxChange) {
       onCheckboxChange("isApproved", checked);
     } else {
-      // Fallback to the old method if onCheckboxChange is not provided
+      // Fallback per mantenere compatibilità con implementazioni esistenti
       const syntheticEvent = {
         target: {
           name: "isApproved",

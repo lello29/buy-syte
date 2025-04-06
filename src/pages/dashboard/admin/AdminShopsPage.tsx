@@ -17,6 +17,7 @@ const AdminShopsPage: React.FC = () => {
     handleEditShop,
     handleDeleteShop,
     handleToggleStatus,
+    handleApproveShop,
   } = useShopState();
   
   return (
@@ -34,6 +35,7 @@ const AdminShopsPage: React.FC = () => {
           onToggleStatus={handleToggleStatus}
           onDeleteShop={handleDeleteShop}
           onAddShop={handleAddShop}
+          onApproveShop={handleApproveShop}
         />
       ) : (
         <ShopsTable 
@@ -42,6 +44,7 @@ const AdminShopsPage: React.FC = () => {
           onEditShop={handleEditShop}
           onToggleStatus={handleToggleStatus}
           onDeleteShop={handleDeleteShop}
+          onApproveShop={handleApproveShop}
         />
       )}
       
