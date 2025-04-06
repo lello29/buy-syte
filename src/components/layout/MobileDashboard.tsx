@@ -50,7 +50,7 @@ const MobileDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Menu tile principale */}
+      {/* Menu tile principale - consistent styling */}
       <div className="grid grid-cols-2 gap-4">
         {dashboardOptions.map((option, index) => (
           <MobileDashboardItem
@@ -64,7 +64,7 @@ const MobileDashboard = () => {
         ))}
       </div>
 
-      {/* Pulsante azione principale */}
+      {/* Pulsante azione principale - consistent styling */}
       <ActionButton
         label={actionButton.label}
         path={actionButton.path}
@@ -72,7 +72,7 @@ const MobileDashboard = () => {
         onUnavailable={handleNotAvailable}
       />
 
-      {/* Lista opzioni aggiuntive */}
+      {/* Lista opzioni aggiuntive - consistent styling */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         {additionalOptions.map((option, index) => (
           <React.Fragment key={`additional-option-${index}`}>

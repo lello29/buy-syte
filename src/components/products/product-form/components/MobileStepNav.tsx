@@ -40,7 +40,7 @@ const MobileStepNav: React.FC = () => {
 
   // Safer click handler
   const handleStepClick = (index: number) => {
-    if (index <= currentStep) {
+    if (index >= 0 && index <= currentStep && setCurrentStep) {
       setCurrentStep(index);
     }
   };

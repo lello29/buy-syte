@@ -43,11 +43,12 @@ const DashboardIndex = () => {
     return <Navigate to="/dashboard/admin" replace />;
   }
 
-  // For mobile devices, render the MobileDashboard component
-  if (isMobile === true) {
+  // For all mobile devices, render the consistent MobileDashboard component
+  if (isMobile) {
     return <MobileDashboard />;
   }
 
+  // For desktop, render role-specific components
   const renderDashboardByRole = () => {
     const role = currentUser.role;
     

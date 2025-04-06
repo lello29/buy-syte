@@ -89,7 +89,7 @@ const DashboardLayout = () => {
     return "Dashboard";
   };
 
-  // Rendering for mobile devices
+  // Rendering for mobile devices - using consistent styling for all user types
   if (isMobile === true) {
     const isSubPage = location.pathname !== "/dashboard" && 
                       location.pathname !== "/dashboard/admin" && 
@@ -97,8 +97,8 @@ const DashboardLayout = () => {
                       
     return (
       <div className="flex flex-col min-h-screen bg-gray-100">
-        {/* Header blu */}
-        <header className="bg-[#0a3276] text-white p-4 fixed top-0 left-0 right-0 z-50">
+        {/* Header blu with consistent styling */}
+        <header className="bg-[#0a3276] text-white p-4 fixed top-0 left-0 right-0 z-50 shadow-md">
           <div className="flex items-center justify-between">
             {isSubPage ? (
               <button 

@@ -18,8 +18,9 @@ export function useIsMobile() {
     // Run immediately
     checkMobile();
     
-    // Add event listener
+    // Add event listener with better media query approach
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    
     const onChange = () => {
       checkMobile();
     }
@@ -38,7 +39,7 @@ export function useIsMobile() {
       // Cleanup
       return () => window.removeEventListener("resize", onChange);
     }
-  }, []) // Remove initialized dependency
+  }, [])
 
   return isMobile;
 }
