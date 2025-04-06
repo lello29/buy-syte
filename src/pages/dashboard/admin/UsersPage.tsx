@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Card,
@@ -12,13 +11,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getUsersByRole } from "@/data/users";
 import { toast } from "sonner";
-import { User as UserIcon, UserCheck, UserX, Ban, Trash2, Shield } from "lucide-react";
+import { User as UserIcon, UserCheck, UserX, Ban, Trash2, Shield, UserPlus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { User } from "@/types";
@@ -31,6 +31,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const UsersPage = () => {
   const { currentUser } = useAuth();
@@ -38,6 +40,11 @@ const UsersPage = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    name: '',
+    email: '',
+  });
   const isMobile = useIsMobile();
 
   if (!currentUser || currentUser.role !== "admin") {
@@ -66,6 +73,10 @@ const UsersPage = () => {
     toast.success(`Utente eliminato con successo`);
   };
 
+  const openAddDialog = () => {
+    setIsAddDialogOpen(true);
+  };
+
   const openViewDialog = (user: User) => {
     setSelectedUser(user);
     setIsViewDialogOpen(true);
@@ -74,6 +85,36 @@ const UsersPage = () => {
   const openDeleteDialog = (user: User) => {
     setSelectedUser(user);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewUser(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddUser = () => {
+    if (!newUser.name || !newUser.email) {
+      toast.error("Inserisci nome e email");
+      return;
+    }
+
+    const newUserId = `user-${Date.now()}`;
+    const newUserObj: User = {
+      id: newUserId,
+      name: newUser.name,
+      email: newUser.email,
+      role: "user",
+      favorites: [],
+      loyaltyPoints: 0,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setUsers(prev => [...prev, newUserObj]);
+    setNewUser({ name: '', email: '' });
+    setIsAddDialogOpen(false);
+    toast.success("Utente aggiunto con successo");
   };
 
   const mobileHeader = (
@@ -89,10 +130,17 @@ const UsersPage = () => {
     <div className="space-y-6">
       {!isMobile && (
         <>
-          <h1 className="text-3xl font-bold">Gestione Utenti</h1>
-          <p className="text-gray-600">
-            Visualizza e gestisci gli utenti registrati sulla piattaforma.
-          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold">Gestione Utenti</h1>
+              <p className="text-gray-600">
+                Visualizza e gestisci gli utenti registrati sulla piattaforma.
+              </p>
+            </div>
+            <Button onClick={openAddDialog}>
+              <UserPlus className="mr-2 h-5 w-5" /> Aggiungi Utente
+            </Button>
+          </div>
         </>
       )}
 
@@ -103,6 +151,7 @@ const UsersPage = () => {
             users={users}
             onToggleStatus={handleToggleUserStatus}
             onDeleteUser={handleDeleteUser}
+            onAddUser={openAddDialog}
           />
         </>
       ) : (
@@ -295,6 +344,45 @@ const UsersPage = () => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Add User Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Aggiungi Nuovo Utente</DialogTitle>
+            <DialogDescription>
+              Inserisci i dettagli per creare un nuovo utente.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome</Label>
+              <Input
+                id="name"
+                name="name"
+                value={newUser.name}
+                onChange={handleInputChange}
+                placeholder="Nome utente"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={newUser.email}
+                onChange={handleInputChange}
+                placeholder="Email utente"
+              />
+            </div>
+          </div>
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Annulla</Button>
+            <Button onClick={handleAddUser}>Aggiungi Utente</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

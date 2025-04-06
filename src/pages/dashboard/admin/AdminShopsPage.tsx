@@ -1,14 +1,17 @@
+
 import React, { useState } from 'react';
 import { shops } from '@/data/shops';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { Plus, Store } from 'lucide-react';
+import { toast } from 'sonner';
 import { Shop } from '@/types';
 import ShopsTable from '@/components/admin/shops/ShopsTable';
 import ViewShopDialog from '@/components/admin/shops/ViewShopDialog';
 import EditShopDialog from '@/components/admin/shops/EditShopDialog';
 import AddShopDialog from '@/components/admin/shops/AddShopDialog';
+import { useIsMobile } from '@/hooks/use-mobile';
+import MobileShopsList from '@/components/admin/shops/MobileShopsList';
 
 const AdminShopsPage = () => {
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
@@ -16,6 +19,7 @@ const AdminShopsPage = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [shopsList, setShopsList] = useState<Shop[]>(shops);
+  const isMobile = useIsMobile();
   
   const [newShop, setNewShop] = useState({
     name: '',
@@ -45,10 +49,7 @@ const AdminShopsPage = () => {
     );
     
     setShopsList(updatedShops);
-    toast({
-      title: "Negozio aggiornato",
-      description: `Il negozio "${selectedShop.name}" è stato aggiornato con successo.`
-    });
+    toast.success(`Negozio "${selectedShop.name}" aggiornato con successo.`);
     setEditDialogOpen(false);
   };
 
@@ -91,10 +92,7 @@ const AdminShopsPage = () => {
     };
     
     setShopsList([...shopsList, newShopWithId]);
-    toast({
-      title: "Negozio creato",
-      description: `Il negozio "${newShop.name}" è stato creato con successo.`
-    });
+    toast.success(`Negozio "${newShop.name}" creato con successo.`);
     setAddDialogOpen(false);
     setNewShop({
       name: '',
@@ -104,28 +102,51 @@ const AdminShopsPage = () => {
       aiCredits: 100,
     });
   };
+
+  const mobileHeader = (
+    <div className="md:hidden">
+      <h1 className="text-3xl font-bold mb-2">Gestione Negozi</h1>
+      <p className="text-gray-600 mb-6">
+        Elenco di tutti i negozi sulla piattaforma
+      </p>
+    </div>
+  );
   
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Gestione Negozi</h1>
-        <Button onClick={handleAddShop}>
-          <Plus className="mr-1 h-4 w-4" /> Aggiungi Negozio
-        </Button>
-      </div>
+      {!isMobile && (
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Gestione Negozi</h1>
+          <Button onClick={handleAddShop}>
+            <Plus className="mr-1 h-4 w-4" /> Aggiungi Negozio
+          </Button>
+        </div>
+      )}
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Tutti i Negozi</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ShopsTable
+      {isMobile ? (
+        <>
+          {mobileHeader}
+          <MobileShopsList 
             shops={shopsList}
             onViewShop={handleViewShop}
             onEditShop={handleEditShop}
+            onAddShop={handleAddShop}
           />
-        </CardContent>
-      </Card>
+        </>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Tutti i Negozi</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ShopsTable
+              shops={shopsList}
+              onViewShop={handleViewShop}
+              onEditShop={handleEditShop}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       <ViewShopDialog 
         shop={selectedShop}

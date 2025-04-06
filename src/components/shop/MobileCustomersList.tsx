@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Send, Phone, Mail } from 'lucide-react';
+import { Send, Phone, Mail, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Customer {
@@ -15,15 +15,29 @@ interface Customer {
 
 interface MobileCustomersListProps {
   customers: Customer[];
+  onAddCustomer?: () => void;
 }
 
-const MobileCustomersList: React.FC<MobileCustomersListProps> = ({ customers }) => {
+const MobileCustomersList: React.FC<MobileCustomersListProps> = ({ 
+  customers,
+  onAddCustomer 
+}) => {
   const handleContactClick = (customer: Customer) => {
     toast.info(`Contatto cliente: ${customer.name}`);
   };
 
   return (
     <div className="space-y-4">
+      {onAddCustomer && (
+        <Button 
+          className="w-full bg-[#0a3276] hover:bg-[#0a3276]/90 text-white font-bold py-3 rounded-md flex items-center justify-center"
+          onClick={onAddCustomer}
+        >
+          <UserPlus className="h-5 w-5 mr-2" />
+          Aggiungi nuovo cliente
+        </Button>
+      )}
+      
       {customers.length > 0 ? (
         customers.map((customer) => (
           <div key={customer.id} className="border rounded-md overflow-hidden bg-white mb-4">
