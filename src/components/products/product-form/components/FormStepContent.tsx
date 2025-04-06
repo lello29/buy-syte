@@ -10,6 +10,8 @@ import ProductPublish from "../ProductPublish";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import AIStatusCheck from "./AIStatusCheck";
+import BarcodeScanner from "@/components/products/barcode/BarcodeScanner";
+import { toast } from "sonner";
 
 interface FormStepContentProps {
   onClose?: () => void;
@@ -31,6 +33,8 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
     getErrorsForStep,
     steps
   } = useProductForm();
+  
+  const [showScanner, setShowScanner] = useState(false);
 
   // Use provided function or the one from context
   const skipToManual = handleSkipToManualEntry || contextSkipToManual;
@@ -41,6 +45,16 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
   // Get errors for current step
   const currentStepErrors = getErrorsForStep(validStep);
   const hasErrors = currentStepErrors.length > 0;
+
+  const handleScanBarcode = () => {
+    setShowScanner(true);
+  };
+
+  const handleBarcodeDetected = (barcode: string) => {
+    updateProductData({ barcode });
+    setShowScanner(false);
+    toast.success(`Codice ${barcode} rilevato con successo`);
+  };
 
   const renderErrors = () => {
     if (!hasErrors) return null;
@@ -71,7 +85,8 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
       case 1:
         return <ProductBasicInfo 
           data={productData} 
-          updateData={updateProductData} 
+          updateData={updateProductData}
+          onScanBarcode={handleScanBarcode} 
         />;
       case 2:
         return <ProductDetails 
@@ -114,6 +129,14 @@ const FormStepContent: React.FC<FormStepContentProps> = ({
       {/* Mostra lo stato dell'AI solo nei passaggi rilevanti (non nella scansione barcode) */}
       {validStep > 0 && validStep < 5 && <AIStatusCheck />}
       {renderStepContent()}
+      
+      {/* Barcode Scanner Component */}
+      {showScanner && (
+        <BarcodeScanner 
+          onDetected={handleBarcodeDetected} 
+          onClose={() => setShowScanner(false)} 
+        />
+      )}
     </>
   );
 };

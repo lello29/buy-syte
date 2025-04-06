@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { AlertCircle, Sparkles } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useProductForm } from '../ProductFormContext';
 
 const AIStatusCheck: React.FC = () => {
+  const { productData, currentStep } = useProductForm();
   const [aiStatus, setAiStatus] = useState<{
     available: boolean;
     credits: number;
@@ -30,8 +32,10 @@ const AIStatusCheck: React.FC = () => {
         setAiStatus(mockResponse);
         
         if (!mockResponse.active) {
+          console.log("AI non attiva - mostrando avviso");
           toast.error("L'AI non è attiva. Prosegui con l'inserimento manuale.");
         } else if (mockResponse.credits <= 0) {
+          console.log("Crediti AI esauriti - mostrando avviso");
           toast.error("Crediti AI esauriti. Prosegui con l'inserimento manuale.");
         }
       } catch (error) {
@@ -48,8 +52,23 @@ const AIStatusCheck: React.FC = () => {
     checkAIStatus();
   }, []);
   
+  // Se siamo nella schermata delle informazioni di base e l'AI è disponibile
+  // non mostriamo nessun avviso perché la gestione dell'AI sarà fatta direttamente
+  // nel componente ProductBasicInfo per la descrizione
+  if (currentStep === 1) {
+    return null;
+  }
+  
   if (aiStatus.available && aiStatus.active && aiStatus.credits > 0) {
-    return null; // Non mostrare nulla se tutto è ok
+    return (
+      <Alert className="mb-4 bg-green-50 border-green-200">
+        <Sparkles className="h-4 w-4 text-green-500" />
+        <AlertTitle className="text-green-700">AI attiva</AlertTitle>
+        <AlertDescription className="text-green-600">
+          L'assistente AI è attivo e pronto ad aiutarti. Crediti disponibili: {aiStatus.credits}
+        </AlertDescription>
+      </Alert>
+    );
   }
   
   return (

@@ -10,12 +10,14 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { useProductForm } from "./ProductFormContext";
-import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { Scan, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface ProductBasicInfoProps {
   data: any;
   updateData: (data: any) => void;
+  onScanBarcode?: () => void;
 }
 
 const CATEGORIES = [
@@ -33,18 +35,13 @@ const CATEGORIES = [
   "Altro"
 ];
 
-const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ data, updateData }) => {
-  const { getErrorForField } = useProductForm();
-  
-  // Inizializza il form con i dati correnti
-  const form = useForm({
-    defaultValues: {
-      name: data.name || "",
-      description: data.description || "",
-      price: data.price || 0,
-      category: data.category || ""
-    }
-  });
+const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ 
+  data, 
+  updateData, 
+  onScanBarcode 
+}) => {
+  const { getErrorForField, currentStep } = useProductForm();
+  const [aiDescriptionStatus, setAiDescriptionStatus] = React.useState<'loading' | 'error' | 'success' | 'idle'>('idle');
   
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateData({ name: e.target.value });
@@ -63,11 +60,69 @@ const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ data, updateData })
     updateData({ category: value });
   };
 
+  const handleBarcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateData({ barcode: e.target.value });
+  };
+
+  const generateDescriptionWithAI = () => {
+    // Simuliamo una generazione AI sulla base dei dati disponibili
+    if (!data.name) {
+      return;
+    }
+    
+    setAiDescriptionStatus('loading');
+    
+    // Simulazione della chiamata API all'AI
+    setTimeout(() => {
+      try {
+        // Genera una descrizione basata sul nome e categoria
+        const category = data.category || "prodotto";
+        const generatedDescription = `${data.name} è un ${category.toLowerCase()} di alta qualità. Questo prodotto offre un eccellente rapporto qualità-prezzo ed è adatto a diverse esigenze. Le caratteristiche principali includono design ergonomico e materiali durevoli.`;
+        
+        updateData({ description: generatedDescription });
+        setAiDescriptionStatus('success');
+      } catch (error) {
+        console.error("Errore nella generazione della descrizione con AI:", error);
+        setAiDescriptionStatus('error');
+      }
+    }, 1500);
+  };
+
+  // Verifica AI status quando il nome e la categoria vengono aggiornati
+  React.useEffect(() => {
+    if (data.name && data.category && !data.description && aiDescriptionStatus === 'idle') {
+      generateDescriptionWithAI();
+    }
+  }, [data.name, data.category]);
+
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium">Informazioni di base</h3>
       
       <div className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="product-barcode" className="block text-sm font-medium text-gray-700">
+            Codice a Barre <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-2">
+            <Input
+              id="product-barcode"
+              placeholder="Inserisci o scansiona codice"
+              value={data.barcode || ""}
+              onChange={handleBarcodeChange}
+              className={getErrorForField("barcode") ? "border-red-500" : ""}
+            />
+            {onScanBarcode && (
+              <Button type="button" variant="outline" size="icon" onClick={onScanBarcode}>
+                <Scan className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          {getErrorForField("barcode") && (
+            <p className="text-sm font-medium text-destructive">{getErrorForField("barcode")?.message}</p>
+          )}
+        </div>
+        
         <div className="space-y-2">
           <label htmlFor="product-name" className="block text-sm font-medium text-gray-700">
             Nome Prodotto <span className="text-red-500">*</span>
@@ -82,19 +137,6 @@ const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ data, updateData })
           {getErrorForField("name") && (
             <p className="text-sm font-medium text-destructive">{getErrorForField("name")?.message}</p>
           )}
-        </div>
-        
-        <div className="space-y-2">
-          <label htmlFor="product-description" className="block text-sm font-medium text-gray-700">
-            Descrizione
-          </label>
-          <Textarea
-            id="product-description"
-            placeholder="Descrizione del prodotto"
-            value={data.description || ""}
-            onChange={handleDescriptionChange}
-            rows={4}
-          />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -145,6 +187,47 @@ const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ data, updateData })
               <p className="text-sm font-medium text-destructive">{getErrorForField("category")?.message}</p>
             )}
           </div>
+        </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="product-description" className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+            Descrizione
+            {aiDescriptionStatus === 'loading' && (
+              <span className="text-xs text-blue-500">(Generazione con AI in corso...)</span>
+            )}
+            {aiDescriptionStatus === 'success' && (
+              <span className="text-xs text-green-500">(Generata con AI)</span>
+            )}
+          </label>
+          
+          {aiDescriptionStatus === 'error' && (
+            <Alert variant="destructive" className="mb-3">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              <AlertDescription>
+                Impossibile generare descrizione con AI. Inserisci manualmente.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <Textarea
+            id="product-description"
+            placeholder="Descrizione del prodotto"
+            value={data.description || ""}
+            onChange={handleDescriptionChange}
+            rows={4}
+          />
+          
+          {!data.description && aiDescriptionStatus !== 'loading' && (
+            <Button
+              type="button" 
+              variant="outline" 
+              size="sm"
+              onClick={generateDescriptionWithAI}
+              className="mt-2"
+            >
+              Genera descrizione con AI
+            </Button>
+          )}
         </div>
         
         <div className="text-xs text-muted-foreground mt-4">
