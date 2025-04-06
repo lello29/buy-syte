@@ -36,8 +36,9 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
 
   const handleAddProduct = () => {
     try {
-      navigate("/dashboard/products/add");
-      console.log("Navigazione verso /dashboard/products/add");
+      // Correggiamo qui il percorso
+      navigate("/dashboard/products");
+      console.log("Navigazione verso /dashboard/products");
     } catch (error) {
       console.error("Errore durante la navigazione:", error);
       toast.error("Impossibile accedere alla pagina di aggiunta prodotto");

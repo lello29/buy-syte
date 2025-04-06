@@ -56,8 +56,9 @@ const ProductsPage = () => {
   const handleAddProduct = () => {
     try {
       if (isMobile) {
-        console.log("Tentativo di navigazione verso /dashboard/products/add su mobile");
-        navigate("/dashboard/products/add");
+        console.log("Tentativo di navigazione verso /dashboard/products su mobile");
+        // Modifichiamo qui il percorso di navigazione
+        setShowAddModal(true);
       } else {
         setShowAddModal(true);
       }
@@ -126,10 +127,12 @@ const ProductsPage = () => {
         />
       </div>
 
-      {/* Add Product Dialog for desktop */}
-      {!isMobile && showAddModal && (
+      {/* Add Product Dialog for all devices */}
+      {showAddModal && (
         <AddProductDialog 
           trigger={<div className="hidden" />} 
+          open={showAddModal}
+          onOpenChange={(open) => setShowAddModal(open)}
         />
       )}
     </div>
