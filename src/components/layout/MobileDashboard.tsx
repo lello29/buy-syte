@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -13,6 +13,12 @@ import { useRoleMenu } from "./mobile-dashboard/RoleMenuProvider";
 const MobileDashboard = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+
+  // Log component mount
+  useEffect(() => {
+    console.log("MobileDashboard mounted", { currentUser: !!currentUser });
+    return () => console.log("MobileDashboard unmounted");
+  }, [currentUser]);
 
   if (!currentUser) return null;
 

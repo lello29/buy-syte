@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +19,16 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Log mounting of the component
+  useEffect(() => {
+    console.log("DashboardLayout mounted", { 
+      isMobile, 
+      path: location.pathname,
+      isLoading,
+      hasUser: !!currentUser
+    });
+  }, [isMobile, location.pathname, isLoading, currentUser]);
+  
   // Check if this is exactly the main dashboard path without any sub-routes
   const shouldShowMobileDashboard = isMobile && 
     (location.pathname === "/dashboard" || 
@@ -85,7 +95,7 @@ const DashboardLayout = () => {
     );
   }
 
-  // Rendering per dispositivi mobili
+  // Rendering for mobile devices
   if (isMobile) {
     return (
       <div className="flex flex-col min-h-screen bg-gray-100">
@@ -125,12 +135,14 @@ const DashboardLayout = () => {
           </div>
         </header>
         
-        {/* Contenuto principale */}
+        {/* Ensure content is rendered statically, not conditionally */}
         <main className="flex-1 pt-20 pb-6 px-4">
           {shouldShowMobileDashboard ? (
-            <MobileDashboard />
+            <MobileDashboard key="mobile-dashboard" />
           ) : (
-            <Outlet />
+            <div key="outlet-container">
+              <Outlet />
+            </div>
           )}
         </main>
       </div>

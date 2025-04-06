@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import UserDashboard from "@/components/dashboard/user/UserDashboard";
 import ShopDashboard from "@/components/dashboard/shop/ShopDashboard";
@@ -8,11 +8,20 @@ import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import MobileDashboard from "@/components/layout/MobileDashboard";
 
 const DashboardIndex = () => {
   const { currentUser, isLoading } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  
+  // Use a useEffect to ensure client-side rendering is complete
+  useEffect(() => {
+    // Ensure we have a valid user and the DOM is ready
+    if (!isLoading && currentUser && isMobile !== undefined) {
+      console.log("Dashboard mounted: ", { isMobile, role: currentUser?.role });
+    }
+  }, [isLoading, currentUser, isMobile]);
   
   if (isLoading) {
     return (
@@ -32,6 +41,15 @@ const DashboardIndex = () => {
     return <Navigate to="/dashboard/admin" replace />;
   }
 
+  // For mobile devices, directly render the MobileDashboard component
+  if (isMobile) {
+    return (
+      <div className="pt-2">
+        <MobileDashboard />
+      </div>
+    );
+  }
+
   const renderDashboardByRole = () => {
     const role = currentUser.role;
     
@@ -47,21 +65,6 @@ const DashboardIndex = () => {
     }
   };
 
-  // Apply specific mobile wrapper for better mobile rendering
-  const renderContent = () => {
-    const dashboardContent = renderDashboardByRole();
-    
-    if (isMobile) {
-      return (
-        <div className="bg-gray-50 min-h-screen">
-          {dashboardContent}
-        </div>
-      );
-    }
-    
-    return dashboardContent;
-  };
-
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -69,7 +72,7 @@ const DashboardIndex = () => {
         Benvenuto, {currentUser.name}! Questa è la tua dashboard personale.
       </p>
       
-      {renderContent()}
+      {renderDashboardByRole()}
     </div>
   );
 };

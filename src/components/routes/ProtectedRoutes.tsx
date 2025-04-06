@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
@@ -22,6 +22,15 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const location = useLocation();
   const isMobile = useIsMobile();
   
+  useEffect(() => {
+    console.log("ProtectedRoute rendered", { 
+      path: location.pathname,
+      isLoading, 
+      hasUser: !!currentUser,
+      isMobile 
+    });
+  }, [location.pathname, isLoading, currentUser, isMobile]);
+  
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -30,11 +39,7 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   
-  // Wrapper ulteriore per dispositivi mobili per garantire il rendering corretto
-  if (isMobile) {
-    return <div className="mobile-protected-wrapper">{children}</div>;
-  }
-  
+  // Return children directly without conditional wrapping for mobile
   return children;
 };
 
@@ -42,6 +47,16 @@ export const AdminRoute = ({ children }: { children: JSX.Element }) => {
   const { currentUser, isLoading } = useAuth();
   const location = useLocation();
   const isMobile = useIsMobile();
+  
+  useEffect(() => {
+    console.log("AdminRoute rendered", { 
+      path: location.pathname,
+      isLoading, 
+      hasUser: !!currentUser,
+      role: currentUser?.role,
+      isMobile 
+    });
+  }, [location.pathname, isLoading, currentUser, isMobile]);
   
   if (isLoading) {
     return <LoadingScreen />;
@@ -51,18 +66,13 @@ export const AdminRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/dashboard" state={{ from: location }} replace />;
   }
   
-  // Wrapper ulteriore per dispositivi mobili per garantire il rendering corretto
-  if (isMobile) {
-    return <div className="mobile-admin-wrapper">{children}</div>;
-  }
-  
+  // Return children directly without conditional wrapping for mobile
   return children;
 };
 
 export const ShopRoute = ({ children }: { children: JSX.Element }) => {
   const { currentUser, isLoading } = useAuth();
   const location = useLocation();
-  const isMobile = useIsMobile();
   
   if (isLoading) {
     return <LoadingScreen />;
@@ -72,18 +82,13 @@ export const ShopRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/dashboard" state={{ from: location }} replace />;
   }
   
-  // Wrapper ulteriore per dispositivi mobili per garantire il rendering corretto
-  if (isMobile) {
-    return <div className="mobile-shop-wrapper">{children}</div>;
-  }
-  
+  // Return children directly
   return children;
 };
 
 export const CollaboratorRoute = ({ children }: { children: JSX.Element }) => {
   const { currentUser, isLoading } = useAuth();
   const location = useLocation();
-  const isMobile = useIsMobile();
   
   if (isLoading) {
     return <LoadingScreen />;
@@ -93,10 +98,6 @@ export const CollaboratorRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/dashboard" state={{ from: location }} replace />;
   }
   
-  // Wrapper ulteriore per dispositivi mobili per garantire il rendering corretto
-  if (isMobile) {
-    return <div className="mobile-collaborator-wrapper">{children}</div>;
-  }
-  
+  // Return children directly
   return children;
 };

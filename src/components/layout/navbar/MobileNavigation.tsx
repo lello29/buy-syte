@@ -38,15 +38,15 @@ const MobileNavigation = ({
     try {
       setMobileMenuOpen(false);
       
-      if (currentUser?.role === "admin") {
-        navigate("/dashboard/admin");
-      } else if (currentUser?.role === "shop") {
-        navigate("/dashboard");
-      } else if (currentUser?.role === "collaborator") {
-        navigate("/dashboard");
-      } else {
-        navigate("/dashboard");
-      }
+      // Ensure we navigate to the correct dashboard based on role
+      // with a slight delay to ensure the menu closes first
+      setTimeout(() => {
+        if (currentUser?.role === "admin") {
+          navigate("/dashboard/admin");
+        } else {
+          navigate("/dashboard");
+        }
+      }, 50);
     } catch (error) {
       console.error("Errore durante la navigazione:", error);
     }

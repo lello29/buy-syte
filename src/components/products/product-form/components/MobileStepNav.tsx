@@ -7,6 +7,11 @@ const MobileStepNav: React.FC = () => {
   const { currentStep, setCurrentStep, steps } = useProductForm();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Log component mount and updates
+  useEffect(() => {
+    console.log("MobileStepNav rendered", { currentStep, stepsCount: steps.length });
+  }, [currentStep, steps]);
+
   // Scroll to active step when it changes
   useEffect(() => {
     if (scrollContainerRef.current) {
@@ -26,7 +31,7 @@ const MobileStepNav: React.FC = () => {
         scrollContainer.scrollTo({ left: scrollLeft, behavior: 'smooth' });
       }
     }
-  }, [currentStep]);
+  }, [currentStep, steps]);
 
   // Safer click handler
   const handleStepClick = (index: number) => {
@@ -40,7 +45,7 @@ const MobileStepNav: React.FC = () => {
       <div className="flex space-x-1 px-1 min-w-fit">
         {steps.map((step, index) => (
           <Button
-            key={step.id}
+            key={`step-${step.id}-${index}`}
             data-step={index}
             variant={currentStep === index ? "default" : "outline"}
             size="sm"

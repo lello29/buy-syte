@@ -6,6 +6,8 @@ import { UserCircle, Heart, ShoppingBag, Award, Store, Package, CreditCard,
 
 // The hook to get menu options based on role
 export const useRoleMenu = (role) => {
+  console.log("useRoleMenu called with role:", role);
+  
   // Default user menu
   let dashboardOptions = [];
   let additionalOptions = [];
