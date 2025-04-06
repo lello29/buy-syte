@@ -7,10 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, Mail, Send } from "lucide-react";
 import { shops, users, orders } from "@/data/mockData";
+import { useIsMobile } from "@/hooks/use-mobile";
+import MobileCustomersList from "@/components/shop/MobileCustomersList";
 
 const CustomersPage = () => {
   const { currentUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
+  const isMobile = useIsMobile();
 
   if (!currentUser || currentUser.role !== "shop") {
     return (
@@ -144,48 +147,52 @@ const CustomersPage = () => {
           <CardTitle>Lista Clienti</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Nome</th>
-                    <th className="px-4 py-3 text-left">Email</th>
-                    <th className="px-4 py-3 text-right">Ordini</th>
-                    <th className="px-4 py-3 text-right">Spesa totale</th>
-                    <th className="px-4 py-3 text-left">Ultimo ordine</th>
-                    <th className="px-4 py-3 text-right">Azioni</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {filteredCustomers.map((customer) => (
-                    <tr key={customer.id}>
-                      <td className="px-4 py-3">{customer.name}</td>
-                      <td className="px-4 py-3 text-gray-600">{customer.email}</td>
-                      <td className="px-4 py-3 text-right">{customer.orderCount}</td>
-                      <td className="px-4 py-3 text-right">
-                        €{customer.totalSpent.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3">
-                        {customer.lastOrderDate.toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Button size="sm" variant="ghost" className="flex gap-1">
-                          <Send className="h-4 w-4" />
-                          Contatta
-                        </Button>
-                      </td>
+          {isMobile ? (
+            <MobileCustomersList customers={filteredCustomers} />
+          ) : (
+            <div className="rounded-md border">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left">Nome</th>
+                      <th className="px-4 py-3 text-left">Email</th>
+                      <th className="px-4 py-3 text-right">Ordini</th>
+                      <th className="px-4 py-3 text-right">Spesa totale</th>
+                      <th className="px-4 py-3 text-left">Ultimo ordine</th>
+                      <th className="px-4 py-3 text-right">Azioni</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              {filteredCustomers.length === 0 && (
-                <div className="px-4 py-8 text-center">
-                  <p className="text-gray-500">Nessun cliente trovato</p>
-                </div>
-              )}
+                  </thead>
+                  <tbody className="divide-y">
+                    {filteredCustomers.map((customer) => (
+                      <tr key={customer.id}>
+                        <td className="px-4 py-3">{customer.name}</td>
+                        <td className="px-4 py-3 text-gray-600">{customer.email}</td>
+                        <td className="px-4 py-3 text-right">{customer.orderCount}</td>
+                        <td className="px-4 py-3 text-right">
+                          €{customer.totalSpent.toFixed(2)}
+                        </td>
+                        <td className="px-4 py-3">
+                          {customer.lastOrderDate.toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <Button size="sm" variant="ghost" className="flex gap-1">
+                            <Send className="h-4 w-4" />
+                            Contatta
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredCustomers.length === 0 && (
+                  <div className="px-4 py-8 text-center">
+                    <p className="text-gray-500">Nessun cliente trovato</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>

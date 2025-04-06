@@ -8,7 +8,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import DesktopNavigation from "./navbar/DesktopNavigation";
 import MobileNavigation from "./navbar/MobileNavigation";
 import AuthActions from "./navbar/AuthActions";
-import MobileNavbarUserMenu from "./navbar/MobileNavbarUserMenu";
 
 interface NavbarProps {
   simplified?: boolean;
@@ -22,8 +21,8 @@ const Navbar: React.FC<NavbarProps> = ({ simplified = false }) => {
   const isMobile = useIsMobile();
   const isDashboardRoute = location.pathname.startsWith("/dashboard");
 
-  // Verifico se siamo nella dashboard principale in modalità mobile
-  const shouldHideNavbar = isMobile && isDashboardRoute && location.pathname === "/dashboard";
+  // Verifico se siamo nella dashboard o in una sottopagina della dashboard
+  const shouldHideNavbar = isDashboardRoute && isMobile;
 
   const handleLogout = async () => {
     await logout();
@@ -31,7 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({ simplified = false }) => {
     setMobileMenuOpen(false);
   };
 
-  // Se siamo nella dashboard principale in mobile view, non mostriamo la navbar standard
+  // Se siamo in qualsiasi pagina dashboard in mobile view, non mostriamo la navbar standard
   if (shouldHideNavbar) {
     return null;
   }

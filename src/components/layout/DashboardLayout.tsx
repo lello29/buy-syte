@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import DashboardSidebar from "./DashboardSidebar";
 import MobileDashboard from "./MobileDashboard";
-import { Menu, Home, LogOut } from "lucide-react";
+import { Menu, Home, LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const DashboardLayout = () => {
@@ -21,6 +21,7 @@ const DashboardLayout = () => {
 
   // Controllo se visualizzare la dashboard mobile
   const shouldShowMobileDashboard = isMobile && location.pathname === "/dashboard";
+  const isSubPage = location.pathname !== "/dashboard" && location.pathname.startsWith("/dashboard");
 
   const handleLogout = async () => {
     await logout();
@@ -29,6 +30,19 @@ const DashboardLayout = () => {
 
   const handleHomeClick = () => {
     navigate("/");
+  };
+
+  const handleBackClick = () => {
+    navigate("/dashboard");
+  };
+
+  const getPageTitle = () => {
+    if (location.pathname === "/dashboard") return "Dashboard";
+    if (location.pathname.includes("/users")) return "Lista Utenti";
+    if (location.pathname.includes("/shops")) return "Negozi";
+    if (location.pathname.includes("/products")) return "Prodotti";
+    if (location.pathname.includes("/orders")) return "Ordini";
+    return "Dashboard";
   };
 
   if (!currentUser) {
@@ -42,17 +56,26 @@ const DashboardLayout = () => {
     );
   }
 
-  // Rendering per dispositivi mobili sulla rotta principale
-  if (shouldShowMobileDashboard) {
+  // Rendering per dispositivi mobili
+  if (isMobile) {
     return (
       <div className="flex flex-col min-h-screen bg-gray-100">
         {/* Header blu */}
         <header className="bg-[#0a3276] text-white p-4 fixed top-0 left-0 right-0 z-50">
           <div className="flex items-center justify-between">
-            <button className="p-1 rounded-full hover:bg-blue-700 active:bg-blue-800 transition-colors">
-              <Menu className="h-8 w-8" />
-            </button>
-            <h1 className="text-2xl font-bold">Dashboard</h1>
+            {isSubPage ? (
+              <button 
+                onClick={handleBackClick}
+                className="p-1 rounded-full hover:bg-blue-700 active:bg-blue-800 transition-colors"
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </button>
+            ) : (
+              <button className="p-1 rounded-full hover:bg-blue-700 active:bg-blue-800 transition-colors">
+                <Menu className="h-6 w-6" />
+              </button>
+            )}
+            <h1 className="text-2xl font-bold">{getPageTitle()}</h1>
             <div className="flex items-center gap-4">
               <button 
                 onClick={handleHomeClick} 
@@ -70,15 +93,19 @@ const DashboardLayout = () => {
           </div>
         </header>
         
-        {/* Contenuto principale con padding-top per evitare sovrapposizione con l'header */}
+        {/* Contenuto principale */}
         <main className="flex-1 pt-20 pb-6 px-4">
-          <MobileDashboard />
+          {shouldShowMobileDashboard ? (
+            <MobileDashboard />
+          ) : (
+            <Outlet />
+          )}
         </main>
       </div>
     );
   }
 
-  // Layout desktop o per percorsi diversi dalla dashboard principale in mobile
+  // Layout desktop
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <SidebarProvider defaultOpen={!isMobile}>
@@ -93,16 +120,14 @@ const DashboardLayout = () => {
                     Benvenuto, <span className="text-primary">{currentUser.name}</span>!
                   </h1>
                 </div>
-                {isMobile && (
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" onClick={handleHomeClick}>
-                      <Home className="h-4 w-4 mr-1" /> Home
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={handleLogout}>
-                      <LogOut className="h-4 w-4 mr-1" /> Logout
-                    </Button>
-                  </div>
-                )}
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" onClick={handleHomeClick}>
+                    <Home className="h-4 w-4 mr-1" /> Home
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-1" /> Logout
+                  </Button>
+                </div>
               </div>
               <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
                 <Outlet />
