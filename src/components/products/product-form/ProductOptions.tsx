@@ -1,62 +1,15 @@
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import {
-  ShoppingCart,
-  Phone,
-  Store,
-  Plus,
-  Trash,
-  Calendar,
-  Shirt,
-  Palette,
-  Scale,
-} from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SellingOptionsTab from "./components/options/SellingOptionsTab";
+import VariantsTab from "./components/options/VariantsTab";
+import AdvancedTab from "./components/options/AdvancedTab";
+import { VARIANT_TYPES } from "./components/options/constants";
 
 interface ProductOptionsProps {
   data: any;
   updateData: (data: any) => void;
 }
-
-const VARIANT_TYPES = [
-  { id: "size", label: "Taglia", icon: Shirt },
-  { id: "color", label: "Colore", icon: Palette },
-  { id: "weight", label: "Peso/Volume", icon: Scale },
-];
 
 const ProductOptions: React.FC<ProductOptionsProps> = ({ data, updateData }) => {
   const [sellingOptions, setSellingOptions] = useState({
@@ -151,274 +104,33 @@ const ProductOptions: React.FC<ProductOptionsProps> = ({ data, updateData }) => 
         </TabsList>
 
         <TabsContent value="selling-options" className="mt-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Modalità di vendita</CardTitle>
-              <CardDescription>
-                Scegli come i clienti possono acquistare il prodotto
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <ShoppingCart className="h-4 w-4" />
-                  <Label htmlFor="online-purchase">Acquisto online</Label>
-                </div>
-                <Switch
-                  id="online-purchase"
-                  checked={sellingOptions.isOnlinePurchase}
-                  onCheckedChange={(checked) => updateSellingOptions({ isOnlinePurchase: checked })}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Phone className="h-4 w-4" />
-                  <Label htmlFor="reservation-only">Solo prenotazione</Label>
-                </div>
-                <Switch
-                  id="reservation-only"
-                  checked={sellingOptions.isReservationOnly}
-                  onCheckedChange={(checked) => updateSellingOptions({ isReservationOnly: checked })}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Store className="h-4 w-4" />
-                  <Label htmlFor="in-store-only">Solo vendita in negozio</Label>
-                </div>
-                <Switch
-                  id="in-store-only"
-                  checked={sellingOptions.isInStoreOnly}
-                  onCheckedChange={(checked) => updateSellingOptions({ isInStoreOnly: checked })}
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <p className="text-xs text-muted-foreground">
-                Puoi attivare più modalità contemporaneamente
-              </p>
-            </CardFooter>
-          </Card>
-
-          <Card className="mt-4">
-            <CardHeader className="pb-3">
-              <CardTitle>Posizione prodotto</CardTitle>
-              <CardDescription>
-                Seleziona in quale negozio o sede è disponibile
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Select value={location} onValueChange={handleLocationChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleziona sede" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sede-principale">Sede principale</SelectItem>
-                  <SelectItem value="sede-secondaria">Sede secondaria</SelectItem>
-                  <SelectItem value="magazzino">Solo magazzino</SelectItem>
-                  <SelectItem value="tutte">Tutte le sedi</SelectItem>
-                </SelectContent>
-              </Select>
-            </CardContent>
-          </Card>
+          <SellingOptionsTab
+            sellingOptions={sellingOptions}
+            updateSellingOptions={updateSellingOptions}
+            location={location}
+            handleLocationChange={handleLocationChange}
+          />
         </TabsContent>
 
         <TabsContent value="variants" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Varianti prodotto</CardTitle>
-              <CardDescription>
-                Aggiungi varianti come taglie, colori o pesi
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {variants.length === 0 ? (
-                  <div className="text-center p-6 border rounded-md">
-                    <p className="text-muted-foreground mb-2">Nessuna variante configurata</p>
-                    <p className="text-sm text-muted-foreground">
-                      Aggiungi varianti per prodotti disponibili in diverse opzioni
-                    </p>
-                  </div>
-                ) : (
-                  <Accordion type="single" collapsible className="w-full">
-                    {variants.map((variant, index) => (
-                      <AccordionItem key={variant.id} value={variant.id}>
-                        <div className="flex items-center justify-between">
-                          <AccordionTrigger className="flex-1">
-                            {variant.name} ({variant.options.length})
-                          </AccordionTrigger>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeVariant(index);
-                            }}
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <AccordionContent>
-                          <div className="space-y-4 pt-2">
-                            {variant.options.map((option, optionIndex) => (
-                              <div key={optionIndex} className="grid grid-cols-12 gap-2">
-                                <div className="col-span-4">
-                                  <Input
-                                    placeholder={`Valore ${variant.name}`}
-                                    value={option.value || ''}
-                                    onChange={(e) => updateVariantOption(index, optionIndex, 'value', e.target.value)}
-                                  />
-                                </div>
-                                <div className="col-span-3">
-                                  <Input
-                                    type="number"
-                                    placeholder="Prezzo"
-                                    value={option.price || ''}
-                                    onChange={(e) => updateVariantOption(index, optionIndex, 'price', parseFloat(e.target.value))}
-                                  />
-                                </div>
-                                <div className="col-span-3">
-                                  <Input
-                                    type="number"
-                                    placeholder="Quantità"
-                                    value={option.stock || ''}
-                                    onChange={(e) => updateVariantOption(index, optionIndex, 'stock', parseInt(e.target.value))}
-                                  />
-                                </div>
-                                <div className="col-span-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-full w-full"
-                                    onClick={() => removeVariantOption(index, optionIndex)}
-                                    disabled={variant.options.length <= 1}
-                                  >
-                                    <Trash className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => addVariantOption(index)}
-                            >
-                              <Plus className="h-4 w-4 mr-2" />
-                              Aggiungi opzione
-                            </Button>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                )}
-
-                <Separator className="my-4" />
-                
-                <div className="grid grid-cols-3 gap-2">
-                  {VARIANT_TYPES.map((type) => (
-                    <Button
-                      key={type.id}
-                      variant="outline"
-                      className="h-20 flex flex-col items-center justify-center"
-                      onClick={() => addVariant(type.id)}
-                      disabled={variants.some(v => v.type === type.id)}
-                    >
-                      <type.icon className="h-6 w-6 mb-1" />
-                      <span className="text-xs">{type.label}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <VariantsTab
+            variants={variants}
+            addVariant={addVariant}
+            removeVariant={removeVariant}
+            addVariantOption={addVariantOption}
+            removeVariantOption={removeVariantOption}
+            updateVariantOption={updateVariantOption}
+          />
         </TabsContent>
 
         <TabsContent value="advanced" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Programmazione</CardTitle>
-              <CardDescription>
-                Imposta quando il prodotto sarà visibile o nascosto
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="publish-date">Data di pubblicazione</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        id="publish-date"
-                        variant={"outline"}
-                        className="w-full justify-start text-left font-normal"
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {publicationDate ? (
-                          format(publicationDate, "PPP")
-                        ) : (
-                          <span>Seleziona data</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <CalendarComponent
-                        mode="single"
-                        selected={publicationDate}
-                        onSelect={handlePublicationDateChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="expiry-date">Data di scadenza</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        id="expiry-date"
-                        variant={"outline"}
-                        className="w-full justify-start text-left font-normal"
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {expirationDate ? (
-                          format(expirationDate, "PPP")
-                        ) : (
-                          <span>Seleziona data</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <CalendarComponent
-                        mode="single"
-                        selected={expirationDate}
-                        onSelect={handleExpirationDateChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setPublicationDate(undefined);
-                    setExpirationDate(undefined);
-                    updateData({ publicationDate: null, expirationDate: null });
-                    toast.info("Date di programmazione rimosse");
-                  }}
-                >
-                  Rimuovi programmazione
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <AdvancedTab
+            publicationDate={publicationDate}
+            expirationDate={expirationDate}
+            handlePublicationDateChange={handlePublicationDateChange}
+            handleExpirationDateChange={handleExpirationDateChange}
+            updateData={updateData}
+          />
         </TabsContent>
       </Tabs>
     </div>
