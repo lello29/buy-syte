@@ -121,8 +121,21 @@ const transformUsers = (user: any) => {
 
 const transformShops = (shop: any) => {
   const snakeCaseShop = toSnakeCase(shop);
+  
+  // Estrazione latitudine e longitudine se esiste location
+  let latitude = undefined;
+  let longitude = undefined;
+  
+  if (shop.location) {
+    latitude = shop.location.latitude;
+    longitude = shop.location.longitude;
+  }
+  
   return {
     ...snakeCaseShop,
+    latitude,
+    longitude,
+    category: shop.category || 'Altro',
     social_links: shop.socialLinks || null
   };
 };

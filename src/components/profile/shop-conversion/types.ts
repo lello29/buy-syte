@@ -6,6 +6,9 @@ export interface ShopFormData {
   phone: string;
   fiscalCode: string;
   vatNumber: string;
+  latitude?: number;
+  longitude?: number;
+  category?: string;
 }
 
 export interface ShopFormErrors {

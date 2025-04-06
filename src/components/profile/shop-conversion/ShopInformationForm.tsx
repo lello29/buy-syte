@@ -4,17 +4,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
 import { ShopFormData, ShopFormErrors } from "./types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ShopInformationFormProps {
   formData: ShopFormData;
   errors: ShopFormErrors;
   loading: boolean;
   currentUserEmail: string;
-  onChange: (field: keyof ShopFormData, value: string) => void;
+  onChange: (field: keyof ShopFormData, value: string | number) => void;
   onSubmit: (e: React.FormEvent) => void;
+  onGetLocation: () => void;
 }
+
+const SHOP_CATEGORIES = [
+  "Abbigliamento",
+  "Alimentari",
+  "Arredamento",
+  "Elettronica",
+  "Farmacia",
+  "Informatica",
+  "Libri",
+  "Ristorante",
+  "Servizi",
+  "Sport",
+  "Altro"
+];
 
 export const ShopInformationForm: React.FC<ShopInformationFormProps> = ({
   formData,
@@ -23,6 +39,7 @@ export const ShopInformationForm: React.FC<ShopInformationFormProps> = ({
   currentUserEmail,
   onChange,
   onSubmit,
+  onGetLocation,
 }) => {
   const {
     shopName,
@@ -31,6 +48,9 @@ export const ShopInformationForm: React.FC<ShopInformationFormProps> = ({
     phone,
     fiscalCode,
     vatNumber,
+    latitude,
+    longitude,
+    category,
   } = formData;
 
   return (
@@ -50,6 +70,24 @@ export const ShopInformationForm: React.FC<ShopInformationFormProps> = ({
         </div>
         
         <div className="space-y-2">
+          <Label htmlFor="category">Categoria Negozio <span className="text-red-500">*</span></Label>
+          <Select 
+            value={category} 
+            onValueChange={(value) => onChange("category", value)}
+          >
+            <SelectTrigger className={errors.category ? "border-red-500" : ""}>
+              <SelectValue placeholder="Seleziona una categoria" />
+            </SelectTrigger>
+            <SelectContent>
+              {SHOP_CATEGORIES.map((cat) => (
+                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
+        </div>
+        
+        <div className="space-y-2">
           <Label htmlFor="description">Descrizione <span className="text-red-500">*</span></Label>
           <Textarea
             id="description"
@@ -63,20 +101,59 @@ export const ShopInformationForm: React.FC<ShopInformationFormProps> = ({
           {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="address">Indirizzo <span className="text-red-500">*</span></Label>
-            <Input
-              id="address"
-              placeholder="Es. Via Roma 123, Milano"
-              value={address}
-              onChange={(e) => onChange("address", e.target.value)}
-              required
-              className={errors.address ? "border-red-500" : ""}
-            />
-            {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+        <div className="space-y-2">
+          <Label htmlFor="address">Indirizzo <span className="text-red-500">*</span></Label>
+          <Input
+            id="address"
+            placeholder="Es. Via Roma 123, Milano"
+            value={address}
+            onChange={(e) => onChange("address", e.target.value)}
+            required
+            className={errors.address ? "border-red-500" : ""}
+          />
+          {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+        </div>
+        
+        <div className="space-y-2">
+          <Label>Posizione Geografica</Label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="col-span-1">
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full" 
+                onClick={onGetLocation}
+              >
+                <MapPin className="mr-2 h-4 w-4" />
+                Usa Posizione Attuale
+              </Button>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="latitude" className="text-xs">Latitudine</Label>
+              <Input
+                id="latitude"
+                placeholder="Es. 45.4642"
+                value={latitude || ""}
+                onChange={(e) => onChange("latitude", parseFloat(e.target.value) || 0)}
+                type="number"
+                step="0.000001"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="longitude" className="text-xs">Longitudine</Label>
+              <Input
+                id="longitude"
+                placeholder="Es. 9.1900"
+                value={longitude || ""}
+                onChange={(e) => onChange("longitude", parseFloat(e.target.value) || 0)}
+                type="number"
+                step="0.000001"
+              />
+            </div>
           </div>
-          
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="phone">Telefono <span className="text-red-500">*</span></Label>
             <Input
@@ -88,6 +165,17 @@ export const ShopInformationForm: React.FC<ShopInformationFormProps> = ({
               className={errors.phone ? "border-red-500" : ""}
             />
             {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              defaultValue={currentUserEmail}
+              disabled
+              className="bg-gray-100"
+            />
           </div>
         </div>
         
@@ -117,20 +205,6 @@ export const ShopInformationForm: React.FC<ShopInformationFormProps> = ({
             />
             {errors.vatNumber && <p className="text-red-500 text-sm">{errors.vatNumber}</p>}
           </div>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            defaultValue={currentUserEmail}
-            disabled
-            className="bg-gray-100"
-          />
-          <p className="text-sm text-gray-500">
-            Utilizzeremo questa email per le comunicazioni ufficiali.
-          </p>
         </div>
       </div>
       

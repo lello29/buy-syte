@@ -1,4 +1,3 @@
-
 import { Shop } from "@/types";
 
 export const shops: Shop[] = [
@@ -23,6 +22,11 @@ export const shops: Shop[] = [
     categories: ["Elettronica", "Informatica", "Smartphone", "Accessori"],
     fiscalCode: "BRTMRC80A01F205P",
     vatNumber: "12345678901",
+    category: "Elettronica",
+    location: {
+      latitude: 45.4642,
+      longitude: 9.1900
+    },
     socialLinks: {
       facebook: "https://facebook.com/elettronicamoderna",
       instagram: "https://instagram.com/elettronica_moderna",
@@ -49,6 +53,11 @@ export const shops: Shop[] = [
     categories: ["Abbigliamento", "Accessori", "Scarpe"],
     fiscalCode: "RSSMRA75B02H501L",
     vatNumber: "09876543210",
+    category: "Abbigliamento",
+    location: {
+      latitude: 41.9028,
+      longitude: 12.4964
+    },
     socialLinks: {
       instagram: "https://instagram.com/moda_italiana",
       facebook: "https://facebook.com/modaitaliana"
@@ -74,6 +83,11 @@ export const shops: Shop[] = [
     categories: ["Ristoranti", "Pizza", "Cucina Napoletana"],
     fiscalCode: "VRDLGI68C10F839H",
     vatNumber: "07654321098",
+    category: "Ristorante",
+    location: {
+      latitude: 40.8400,
+      longitude: 14.2525
+    },
   },
   {
     id: "shop4",
@@ -90,6 +104,11 @@ export const shops: Shop[] = [
     createdAt: "2023-01-20T10:00:00.000Z",
     fiscalCode: "BNCLCA72D45F205Z",
     vatNumber: "05432109876",
+    category: "Libri",
+    location: {
+      latitude: 45.4689,
+      longitude: 9.1930
+    },
   },
   {
     id: "shop5",
@@ -106,6 +125,11 @@ export const shops: Shop[] = [
     createdAt: "2023-02-28T16:00:00.000Z",
     fiscalCode: "GLLNNA84E64H501Y",
     vatNumber: "04321098765",
+    category: "Alimentari",
+    location: {
+      latitude: 41.8992,
+      longitude: 12.4731
+    },
   },
   {
     id: "shop6",
@@ -122,6 +146,11 @@ export const shops: Shop[] = [
     createdAt: "2023-03-15T12:00:00.000Z",
     fiscalCode: "FRRPLA65H12A944X",
     vatNumber: "03210987654",
+    category: "Auto",
+    location: {
+      latitude: 44.4964,
+      longitude: 11.3400
+    },
   },
   {
     id: "shop7",
@@ -138,6 +167,11 @@ export const shops: Shop[] = [
     createdAt: "2023-04-01T08:00:00.000Z",
     fiscalCode: "RSSGNN77L08L219T",
     vatNumber: "02109876543",
+    category: "Dolci",
+    location: {
+      latitude: 45.0600,
+      longitude: 7.6400
+    },
   },
   {
     id: "shop8",
@@ -154,6 +188,11 @@ export const shops: Shop[] = [
     createdAt: "2023-05-10T14:00:00.000Z",
     fiscalCode: "MRCSFN82P12H501K",
     vatNumber: "01098765432",
+    category: "Fotografia",
+    location: {
+      latitude: 41.8992,
+      longitude: 12.4731
+    },
   },
   {
     id: "shop9",
@@ -170,6 +209,11 @@ export const shops: Shop[] = [
     createdAt: "2023-06-01T10:00:00.000Z",
     fiscalCode: "BNCSVT70S18L781P",
     vatNumber: "09876543215",
+    category: "Arredamento",
+    location: {
+      latitude: 45.4642,
+      longitude: 9.1900
+    },
   },
   {
     id: "shop10",
@@ -186,6 +230,11 @@ export const shops: Shop[] = [
     createdAt: "2023-07-15T18:00:00.000Z",
     fiscalCode: "MRRFNC74P07D612S",
     vatNumber: "08765432109",
+    category: "Viaggi",
+    location: {
+      latitude: 43.7350,
+      longitude: 12.4460
+    },
   },
 ];
 

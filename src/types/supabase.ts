@@ -71,6 +71,9 @@ export interface Database {
           categories?: string[]
           fiscal_code: string
           vat_number: string
+          latitude?: number
+          longitude?: number
+          category?: string
           social_links?: Json
         }
         Insert: {
@@ -94,6 +97,9 @@ export interface Database {
           categories?: string[]
           fiscal_code: string
           vat_number: string
+          latitude?: number
+          longitude?: number
+          category?: string
           social_links?: Json
         }
         Update: {
@@ -115,6 +121,9 @@ export interface Database {
           categories?: string[]
           fiscal_code?: string
           vat_number?: string
+          latitude?: number
+          longitude?: number
+          category?: string
           social_links?: Json
         }
       }

@@ -10,6 +10,22 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { MapPin } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const SHOP_CATEGORIES = [
+  "Abbigliamento",
+  "Alimentari",
+  "Arredamento",
+  "Elettronica",
+  "Farmacia",
+  "Informatica",
+  "Libri",
+  "Ristorante",
+  "Servizi",
+  "Sport",
+  "Altro"
+];
 
 interface AddShopDialogProps {
   newShop: {
@@ -20,10 +36,15 @@ interface AddShopDialogProps {
     aiCredits: number;
     fiscalCode: string;
     vatNumber: string;
+    category?: string;
+    latitude?: number;
+    longitude?: number;
   };
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onSelectChange?: (field: string, value: string) => void;
+  onGetLocation?: () => void;
   onCreateShop: () => void;
 }
 
@@ -32,6 +53,8 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
   open,
   onOpenChange,
   onInputChange,
+  onSelectChange,
+  onGetLocation,
   onCreateShop
 }) => {
   return (
@@ -52,6 +75,26 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               required
             />
           </div>
+          
+          <div className="flex flex-col space-y-1">
+            <Label htmlFor="new-category">Categoria <span className="text-red-500">*</span></Label>
+            <Select 
+              value={newShop.category}
+              onValueChange={(value) => onSelectChange && onSelectChange("category", value)}
+            >
+              <SelectTrigger id="new-category">
+                <SelectValue placeholder="Seleziona categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {SHOP_CATEGORIES.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
           <div className="flex flex-col space-y-1">
             <Label htmlFor="new-address">Indirizzo <span className="text-red-500">*</span></Label>
             <Input 
@@ -63,6 +106,41 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               required
             />
           </div>
+          
+          <div className="space-y-1">
+            <Label>Posizione Geografica</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="col-span-1"
+                onClick={onGetLocation}
+              >
+                <MapPin className="h-4 w-4 mr-1" /> Rileva
+              </Button>
+              <div className="col-span-1">
+                <Input
+                  name="latitude"
+                  placeholder="Latitudine"
+                  type="number"
+                  step="0.000001"
+                  value={newShop.latitude || ""}
+                  onChange={onInputChange}
+                />
+              </div>
+              <div className="col-span-1">
+                <Input
+                  name="longitude"
+                  placeholder="Longitudine"
+                  type="number"
+                  step="0.000001"
+                  value={newShop.longitude || ""}
+                  onChange={onInputChange}
+                />
+              </div>
+            </div>
+          </div>
+          
           <div className="flex flex-col space-y-1">
             <Label htmlFor="new-email">Email <span className="text-red-500">*</span></Label>
             <Input 
@@ -75,6 +153,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               required
             />
           </div>
+          
           <div className="flex flex-col space-y-1">
             <Label htmlFor="new-phone">Telefono <span className="text-red-500">*</span></Label>
             <Input 
@@ -86,6 +165,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               required
             />
           </div>
+          
           <div className="flex flex-col space-y-1">
             <Label htmlFor="new-fiscalCode">Codice Fiscale <span className="text-red-500">*</span></Label>
             <Input 
@@ -97,6 +177,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               required
             />
           </div>
+          
           <div className="flex flex-col space-y-1">
             <Label htmlFor="new-vatNumber">Partita IVA <span className="text-red-500">*</span></Label>
             <Input 
@@ -108,6 +189,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               required
             />
           </div>
+          
           <div className="flex flex-col space-y-1">
             <Label htmlFor="new-aiCredits">Crediti AI <span className="text-red-500">*</span></Label>
             <Input 
@@ -120,6 +202,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               required
             />
           </div>
+          
           <DialogFooter>
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Annulla

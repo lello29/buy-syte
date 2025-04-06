@@ -20,7 +20,10 @@ const ConvertToShopPage = () => {
     address: "",
     phone: "",
     fiscalCode: "",
-    vatNumber: ""
+    vatNumber: "",
+    latitude: undefined,
+    longitude: undefined,
+    category: undefined
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<ShopFormErrors>({});
@@ -29,7 +32,7 @@ const ConvertToShopPage = () => {
     return <div>Caricamento...</div>;
   }
 
-  const handleInputChange = (field: keyof ShopFormData, value: string) => {
+  const handleInputChange = (field: keyof ShopFormData, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -45,6 +48,31 @@ const ConvertToShopPage = () => {
     }
   };
 
+  const handleGetLocation = () => {
+    if (navigator.geolocation) {
+      toast.info("Rilevamento posizione in corso...");
+      
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setFormData(prev => ({
+            ...prev,
+            latitude,
+            longitude
+          }));
+          toast.success("Posizione rilevata con successo!");
+        },
+        (error) => {
+          console.error("Errore di geolocalizzazione:", error);
+          toast.error("Impossibile rilevare la posizione. Verifica le autorizzazioni del browser.");
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      toast.error("La geolocalizzazione non è supportata da questo browser.");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -56,6 +84,12 @@ const ConvertToShopPage = () => {
       return;
     }
     
+    if (!formData.category) {
+      setErrors(prev => ({ ...prev, category: "Seleziona una categoria" }));
+      toast.error("Seleziona una categoria per il tuo negozio");
+      return;
+    }
+    
     setLoading(true);
     
     // Simulate API call delay
@@ -64,7 +98,17 @@ const ConvertToShopPage = () => {
     // Update user role with fiscal code and VAT number
     updateUserRole("shop", {
       fiscalCode: formData.fiscalCode,
-      vatNumber: formData.vatNumber
+      vatNumber: formData.vatNumber,
+      shopData: {
+        name: formData.shopName,
+        description: formData.description,
+        address: formData.address,
+        phone: formData.phone,
+        category: formData.category,
+        location: formData.latitude && formData.longitude 
+          ? { latitude: formData.latitude, longitude: formData.longitude }
+          : undefined
+      }
     });
     
     setLoading(false);
@@ -76,7 +120,10 @@ const ConvertToShopPage = () => {
       address: "",
       phone: "",
       fiscalCode: "",
-      vatNumber: ""
+      vatNumber: "",
+      latitude: undefined,
+      longitude: undefined,
+      category: undefined
     });
   };
 
@@ -106,6 +153,7 @@ const ConvertToShopPage = () => {
             currentUserEmail={currentUser.email}
             onChange={handleInputChange}
             onSubmit={handleSubmit}
+            onGetLocation={handleGetLocation}
           />
           
           <ShopBenefitsCard />

@@ -39,6 +39,11 @@ export interface Shop {
   categories?: string[];
   fiscalCode: string; // Required for shops
   vatNumber: string; // Required for shops
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  category?: string; // Shop category
   socialLinks?: {
     facebook?: string;
     instagram?: string;
