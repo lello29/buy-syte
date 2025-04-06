@@ -21,16 +21,42 @@ import {
   Sparkles, 
   Loader2
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+// Funzione per salvare le impostazioni nel localStorage
+const saveSettingsToStorage = (key: string, data: any) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Errore nel salvare ${key}:`, error);
+  }
+};
+
+// Funzione per caricare le impostazioni dal localStorage
+const loadSettingsFromStorage = (key: string, defaultValue: any) => {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : defaultValue;
+  } catch (error) {
+    console.error(`Errore nel caricare ${key}:`, error);
+    return defaultValue;
+  }
+};
 
 const SettingsPage = () => {
   const { currentUser, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [mapApiKey, setMapApiKey] = useState("");
   const [enableMapFeature, setEnableMapFeature] = useState(true);
   const [enablePayments, setEnablePayments] = useState(false);
   const isMobile = useIsMobile();
 
-  // Log component mounting
+  // Carica le impostazioni salvate al caricamento della pagina
   useEffect(() => {
+    setMapApiKey(loadSettingsFromStorage("mapApiKey", ""));
+    setEnableMapFeature(loadSettingsFromStorage("enableMapFeature", true));
+    setEnablePayments(loadSettingsFromStorage("enablePayments", false));
+    
     console.log("SettingsPage mounted", { 
       isMobile, 
       isLoading, 
@@ -56,17 +82,45 @@ const SettingsPage = () => {
     );
   }
 
-  // Per dispositivi mobili, usa il layout mobile unificato
+  // Per dispositivi mobili, ora rendirizziamo alle impostazioni mobile
   if (isMobile) {
-    return <MobileDashboard />;
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Impostazioni Amministratore</h1>
+          <p className="text-muted-foreground">
+            Configura le impostazioni globali della piattaforma.
+          </p>
+        </div>
+        
+        <Separator className="my-6" />
+        
+        <div className="space-y-6">
+          <GeneralSettingsCard onSubmit={handleSaveSettings} />
+          <MapSettingsCard 
+            mapApiKey={mapApiKey}
+            setMapApiKey={setMapApiKey}
+            enableMapFeature={enableMapFeature}
+            setEnableMapFeature={setEnableMapFeature}
+            enablePayments={enablePayments}
+            setEnablePayments={setEnablePayments}
+            onSubmit={handleSaveSettings}
+          />
+          <NotificationsCard />
+          <AISettingsCard />
+        </div>
+      </div>
+    );
   }
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would save the settings to a database
-    localStorage.setItem("mapApiKey", mapApiKey);
-    localStorage.setItem("enableMapFeature", String(enableMapFeature));
-    localStorage.setItem("enablePayments", String(enablePayments));
+    // Salva le impostazioni nel localStorage
+    saveSettingsToStorage("mapApiKey", mapApiKey);
+    saveSettingsToStorage("enableMapFeature", enableMapFeature);
+    saveSettingsToStorage("enablePayments", enablePayments);
+    
+    // In a real app, here we would save to Supabase or another database
     toast.success("Impostazioni salvate con successo");
   };
 

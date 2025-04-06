@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Map } from "lucide-react";
 import {
   Card,
@@ -7,6 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,34 @@ export function MapSettingsCard({
   setEnablePayments,
   onSubmit,
 }: MapSettingsCardProps) {
+  const [defaultRadius, setDefaultRadius] = useState("10");
+
+  // Carica il raggio di ricerca dal localStorage
+  useEffect(() => {
+    try {
+      const savedRadius = localStorage.getItem('defaultRadius');
+      if (savedRadius) {
+        setDefaultRadius(savedRadius);
+      }
+    } catch (error) {
+      console.error("Errore nel caricare il raggio di ricerca:", error);
+    }
+  }, []);
+
+  // Gestisce il cambiamento del raggio
+  const handleRadiusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setDefaultRadius(value);
+    localStorage.setItem('defaultRadius', value);
+  };
+
+  // Gestisce il submit del form
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    localStorage.setItem('defaultRadius', defaultRadius);
+    onSubmit(e);
+  };
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
@@ -44,7 +73,7 @@ export function MapSettingsCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="maps-api-key">Chiave API Maps</Label>
             <Input
@@ -65,7 +94,6 @@ export function MapSettingsCard({
               id="enable-maps" 
               checked={enableMapFeature} 
               onCheckedChange={setEnableMapFeature}
-              defaultChecked 
             />
           </div>
 
@@ -83,14 +111,16 @@ export function MapSettingsCard({
             <Input
               id="default-radius"
               type="number"
-              defaultValue="10"
+              value={defaultRadius}
+              onChange={handleRadiusChange}
               className="focus:border-primary"
             />
           </div>
-          
-          <Button type="submit" className="w-full mt-4">Salva Impostazioni</Button>
         </form>
       </CardContent>
+      <CardFooter>
+        <Button type="button" onClick={handleSubmit} className="w-full mt-4">Salva Impostazioni</Button>
+      </CardFooter>
     </Card>
   );
 }
