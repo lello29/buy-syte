@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "../pages/Index";
@@ -12,7 +11,7 @@ import ShopDetailPage from "../pages/shops/ShopDetailPage";
 import NearestShopsPage from "../pages/shops/NearestShopsPage";
 import OffersPage from "../pages/offers/OffersPage";
 import ProductsPage from "../pages/dashboard/shop/ProductsPage";
-import CustomersPage from "../pages/dashboard/shop/CustomersPage";
+import CustomersPage from "../pages/dashboard/shop/customers/CustomersPage";
 import FavoritesPage from "../pages/dashboard/user/FavoritesPage";
 import OrdersPage from "../pages/dashboard/user/OrdersPage";
 import LoyaltyPage from "../pages/dashboard/user/LoyaltyPage";
@@ -41,11 +40,9 @@ const AppRoutes = () => {
       <Route path="/shops/nearest" element={<NearestShopsPage />} />
       <Route path="/offers" element={<OffersPage />} />
 
-      {/* Dashboard routes with layout */}
       <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route index element={<DashboardIndex />} />
         
-        {/* Shop routes */}
         <Route path="products" element={<ShopRoute><ProductsPage /></ShopRoute>} />
         <Route path="products/add" element={<ShopRoute><AddProductForm /></ShopRoute>} />
         <Route path="products/:id" element={<ShopRoute><AddProductForm /></ShopRoute>} />
@@ -60,21 +57,17 @@ const AppRoutes = () => {
         <Route path="offers/create" element={<ShopRoute><div>Crea Offerta</div></ShopRoute>} />
         <Route path="notifications" element={<ShopRoute><div>Notifiche</div></ShopRoute>} />
         
-        {/* User routes */}
         <Route path="favorites" element={<FavoritesPage />} />
         <Route path="orders" element={<OrdersPage />} />
         <Route path="loyalty" element={<LoyaltyPage />} />
         
-        {/* Profile conversion routes */}
         <Route path="convert-to-shop" element={<ConvertToShopPage />} />
         <Route path="convert-to-collaborator" element={<ConvertToCollaboratorPage />} />
         
-        {/* Collaborator routes */}
         <Route path="tasks" element={<CollaboratorRoute><TasksPage /></CollaboratorRoute>} />
         <Route path="availability" element={<CollaboratorRoute><div>Disponibilità</div></CollaboratorRoute>} />
         <Route path="reviews" element={<CollaboratorRoute><div>Recensioni</div></CollaboratorRoute>} />
         
-        {/* Admin routes */}
         <Route path="admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
         <Route path="admin/shops" element={<AdminRoute><AdminShopsPage /></AdminRoute>} />
         <Route path="admin/collaborators" element={<AdminRoute><CollaboratorsPage /></AdminRoute>} />
