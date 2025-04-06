@@ -72,6 +72,7 @@ const AppRoutes = () => {
         <Route path="admin/products/:id" element={<AddProductForm />} />
         <Route path="admin/users" element={<UsersPage />} />
         <Route path="admin/settings" element={<SettingsPage />} />
+        <Route path="settings" element={<Navigate to="/dashboard/admin/settings" replace />} />
       </Route>
 
       <Route path="/404" element={<NotFound />} />

@@ -108,7 +108,7 @@ const DashboardSidebar = () => {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={location.pathname.includes("/settings")}
+              isActive={location.pathname.includes("/admin/settings") || location.pathname === "/dashboard/settings"}
               tooltip="Impostazioni"
               className="font-semibold hover:text-primary transition-colors"
             >

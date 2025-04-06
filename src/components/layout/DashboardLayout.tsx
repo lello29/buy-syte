@@ -33,7 +33,11 @@ const DashboardLayout = () => {
   };
 
   const handleBackClick = () => {
-    navigate("/dashboard");
+    if (location.pathname.includes("/admin/")) {
+      navigate("/dashboard/admin");
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   const getPageTitle = () => {
@@ -42,6 +46,7 @@ const DashboardLayout = () => {
     if (location.pathname.includes("/admin/shops")) return "Negozi";
     if (location.pathname.includes("/admin/products")) return "Prodotti";
     if (location.pathname.includes("/admin/collaborators")) return "Collaboratori";
+    if (location.pathname.includes("/admin/settings")) return "Impostazioni";
     if (location.pathname.includes("/admin")) return "Admin";
     if (location.pathname.includes("/products")) return "Prodotti";
     if (location.pathname.includes("/orders")) return "Ordini";

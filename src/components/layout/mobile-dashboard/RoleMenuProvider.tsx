@@ -1,220 +1,117 @@
 
 import React from "react";
-import { 
-  Store, Users, User, Package, Plus, BarChart3, Heart, 
-  ShoppingBag, Award, Calendar, Bell, CreditCard, Briefcase 
-} from "lucide-react";
+import { UserCircle, Heart, ShoppingBag, Award, Store, Package, CreditCard, 
+  BellRing, Users, Briefcase, Calendar, BarChart3, Settings, FilePlus, User,
+  UserCog, ShoppingCart, MapPin } from "lucide-react";
 
-interface MenuOption {
-  label: string;
-  icon: React.ReactNode;
-  path: string;
-  available: boolean;
-}
-
-interface ActionButton {
-  label: string;
-  path: string;
-  available: boolean;
-}
-
-interface AdditionalOption {
-  label: string;
-  path: string;
-  available: boolean;
-}
-
-interface RoleMenuItems {
-  dashboardOptions: MenuOption[];
-  additionalOptions: AdditionalOption[];
-  actionButton: ActionButton;
-}
-
-export const useRoleMenu = (role: string): RoleMenuItems => {
-  // Dashboard options based on role
-  const getDashboardOptions = (): MenuOption[] => {
-    switch (role) {
-      case "admin":
-        return [
-          { 
-            label: "Dashboard", 
-            icon: <BarChart3 className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/admin",
-            available: true
-          },
-          { 
-            label: "Utenti", 
-            icon: <Users className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/users",
-            available: true
-          },
-          { 
-            label: "Negozi", 
-            icon: <Store className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/admin-shops",
-            available: true
-          },
-          { 
-            label: "Collaboratori", 
-            icon: <User className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/admin-collaborators",
-            available: true
-          },
-          { 
-            label: "Prodotti", 
-            icon: <Package className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/admin-products",
-            available: true
-          }
-        ];
-      case "shop":
-        return [
-          { 
-            label: "Dashboard", 
-            icon: <Store className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard",
-            available: true
-          },
-          { 
-            label: "Prodotti", 
-            icon: <Package className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/products",
-            available: true
-          },
-          { 
-            label: "Ordini", 
-            icon: <CreditCard className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/shop-orders",
-            available: true
-          },
-          { 
-            label: "Offerte", 
-            icon: <Calendar className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/offers",
-            available: false
-          }
-        ];
-      case "collaborator":
-        return [
-          { 
-            label: "Profilo", 
-            icon: <User className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard",
-            available: true
-          },
-          { 
-            label: "Incarichi", 
-            icon: <Briefcase className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/tasks",
-            available: false
-          },
-          { 
-            label: "Disponibilità", 
-            icon: <Calendar className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/availability",
-            available: false
-          },
-          { 
-            label: "Recensioni", 
-            icon: <Award className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/reviews",
-            available: false
-          }
-        ];
-      case "user":
-      default:
-        return [
-          { 
-            label: "Profilo", 
-            icon: <User className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard",
-            available: true
-          },
-          { 
-            label: "Preferiti", 
-            icon: <Heart className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/favorites",
-            available: true
-          },
-          { 
-            label: "Ordini", 
-            icon: <ShoppingBag className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/orders",
-            available: true
-          },
-          { 
-            label: "Punti Fedeltà", 
-            icon: <Award className="h-16 w-16 text-[#0a3276]" />, 
-            path: "/dashboard/loyalty",
-            available: false
-          }
-        ];
-    }
+// The hook to get menu options based on role
+export const useRoleMenu = (role) => {
+  // Default user menu
+  let dashboardOptions = [];
+  let additionalOptions = [];
+  let actionButton = {
+    label: "",
+    path: "",
+    available: true
   };
 
-  // Additional options based on role
-  const getAdditionalOptions = (): AdditionalOption[] => {
-    switch (role) {
-      case "admin":
-        return [
-          { label: "Impostazioni", path: "/dashboard/admin/settings", available: true },
-          { label: "Gestione Sistema", path: "/dashboard/admin/system", available: false }
-        ];
-      case "shop":
-        return [
-          { label: "Notifiche", path: "/dashboard/notifications", available: false },
-          { label: "Collaboratori", path: "/dashboard/collaborators", available: false },
-          { label: "Impostazioni", path: "/dashboard/shop-settings", available: true }
-        ];
-      case "collaborator":
-        return [
-          { label: "Notifiche", path: "/dashboard/notifications", available: false },
-          { label: "Impostazioni", path: "/dashboard/settings", available: false }
-        ];
-      case "user":
-      default:
-        return [
-          { label: "Diventa Negozio", path: "/dashboard/convert-shop", available: true },
-          { label: "Diventa Collaboratore", path: "/dashboard/convert-collaborator", available: true },
-          { label: "Impostazioni", path: "/dashboard/settings", available: false }
-        ];
-    }
-  };
+  // Set options based on role
+  switch (role) {
+    case "user":
+      dashboardOptions = [
+        { label: "Preferiti", icon: Heart, path: "/dashboard/favorites", available: true },
+        { label: "I Miei Ordini", icon: ShoppingBag, path: "/dashboard/orders", available: true },
+        { label: "Punti Fedeltà", icon: Award, path: "/dashboard/loyalty", available: true },
+        { label: "Negozi Vicini", icon: MapPin, path: "/shops/nearest", available: true }
+      ];
+      
+      additionalOptions = [
+        { label: "Diventa Negozio", path: "/dashboard/convert-to-shop", available: true },
+        { label: "Diventa Collaboratore", path: "/dashboard/convert-to-collaborator", available: true },
+        { label: "Impostazioni", path: "/dashboard/settings", available: true }
+      ];
+      
+      actionButton = {
+        label: "Esplora Offerte",
+        path: "/offers",
+        available: true
+      };
+      break;
+    
+    case "shop":
+      dashboardOptions = [
+        { label: "Prodotti", icon: Package, path: "/dashboard/products", available: true },
+        { label: "Ordini", icon: CreditCard, path: "/dashboard/shop-orders", available: true },
+        { label: "Offerte", icon: ShoppingCart, path: "/dashboard/offers", available: true },
+        { label: "Notifiche", icon: BellRing, path: "/dashboard/notifications", available: true }
+      ];
+      
+      additionalOptions = [
+        { label: "Clienti", path: "/dashboard/customers", available: true },
+        { label: "Collaboratori", path: "/dashboard/collaborators", available: true },
+        { label: "Impostazioni Negozio", path: "/dashboard/shop/settings", available: true }
+      ];
+      
+      actionButton = {
+        label: "Aggiungi Prodotto",
+        path: "/dashboard/products/add",
+        available: true
+      };
+      break;
+    
+    case "collaborator":
+      dashboardOptions = [
+        { label: "Incarichi", icon: Briefcase, path: "/dashboard/tasks", available: true },
+        { label: "Disponibilità", icon: Calendar, path: "/dashboard/availability", available: true },
+        { label: "Recensioni", icon: Award, path: "/dashboard/reviews", available: true },
+        { label: "Impostazioni", icon: Settings, path: "/dashboard/settings", available: true }
+      ];
+      
+      additionalOptions = [
+        { label: "Documenti", path: "/dashboard/documents", available: false },
+        { label: "Pagamenti", path: "/dashboard/payments", available: false }
+      ];
+      
+      actionButton = {
+        label: "Cerca Incarichi",
+        path: "/dashboard/find-tasks",
+        available: false
+      };
+      break;
+    
+    case "admin":
+      dashboardOptions = [
+        { label: "Utenti", icon: Users, path: "/dashboard/admin/users", available: true },
+        { label: "Negozi", icon: Store, path: "/dashboard/admin/shops", available: true },
+        { label: "Prodotti", icon: Package, path: "/dashboard/admin/products", available: true },
+        { label: "Collaboratori", icon: Briefcase, path: "/dashboard/admin/collaborators", available: true }
+      ];
+      
+      additionalOptions = [
+        { label: "Statistiche", path: "/dashboard/admin", available: true },
+        { label: "Impostazioni", path: "/dashboard/admin/settings", available: true }
+      ];
+      
+      actionButton = {
+        label: "Aggiungi Negozio",
+        path: "/dashboard/admin/shops/add",
+        available: false
+      };
+      break;
+      
+    default:
+      // Default options if role not recognized
+      dashboardOptions = [
+        { label: "Profilo", icon: UserCircle, path: "/dashboard", available: true },
+        { label: "Impostazioni", icon: Settings, path: "/dashboard/settings", available: true }
+      ];
+      
+      actionButton = {
+        label: "Esplora Negozi",
+        path: "/shops",
+        available: true
+      };
+  }
 
-  // Main action button based on role
-  const getActionButton = (): ActionButton => {
-    switch (role) {
-      case "admin":
-        return {
-          label: "Aggiungi negozio",
-          path: "/dashboard/admin-shops/add",
-          available: false
-        };
-      case "shop":
-        return {
-          label: "Aggiungi prodotto",
-          path: "/dashboard/products/add",
-          available: true
-        };
-      case "collaborator":
-        return {
-          label: "Aggiungi disponibilità",
-          path: "/dashboard/availability/add",
-          available: false
-        };
-      case "user":
-      default:
-        return {
-          label: "Esplora negozi",
-          path: "/shops",
-          available: true
-        };
-    }
-  };
-
-  return {
-    dashboardOptions: getDashboardOptions(),
-    additionalOptions: getAdditionalOptions(),
-    actionButton: getActionButton()
-  };
+  return { dashboardOptions, additionalOptions, actionButton };
 };
