@@ -5,7 +5,7 @@ import { Eye, Ban, Trash2, UserPlus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Collaborator } from '@/types';
 
-interface MobileCollaboratorsListProps {
+export interface MobileCollaboratorsListProps {
   collaborators: Collaborator[];
   onViewCollaborator: (collaborator: Collaborator) => void;
   onToggleStatus: (collaboratorId: string, isActive: boolean) => void;

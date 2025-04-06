@@ -13,19 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Star, Eye, Trash2, UserX, UserCheck } from "lucide-react";
 import { Collaborator } from "@/types";
 
-interface CollaboratorsTableProps {
+export interface CollaboratorsTableProps {
   collaborators: Collaborator[];
   onViewCollaborator: (collaborator: Collaborator) => void;
   onToggleStatus: (collaboratorId: string, isActive: boolean) => void;
   onDeleteCollaborator: (collaborator: Collaborator) => void;
 }
 
-const CollaboratorsTable = ({
+const CollaboratorsTable: React.FC<CollaboratorsTableProps> = ({
   collaborators,
   onViewCollaborator,
   onToggleStatus,
   onDeleteCollaborator,
-}: CollaboratorsTableProps) => {
+}) => {
   return (
     <div className="rounded-md border">
       <Table>

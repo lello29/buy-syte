@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collaborator } from "@/types";
 import { User, UserX, UserCheck, Star, MapPin, Clock, Phone, Trash2 } from "lucide-react";
 
-interface ViewCollaboratorDialogProps {
+export interface ViewCollaboratorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   collaborator: Collaborator | null;
@@ -20,13 +20,13 @@ interface ViewCollaboratorDialogProps {
   onDelete: (collaborator: Collaborator) => void;
 }
 
-const ViewCollaboratorDialog = ({
+const ViewCollaboratorDialog: React.FC<ViewCollaboratorDialogProps> = ({
   open,
   onOpenChange,
   collaborator,
   onToggleStatus,
   onDelete,
-}: ViewCollaboratorDialogProps) => {
+}) => {
   if (!collaborator) return null;
 
   return (

@@ -10,19 +10,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Collaborator } from "@/types";
 
-interface DeleteCollaboratorDialogProps {
+export interface DeleteCollaboratorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   collaborator: Collaborator | null;
   onConfirmDelete: (collaboratorId: string) => void;
 }
 
-const DeleteCollaboratorDialog = ({
+const DeleteCollaboratorDialog: React.FC<DeleteCollaboratorDialogProps> = ({
   open,
   onOpenChange,
   collaborator,
   onConfirmDelete,
-}: DeleteCollaboratorDialogProps) => {
+}) => {
   if (!collaborator) return null;
 
   return (

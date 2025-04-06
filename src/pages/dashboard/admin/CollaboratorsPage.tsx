@@ -14,18 +14,37 @@ import { collaborators } from "@/data/mockData";
 import { Collaborator } from "@/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileCollaboratorsList from "@/components/admin/collaborators/MobileCollaboratorsList";
-import CollaboratorsFilter from "@/components/admin/collaborators/CollaboratorsFilter";
+import CollaboratorsFilter, { CollaboratorStatusFilter } from "@/components/admin/collaborators/CollaboratorsFilter";
 import CollaboratorsTable from "@/components/admin/collaborators/CollaboratorsTable";
 import ViewCollaboratorDialog from "@/components/admin/collaborators/ViewCollaboratorDialog";
 import DeleteCollaboratorDialog from "@/components/admin/collaborators/DeleteCollaboratorDialog";
 
-const CollaboratorsPage = () => {
+interface CollaboratorsPageState {
+  collaboratorsList: Collaborator[];
+  statusFilter: CollaboratorStatusFilter;
+  selectedCollaborator: Collaborator | null;
+  isViewDialogOpen: boolean;
+  isDeleteDialogOpen: boolean;
+}
+
+const CollaboratorsPage: React.FC = () => {
   const { currentUser } = useAuth();
-  const [collaboratorsList, setCollaboratorsList] = useState(collaborators);
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
-  const [selectedCollaborator, setSelectedCollaborator] = useState<Collaborator | null>(null);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [state, setState] = useState<CollaboratorsPageState>({
+    collaboratorsList: collaborators,
+    statusFilter: "all",
+    selectedCollaborator: null,
+    isViewDialogOpen: false,
+    isDeleteDialogOpen: false
+  });
+  
+  const { 
+    collaboratorsList, 
+    statusFilter, 
+    selectedCollaborator, 
+    isViewDialogOpen, 
+    isDeleteDialogOpen 
+  } = state;
+  
   const isMobile = useIsMobile();
 
   if (!currentUser || currentUser.role !== "admin") {
@@ -36,34 +55,55 @@ const CollaboratorsPage = () => {
     );
   }
 
-  const handleToggleStatus = (id: string, isActive: boolean) => {
+  const handleToggleStatus = (id: string, isActive: boolean): void => {
     const updatedCollaborators = collaboratorsList.map(collab => 
       collab.id === id ? { ...collab, isActive: isActive } : collab
     );
-    setCollaboratorsList(updatedCollaborators);
+    setState(prev => ({ ...prev, collaboratorsList: updatedCollaborators }));
     toast.success(`Stato del collaboratore aggiornato con successo`);
   };
 
-  const handleDeleteCollaborator = (id: string) => {
+  const handleDeleteCollaborator = (id: string): void => {
     const updatedCollaborators = collaboratorsList.filter(collab => collab.id !== id);
-    setCollaboratorsList(updatedCollaborators);
-    setIsDeleteDialogOpen(false);
-    setSelectedCollaborator(null);
+    setState(prev => ({
+      ...prev,
+      collaboratorsList: updatedCollaborators,
+      isDeleteDialogOpen: false,
+      selectedCollaborator: null
+    }));
     toast.success(`Collaboratore eliminato con successo`);
   };
 
-  const openViewDialog = (collaborator: Collaborator) => {
-    setSelectedCollaborator(collaborator);
-    setIsViewDialogOpen(true);
+  const openViewDialog = (collaborator: Collaborator): void => {
+    setState(prev => ({
+      ...prev,
+      selectedCollaborator: collaborator,
+      isViewDialogOpen: true
+    }));
   };
 
-  const openDeleteDialog = (collaborator: Collaborator) => {
-    setSelectedCollaborator(collaborator);
-    setIsDeleteDialogOpen(true);
+  const openDeleteDialog = (collaborator: Collaborator): void => {
+    setState(prev => ({
+      ...prev,
+      selectedCollaborator: collaborator,
+      isDeleteDialogOpen: true
+    }));
   };
 
-  const handleAddCollaborator = () => {
+  const handleAddCollaborator = (): void => {
     toast.info("Funzionalità di aggiunta collaboratore non ancora implementata");
+  };
+
+  const handleFilterChange = (filter: CollaboratorStatusFilter): void => {
+    setState(prev => ({ ...prev, statusFilter: filter }));
+  };
+
+  const setIsViewDialogOpen = (open: boolean): void => {
+    setState(prev => ({ ...prev, isViewDialogOpen: open }));
+  };
+
+  const setIsDeleteDialogOpen = (open: boolean): void => {
+    setState(prev => ({ ...prev, isDeleteDialogOpen: open }));
   };
 
   const filteredCollaborators = statusFilter === "all"
@@ -81,7 +121,7 @@ const CollaboratorsPage = () => {
 
       <CollaboratorsFilter 
         statusFilter={statusFilter} 
-        onFilterChange={setStatusFilter} 
+        onFilterChange={handleFilterChange} 
       />
 
       {isMobile ? (

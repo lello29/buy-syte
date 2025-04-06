@@ -2,15 +2,18 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 
-interface CollaboratorsFilterProps {
-  statusFilter: "all" | "active" | "inactive";
-  onFilterChange: (filter: "all" | "active" | "inactive") => void;
+// Define the filter status type
+export type CollaboratorStatusFilter = "all" | "active" | "inactive";
+
+export interface CollaboratorsFilterProps {
+  statusFilter: CollaboratorStatusFilter;
+  onFilterChange: (filter: CollaboratorStatusFilter) => void;
 }
 
-const CollaboratorsFilter = ({ 
+const CollaboratorsFilter: React.FC<CollaboratorsFilterProps> = ({ 
   statusFilter, 
   onFilterChange 
-}: CollaboratorsFilterProps) => {
+}) => {
   return (
     <div className="flex flex-wrap gap-3 mb-6">
       <Button 
