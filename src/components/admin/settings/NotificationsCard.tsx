@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Bell } from "lucide-react";
 import {
   Card,
@@ -10,53 +10,11 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
-
-// Funzione per caricare le impostazioni dal localStorage
-const loadNotificationSettings = () => {
-  try {
-    const settings = localStorage.getItem('notificationSettings');
-    return settings ? JSON.parse(settings) : {
-      newUsers: true,
-      newShops: true,
-      inactiveShops: false,
-      weeklyReport: true
-    };
-  } catch (error) {
-    console.error("Errore nel caricare le impostazioni delle notifiche:", error);
-    return {
-      newUsers: true,
-      newShops: true,
-      inactiveShops: false,
-      weeklyReport: true
-    };
-  }
-};
+import { useNotificationSettings } from "@/hooks/useNotificationSettings";
+import { NotificationItem } from "./notifications/NotificationItem";
 
 export function NotificationsCard() {
-  const [settings, setSettings] = useState(loadNotificationSettings());
-
-  // Carica le impostazioni all'avvio
-  useEffect(() => {
-    setSettings(loadNotificationSettings());
-  }, []);
-
-  // Gestisce il cambiamento di uno switch
-  const handleSwitchChange = (setting: string) => {
-    const newSettings = { ...settings, [setting]: !settings[setting] };
-    setSettings(newSettings);
-    
-    // Salva nel localStorage
-    localStorage.setItem('notificationSettings', JSON.stringify(newSettings));
-  };
-
-  // Invia notifiche di test
-  const handleSendTestNotifications = () => {
-    toast.success("Notifiche di test inviate con successo");
-  };
+  const { settings, handleSwitchChange, handleSendTestNotifications } = useNotificationSettings();
 
   return (
     <Card className="shadow-sm">
@@ -71,47 +29,34 @@ export function NotificationsCard() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex items-center justify-between space-x-2 py-2">
-            <Label htmlFor="notify-new-users" className="font-medium">Notifica Nuovi Utenti</Label>
-            <Switch 
-              id="notify-new-users" 
-              checked={settings.newUsers}
-              onCheckedChange={() => handleSwitchChange('newUsers')}
-            />
-          </div>
+          <NotificationItem
+            id="notify-new-users"
+            label="Notifica Nuovi Utenti"
+            checked={settings.newUsers}
+            onChange={() => handleSwitchChange('newUsers')}
+          />
           
-          <Separator />
+          <NotificationItem
+            id="notify-new-shops"
+            label="Notifica Nuovi Negozi"
+            checked={settings.newShops}
+            onChange={() => handleSwitchChange('newShops')}
+          />
           
-          <div className="flex items-center justify-between space-x-2 py-2">
-            <Label htmlFor="notify-new-shops" className="font-medium">Notifica Nuovi Negozi</Label>
-            <Switch 
-              id="notify-new-shops" 
-              checked={settings.newShops}
-              onCheckedChange={() => handleSwitchChange('newShops')}
-            />
-          </div>
+          <NotificationItem
+            id="notify-inactive-shops"
+            label="Notifica Negozi Inattivi"
+            checked={settings.inactiveShops}
+            onChange={() => handleSwitchChange('inactiveShops')}
+          />
           
-          <Separator />
-          
-          <div className="flex items-center justify-between space-x-2 py-2">
-            <Label htmlFor="notify-inactive-shops" className="font-medium">Notifica Negozi Inattivi</Label>
-            <Switch 
-              id="notify-inactive-shops" 
-              checked={settings.inactiveShops}
-              onCheckedChange={() => handleSwitchChange('inactiveShops')}
-            />
-          </div>
-          
-          <Separator />
-          
-          <div className="flex items-center justify-between space-x-2 py-2">
-            <Label htmlFor="weekly-report" className="font-medium">Report Settimanale</Label>
-            <Switch 
-              id="weekly-report" 
-              checked={settings.weeklyReport}
-              onCheckedChange={() => handleSwitchChange('weeklyReport')}
-            />
-          </div>
+          <NotificationItem
+            id="weekly-report"
+            label="Report Settimanale"
+            checked={settings.weeklyReport}
+            onChange={() => handleSwitchChange('weeklyReport')}
+            showSeparator={false}
+          />
         </div>
       </CardContent>
       <CardFooter>
