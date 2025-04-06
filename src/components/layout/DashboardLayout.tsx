@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -19,8 +18,11 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Controllo se visualizzare la dashboard mobile
-  const shouldShowMobileDashboard = isMobile && location.pathname === "/dashboard";
+  // Check if this is exactly the main dashboard path without any sub-routes
+  const shouldShowMobileDashboard = isMobile && 
+    (location.pathname === "/dashboard" || 
+     location.pathname === "/dashboard/admin");
+  
   const isSubPage = location.pathname !== "/dashboard" && location.pathname.startsWith("/dashboard");
 
   const handleLogout = async () => {
@@ -42,12 +44,13 @@ const DashboardLayout = () => {
 
   const getPageTitle = () => {
     if (location.pathname === "/dashboard") return "Dashboard";
+    if (location.pathname === "/dashboard/admin") return "Admin Dashboard";
     if (location.pathname.includes("/admin/users")) return "Utenti";
     if (location.pathname.includes("/admin/shops")) return "Negozi";
     if (location.pathname.includes("/admin/products")) return "Prodotti";
+    if (location.pathname.includes("/admin/products/add")) return "Aggiungi Prodotto";
     if (location.pathname.includes("/admin/collaborators")) return "Collaboratori";
     if (location.pathname.includes("/admin/settings")) return "Impostazioni";
-    if (location.pathname.includes("/admin")) return "Admin";
     if (location.pathname.includes("/products")) return "Prodotti";
     if (location.pathname.includes("/orders")) return "Ordini";
     return "Dashboard";

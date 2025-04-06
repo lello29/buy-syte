@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { LogOut, LogIn, UserPlus, Home, AlertTriangle, Store, Tag, UserCircle } from "lucide-react";
@@ -21,6 +21,7 @@ const MobileNavigation = ({
   simplified = false
 }: MobileNavigationProps) => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   if (!mobileMenuOpen) return null;
 
@@ -31,6 +32,15 @@ const MobileNavigation = ({
       description: `La funzione "${featureName}" non è ancora disponibile.`,
       variant: "destructive",
     });
+  };
+
+  const handleDashboardClick = () => {
+    setMobileMenuOpen(false);
+    if (currentUser?.role === "admin") {
+      navigate("/dashboard/admin");
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -79,12 +89,15 @@ const MobileNavigation = ({
                   <MobileNavbarUserMenu setMobileMenuOpen={setMobileMenuOpen} />
                 </div>
               ) : (
-                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    <UserCircle className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </Button>
-                </Link>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={handleDashboardClick}
+                >
+                  <UserCircle className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Button>
               )}
               <Button variant="outline" size="sm" onClick={handleLogout} className="w-full justify-start">
                 <LogOut className="h-4 w-4 mr-2" />

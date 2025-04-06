@@ -1,4 +1,3 @@
-
 import React from "react";
 import { UserCircle, Heart, ShoppingBag, Award, Store, Package, CreditCard, 
   BellRing, Users, Briefcase, Calendar, BarChart3, Settings, FilePlus, User,
@@ -81,14 +80,14 @@ export const useRoleMenu = (role) => {
     
     case "admin":
       dashboardOptions = [
+        { label: "Dashboard", icon: BarChart3, path: "/dashboard/admin", available: true },
         { label: "Utenti", icon: Users, path: "/dashboard/admin/users", available: true },
         { label: "Negozi", icon: Store, path: "/dashboard/admin/shops", available: true },
-        { label: "Prodotti", icon: Package, path: "/dashboard/admin/products", available: true },
-        { label: "Collaboratori", icon: Briefcase, path: "/dashboard/admin/collaborators", available: true }
+        { label: "Prodotti", icon: Package, path: "/dashboard/admin/products", available: true }
       ];
       
       additionalOptions = [
-        { label: "Statistiche", path: "/dashboard/admin", available: true },
+        { label: "Collaboratori", path: "/dashboard/admin/collaborators", available: true },
         { label: "Impostazioni", path: "/dashboard/admin/settings", available: true }
       ];
       
@@ -100,7 +99,6 @@ export const useRoleMenu = (role) => {
       break;
       
     default:
-      // Default options if role not recognized
       dashboardOptions = [
         { label: "Profilo", icon: UserCircle, path: "/dashboard", available: true },
         { label: "Impostazioni", icon: Settings, path: "/dashboard/settings", available: true }

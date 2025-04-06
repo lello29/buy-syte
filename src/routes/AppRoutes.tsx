@@ -6,7 +6,7 @@ import NotFound from "../pages/NotFound";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import DashboardIndex from "../pages/dashboard/DashboardIndex";
-import { ProtectedRoute } from "../components/routes/ProtectedRoutes";
+import { ProtectedRoute, AdminRoute, ShopRoute, CollaboratorRoute } from "../components/routes/ProtectedRoutes";
 import ShopsPage from "../pages/shops/ShopsPage";
 import ShopDetailPage from "../pages/shops/ShopDetailPage";
 import NearestShopsPage from "../pages/shops/NearestShopsPage";
@@ -45,11 +45,11 @@ const AppRoutes = () => {
         <Route index element={<DashboardIndex />} />
         
         {/* Shop routes */}
-        <Route path="products" element={<ProductsPage />} />
-        <Route path="products/add" element={<AddProductForm />} />
-        <Route path="products/:id" element={<AddProductForm />} />
-        <Route path="customers" element={<CustomersPage />} />
-        <Route path="shop/settings" element={<ShopSettingsPage />} />
+        <Route path="products" element={<ShopRoute><ProductsPage /></ShopRoute>} />
+        <Route path="products/add" element={<ShopRoute><AddProductForm /></ShopRoute>} />
+        <Route path="products/:id" element={<ShopRoute><AddProductForm /></ShopRoute>} />
+        <Route path="customers" element={<ShopRoute><CustomersPage /></ShopRoute>} />
+        <Route path="shop/settings" element={<ShopRoute><ShopSettingsPage /></ShopRoute>} />
         
         {/* User routes */}
         <Route path="favorites" element={<FavoritesPage />} />
@@ -61,17 +61,17 @@ const AppRoutes = () => {
         <Route path="convert-to-collaborator" element={<ConvertToCollaboratorPage />} />
         
         {/* Collaborator routes */}
-        <Route path="tasks" element={<TasksPage />} />
+        <Route path="tasks" element={<CollaboratorRoute><TasksPage /></CollaboratorRoute>} />
         
         {/* Admin routes */}
-        <Route path="admin" element={<AdminDashboardPage />} />
-        <Route path="admin/shops" element={<AdminShopsPage />} />
-        <Route path="admin/collaborators" element={<CollaboratorsPage />} />
-        <Route path="admin/products" element={<ProductsAdminPage />} />
-        <Route path="admin/products/add" element={<AddProductForm />} />
-        <Route path="admin/products/:id" element={<AddProductForm />} />
-        <Route path="admin/users" element={<UsersPage />} />
-        <Route path="admin/settings" element={<SettingsPage />} />
+        <Route path="admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+        <Route path="admin/shops" element={<AdminRoute><AdminShopsPage /></AdminRoute>} />
+        <Route path="admin/collaborators" element={<AdminRoute><CollaboratorsPage /></AdminRoute>} />
+        <Route path="admin/products" element={<AdminRoute><ProductsAdminPage /></AdminRoute>} />
+        <Route path="admin/products/add" element={<AdminRoute><AddProductForm /></AdminRoute>} />
+        <Route path="admin/products/:id" element={<AdminRoute><AddProductForm /></AdminRoute>} />
+        <Route path="admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
+        <Route path="admin/settings" element={<AdminRoute><SettingsPage /></AdminRoute>} />
         <Route path="settings" element={<Navigate to="/dashboard/admin/settings" replace />} />
       </Route>
 
