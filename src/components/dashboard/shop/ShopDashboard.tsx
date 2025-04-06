@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +7,7 @@ import { Package, Calendar, ShoppingBag, DollarSign, ChevronRight, Settings } fr
 import { getProductsByShopId, shops } from "@/data/mockData";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import ProductCategoriesManager from "@/components/products/ProductCategoriesManager";
 
 interface ShopDashboardProps {
   userId: string;
@@ -46,7 +46,6 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
   const shopProducts = getProductsByShopId(shop.id);
   const recentProducts = shopProducts.slice(0, 5);
   
-  // Simulate some orders and sales data
   const todayOrders = Math.floor(Math.random() * 10) + 1;
   const totalSales = Math.floor(Math.random() * 10000) + 1000;
   const reservations = Math.floor(Math.random() * 10) + 1;
@@ -56,7 +55,6 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
   };
 
   const handleManageCategories = () => {
-    // Trova e clicca il pulsante nascosto per gestire le categorie
     const manageCategoriesButton = document.getElementById("manage-categories-button");
     if (manageCategoriesButton) {
       manageCategoriesButton.click();
@@ -67,11 +65,9 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
   
   return (
     <div className="space-y-6 max-w-md mx-auto md:max-w-none pb-20">
-      {/* Header with shop name and options */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Negozio: {shop.name}</h1>
         
-        {/* Desktop Settings Button */}
         {!isMobile && (
           <Link to="/dashboard/shop-settings">
             <Button variant="outline">
@@ -82,7 +78,6 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
         )}
       </div>
       
-      {/* Summary cards section */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         <DashboardCard
           title="Totale Prodotti"
@@ -132,7 +127,6 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
         />
       </div>
 
-      {/* Action Buttons */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
         <Button 
           variant="primary" 
@@ -153,7 +147,6 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
         </Button>
       </div>
 
-      {/* Recent Products */}
       <div className="mt-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Ultimi Prodotti</h2>
@@ -184,7 +177,6 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
         </Card>
       </div>
       
-      {/* Mobile-only Settings Link at bottom */}
       {isMobile && (
         <div className="mt-8">
           <Link to="/dashboard/shop-settings">
@@ -196,7 +188,6 @@ const ShopDashboard: React.FC<ShopDashboardProps> = ({ userId }) => {
         </div>
       )}
 
-      {/* Hidden component for category management */}
       <div className="hidden">
         <ProductCategoriesManager 
           categories={["Abbigliamento", "Accessori", "Elettronica", "Casa", "Sport", "Bellezza"]} 
