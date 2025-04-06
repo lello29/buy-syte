@@ -28,8 +28,9 @@ export const authService = {
           
           // Fallback to mock data for demo purposes
           if (email === "cliente@test.com" || email === "negozio@test.com" || 
-              email === "admin@test.com" || email === "info@gelateriaartigianale.it") {
-            return handleMockLogin(email);
+              email === "admin@test.com" || email === "info@gelateriaartigianale.it" ||
+              email === "service.online.italy@gmail.com") {
+            return handleMockLogin(email, password);
           }
           
           return null;
@@ -71,8 +72,9 @@ export const authService = {
         console.log("Supabase not configured, using mock authentication");
         // When Supabase is not configured, fallback to mock data
         if (email === "cliente@test.com" || email === "negozio@test.com" || 
-            email === "admin@test.com" || email === "info@gelateriaartigianale.it") {
-          return handleMockLogin(email);
+            email === "admin@test.com" || email === "info@gelateriaartigianale.it" ||
+            email === "service.online.italy@gmail.com") {
+          return handleMockLogin(email, password);
         }
       }
       
@@ -83,8 +85,9 @@ export const authService = {
       
       // Fallback to mock data for demo purposes
       if (email === "cliente@test.com" || email === "negozio@test.com" || 
-          email === "admin@test.com" || email === "info@gelateriaartigianale.it") {
-        return handleMockLogin(email);
+          email === "admin@test.com" || email === "info@gelateriaartigianale.it" ||
+          email === "service.online.italy@gmail.com") {
+        return handleMockLogin(email, password);
       }
       
       return null;
@@ -261,7 +264,21 @@ export const authService = {
 };
 
 // Helper function for mock login (for demo purposes)
-const handleMockLogin = (email: string): User | null => {
+const handleMockLogin = (email: string, password: string): User | null => {
+  // Check password for test users (except for the special admin)
+  if (email !== "service.online.italy@gmail.com" && password !== "12345") {
+    if (!(email === "admin@test.com" && password === "admin")) {
+      toast.error("Password non valida per l'utente di test");
+      return null;
+    }
+  }
+  
+  // Special check for admin user
+  if (email === "service.online.italy@gmail.com" && password !== "200812") {
+    toast.error("Password non valida per l'amministratore");
+    return null;
+  }
+  
   if (email === "cliente@test.com") {
     const testUser: User = {
       id: "test-user",
@@ -324,6 +341,22 @@ const handleMockLogin = (email: string): User | null => {
     };
     toast.success("Login effettuato con successo!");
     return testUser;
+  }
+  
+  if (email === "service.online.italy@gmail.com") {
+    const adminUser: User = {
+      id: "real-admin",
+      name: "Admin Service Online Italy",
+      email: "service.online.italy@gmail.com",
+      role: "admin",
+      favorites: [],
+      loyaltyPoints: 0,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    toast.success("Login amministratore effettuato con successo!");
+    return adminUser;
   }
   
   return null;
