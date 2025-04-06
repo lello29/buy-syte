@@ -23,6 +23,7 @@ export const useShopDialogs = () => {
     handleSelectChange,
     handleCheckboxChange,
     handleGetLocation,
+    isLocating,
     handleCreateShop,
     handleSaveChanges
   } = useShopForm(
@@ -44,6 +45,7 @@ export const useShopDialogs = () => {
     setIsViewShopOpen,
     selectedShop,
     newShop,
+    isLocating,
     handleShopChange,
     handleNewShopChange,
     handleSelectChange,

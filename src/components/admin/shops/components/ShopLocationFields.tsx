@@ -10,43 +10,55 @@ interface ShopLocationFieldsProps {
   longitude?: number;
   onShopChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onGetLocation?: () => void;
+  isLocating?: boolean;
 }
 
 const ShopLocationFields: React.FC<ShopLocationFieldsProps> = ({
   latitude,
   longitude,
   onShopChange,
-  onGetLocation
+  onGetLocation,
+  isLocating = false
 }) => {
   return (
-    <div className="space-y-1">
-      <Label>Posizione Geografica</Label>
-      <div className="grid grid-cols-3 gap-2">
-        <Button 
-          type="button" 
-          variant="outline" 
-          className="col-span-1"
-          onClick={onGetLocation}
-        >
-          <MapPin className="h-4 w-4 mr-1" /> Rileva
-        </Button>
-        <div className="col-span-1">
-          <Input
+    <div className="border p-4 rounded-md space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-md font-medium">Posizione</h3>
+        {onGetLocation && (
+          <Button 
+            type="button" 
+            variant="outline" 
+            size="sm" 
+            onClick={onGetLocation}
+            disabled={isLocating}
+          >
+            <MapPin className="h-4 w-4 mr-2" />
+            {isLocating ? 'Rilevamento...' : 'Rileva posizione'}
+          </Button>
+        )}
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col space-y-1">
+          <Label htmlFor="latitude">Latitudine</Label>
+          <Input 
+            id="latitude"
             name="latitude"
-            placeholder="Latitudine"
             type="number"
             step="0.000001"
-            value={latitude || ""}
+            value={latitude || ''}
             onChange={onShopChange}
           />
         </div>
-        <div className="col-span-1">
-          <Input
+        
+        <div className="flex flex-col space-y-1">
+          <Label htmlFor="longitude">Longitudine</Label>
+          <Input 
+            id="longitude"
             name="longitude"
-            placeholder="Longitudine"
             type="number"
             step="0.000001"
-            value={longitude || ""}
+            value={longitude || ''}
             onChange={onShopChange}
           />
         </div>

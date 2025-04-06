@@ -22,6 +22,7 @@ interface EditShopDialogProps {
   onCheckboxChange?: (field: string, checked: boolean) => void;
   onGetLocation?: () => void;
   onSaveChanges: () => void;
+  isLocating?: boolean;
 }
 
 const EditShopDialog: React.FC<EditShopDialogProps> = ({
@@ -32,7 +33,8 @@ const EditShopDialog: React.FC<EditShopDialogProps> = ({
   onSelectChange,
   onCheckboxChange,
   onGetLocation,
-  onSaveChanges
+  onSaveChanges,
+  isLocating = false
 }) => {
   if (!shop) return null;
 
@@ -62,6 +64,7 @@ const EditShopDialog: React.FC<EditShopDialogProps> = ({
             longitude={shop.location?.longitude}
             onShopChange={onShopChange}
             onGetLocation={onGetLocation}
+            isLocating={isLocating}
           />
           
           <ShopStatusFields

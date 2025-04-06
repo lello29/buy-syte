@@ -15,6 +15,7 @@ const ShopDialogs: React.FC = () => {
     setIsEditShopOpen,
     selectedShop,
     newShop,
+    isLocating,
     handleNewShopChange,
     handleSelectChange,
     handleCreateShop,
@@ -50,6 +51,7 @@ const ShopDialogs: React.FC = () => {
         onCheckboxChange={handleCheckboxChange}
         onGetLocation={handleGetLocation}
         onSaveChanges={handleSaveChanges}
+        isLocating={isLocating}
       />
     </>
   );
