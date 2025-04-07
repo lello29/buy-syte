@@ -1,58 +1,52 @@
-
 import React from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useAdminSettings } from "@/hooks/useAdminSettings";
-import { MobileSettingsView } from "@/components/admin/settings/MobileSettingsView";
 import { DesktopSettingsView } from "@/components/admin/settings/DesktopSettingsView";
+import { MobileSettingsView } from "@/components/admin/settings/MobileSettingsView";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { DatabaseCard } from "@/components/admin/settings/DatabaseCard";
+import { DatabaseMigrationCard } from "@/components/admin/settings/DatabaseMigrationCard";
+import { DeploymentInfoCard } from "@/components/admin/settings/DeploymentInfoCard";
+import { ProjectExportCard } from "@/components/admin/settings/ProjectExportCard";
 
-const SettingsPage = () => {
-  const { currentUser, isLoading } = useAuth();
+export default function SettingsPage() {
   const isMobile = useIsMobile();
-  const { 
-    mapSettings, 
-    handleSaveGeneralSettings, 
-    handleSaveMapSettings 
-  } = useAdminSettings();
 
-  // Log mounting of the component
-  React.useEffect(() => {
-    console.log("SettingsPage mounted", { 
-      isMobile, 
-      isLoading, 
-      userRole: currentUser?.role 
-    });
-  }, [isMobile, isLoading, currentUser]);
-
-  // Check if user is authenticated and has admin role
-  if (!currentUser || currentUser.role !== "admin") {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p>Non sei autorizzato a visualizzare questa pagina.</p>
-      </div>
-    );
-  }
-
-  // Render the appropriate view based on device type
-  if (isMobile) {
-    return (
-      <MobileSettingsView 
-        isLoading={isLoading || isMobile === null}
-        mapSettings={mapSettings}
-        handleSaveGeneralSettings={handleSaveGeneralSettings}
-        handleSaveMapSettings={handleSaveMapSettings}
-      />
-    );
-  }
+  // Configurazione delle schede di impostazioni per desktop e mobile
+  const settingsSections = {
+    general: [
+      {
+        title: "Impostazioni Generali",
+        components: [
+          
+        ],
+      },
+    ],
+    database: [
+      {
+        title: "Database e Dati",
+        components: [
+          { id: "database", component: <DatabaseCard /> },
+          { id: "database-migration", component: <DatabaseMigrationCard /> },
+        ],
+      },
+    ],
+    deployment: [
+      {
+        title: "Deployment e Export",
+        components: [
+          { id: "deployment-info", component: <DeploymentInfoCard /> },
+          { id: "project-export", component: <ProjectExportCard /> },
+        ],
+      },
+    ],
+  };
 
   return (
-    <DesktopSettingsView 
-      isLoading={isLoading || isMobile === null}
-      mapSettings={mapSettings}
-      handleSaveGeneralSettings={handleSaveGeneralSettings}
-      handleSaveMapSettings={handleSaveMapSettings}
-    />
+    <div className="p-4 md:p-8 pt-6 h-full">
+      {isMobile === true ? (
+        <MobileSettingsView sections={settingsSections} />
+      ) : (
+        <DesktopSettingsView sections={settingsSections} />
+      )}
+    </div>
   );
-};
-
-export default SettingsPage;
+}
