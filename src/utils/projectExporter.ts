@@ -300,59 +300,59 @@ CMD ["nginx", "-g", "daemon off;"]
 # Script di setup per il progetto
 
 # Colori per output
-GREEN='\x1b[0;32m'
-RED='\x1b[0;31m'
-YELLOW='\x1b[0;33m'
-NC='\x1b[0m' # No Color
+GREEN='\\x1b[0;32m'
+RED='\\x1b[0;31m'
+YELLOW='\\x1b[0;33m'
+NC='\\x1b[0m' # No Color
 
-echo -e "${GREEN}Inizializzazione setup del progetto...${NC}"
+echo -e "\${GREEN}Inizializzazione setup del progetto...\${NC}"
 
 # Verifica Node.js
 if ! command -v node &> /dev/null; then
-    echo -e "${RED}Node.js non trovato. Installalo prima di continuare.${NC}"
+    echo -e "\${RED}Node.js non trovato. Installalo prima di continuare.\${NC}"
     exit 1
 fi
 
 # Verifica npm
 if ! command -v npm &> /dev/null; then
-    echo -e "${RED}npm non trovato. Installalo prima di continuare.${NC}"
+    echo -e "\${RED}npm non trovato. Installalo prima di continuare.\${NC}"
     exit 1
 fi
 
 # Verifica versione Node.js
 NODE_VERSION=$(node -v | cut -d "v" -f 2)
-echo -e "${YELLOW}Versione Node.js: $NODE_VERSION${NC}"
+echo -e "\${YELLOW}Versione Node.js: $NODE_VERSION\${NC}"
 
 # Installa dipendenze
-echo -e "${YELLOW}Installazione dipendenze...${NC}"
+echo -e "\${YELLOW}Installazione dipendenze...\${NC}"
 npm install
 
 # Creazione file .env se non esiste
 if [ ! -f .env ]; then
-    echo -e "${YELLOW}Creazione file .env...${NC}"
+    echo -e "\${YELLOW}Creazione file .env...\${NC}"
     echo "VITE_SUPABASE_URL=inserisci-url-supabase" > .env
     echo "VITE_SUPABASE_ANON_KEY=inserisci-chiave-anonima-supabase" >> .env
-    echo -e "${GREEN}File .env creato. Modifica le variabili con i tuoi valori.${NC}"
+    echo -e "\${GREEN}File .env creato. Modifica le variabili con i tuoi valori.\${NC}"
 else
-    echo -e "${GREEN}File .env già esistente.${NC}"
+    echo -e "\${GREEN}File .env già esistente.\${NC}"
 fi
 
 # Build del progetto
-echo -e "${YELLOW}Creazione build di produzione...${NC}"
+echo -e "\${YELLOW}Creazione build di produzione...\${NC}"
 npm run build
 
 # Verifica se il build è andato a buon fine
 if [ -d "dist" ]; then
-    echo -e "${GREEN}Build completato con successo!${NC}"
-    echo -e "${GREEN}I file di build sono disponibili nella cartella 'dist'.${NC}"
+    echo -e "\${GREEN}Build completato con successo!\${NC}"
+    echo -e "\${GREEN}I file di build sono disponibili nella cartella 'dist'.\${NC}"
 else
-    echo -e "${RED}Errore durante il build.${NC}"
+    echo -e "\${RED}Errore durante il build.\${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}Setup completato con successo!${NC}"
-echo -e "${YELLOW}Per avviare l'app in modalità sviluppo: ${NC}npm run dev"
-echo -e "${YELLOW}Per servire l'app di produzione, copia la cartella 'dist' sul server web.${NC}"
+echo -e "\${GREEN}Setup completato con successo!\${NC}"
+echo -e "\${YELLOW}Per avviare l'app in modalità sviluppo: \${NC}npm run dev"
+echo -e "\${YELLOW}Per servire l'app di produzione, copia la cartella 'dist' sul server web.\${NC}"
 `;
   }
 }
