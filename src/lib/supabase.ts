@@ -1,28 +1,29 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
+import { supabaseConfig } from '@/config/databaseConfig';
 
-// Get environment variables from Vite
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// Utilizza la configurazione centralizzata
+const supabaseUrl = supabaseConfig.url;
+const supabaseAnonKey = supabaseConfig.anonKey;
 
-// Create a mock client if credentials are missing
-export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+// Controlla se è configurato
+export const isSupabaseConfigured = supabaseConfig.isConfigured;
 
 let supabaseClient;
 
 if (isSupabaseConfigured) {
-  // Only create the client if we have valid credentials
+  // Solo se abbiamo credenziali valide
   supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
 } else {
   console.error('Supabase URL o chiave anonima mancante. Verifica le variabili d\'ambiente.');
-  // Create a mock client that won't perform actual operations
+  // Crea un client fittizio che non eseguirà operazioni effettive
   supabaseClient = {
     from: () => ({
       upsert: () => ({ error: new Error('Supabase not configured') }),
       select: () => ({ error: new Error('Supabase not configured') }),
     }),
-    // Add other methods we might need to mock
+    // Aggiungi altri metodi che potrebbero essere necessari
   } as any;
 }
 
