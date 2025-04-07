@@ -28,4 +28,34 @@ export interface ProjectConfig {
     node: string;
     npm: string;
   };
+  databaseSchema?: {
+    tables: string[];
+    relationships?: Record<string, string[]>;
+  };
+  frontendComponents?: string[];
+  customFiles?: string[];
 }
+
+/**
+ * Interface for export options
+ */
+export interface ExportOptions {
+  includeDatabase: boolean;
+  includeConfig: boolean;
+  includeDocker: boolean;
+  includeNginx: boolean;
+  includeSetupScript: boolean;
+  includeDocs: boolean;
+}
+
+/**
+ * Default export options
+ */
+export const defaultExportOptions: ExportOptions = {
+  includeDatabase: true,
+  includeConfig: true,
+  includeDocker: true,
+  includeNginx: true,
+  includeSetupScript: true,
+  includeDocs: true
+};

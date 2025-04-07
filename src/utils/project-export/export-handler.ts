@@ -6,20 +6,31 @@ import {
   generateReadme, 
   generateDockerConfig, 
   generateNginxConfig, 
-  generateSetupScript 
+  generateSetupScript,
+  generateDatabaseImportScript
 } from "./document-generators";
+import { ExportOptions, defaultExportOptions } from "./types";
 
 /**
  * Gestisce l'esportazione del progetto completo
+ * @param options Opzioni di esportazione personalizzate
  */
-export async function exportProject(): Promise<void> {
+export async function exportProject(
+  options: ExportOptions = defaultExportOptions
+): Promise<void> {
   try {
     toast.info("Inizio esportazione del progetto...");
 
     // 1. Esportazione dati database
-    const dbData = await DatabaseExporter.exportAllData();
-    if (dbData) {
-      saveExportedDataToFile(dbData, "database-export.json");
+    if (options.includeDatabase) {
+      const dbData = await DatabaseExporter.exportAllData();
+      if (dbData) {
+        saveExportedDataToFile(dbData, "database-export.json");
+        
+        // Script per l'importazione del database
+        const importScript = generateDatabaseImportScript();
+        saveExportedDataToFile(importScript, "import-database.js");
+      }
     }
 
     // 2. Generazione configurazione progetto
@@ -27,20 +38,28 @@ export async function exportProject(): Promise<void> {
     saveExportedDataToFile(projectConfig, "project-config.json");
 
     // 3. Generazione README con istruzioni
-    const readmeContent = generateReadme(projectConfig);
-    saveExportedDataToFile(readmeContent, "README.md");
+    if (options.includeDocs) {
+      const readmeContent = generateReadme(projectConfig);
+      saveExportedDataToFile(readmeContent, "README.md");
+    }
 
     // 4. Generazione file Docker
-    const dockerConfig = generateDockerConfig();
-    saveExportedDataToFile(dockerConfig, "Dockerfile");
+    if (options.includeDocker) {
+      const dockerConfig = generateDockerConfig();
+      saveExportedDataToFile(dockerConfig, "Dockerfile");
+    }
 
     // 5. Generazione configurazione nginx
-    const nginxConfig = generateNginxConfig();
-    saveExportedDataToFile(nginxConfig, "nginx.conf");
+    if (options.includeNginx) {
+      const nginxConfig = generateNginxConfig();
+      saveExportedDataToFile(nginxConfig, "nginx.conf");
+    }
 
     // 6. Generazione script di setup
-    const setupScript = generateSetupScript();
-    saveExportedDataToFile(setupScript, "setup.sh");
+    if (options.includeSetupScript) {
+      const setupScript = generateSetupScript();
+      saveExportedDataToFile(setupScript, "setup.sh");
+    }
 
     toast.success("Esportazione del progetto completata con successo!");
   } catch (error) {

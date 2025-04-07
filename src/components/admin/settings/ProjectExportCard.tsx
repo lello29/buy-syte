@@ -20,15 +20,26 @@ import {
 import { ProjectExporter } from "@/utils/projectExporter";
 import { DatabaseExporter, saveExportedDataToFile } from "@/utils/exportDatabase";
 import { supabaseConfig } from "@/config/databaseConfig";
+import { ExportOptions } from "@/utils/project-export/types";
 
 export function ProjectExportCard() {
   const [isExporting, setIsExporting] = useState(false);
   const [isDatabaseExporting, setIsDatabaseExporting] = useState(false);
 
+  // Opzioni di esportazione completa
+  const fullExportOptions: ExportOptions = {
+    includeDatabase: true,
+    includeConfig: true,
+    includeDocker: true,
+    includeNginx: true,
+    includeSetupScript: true,
+    includeDocs: true
+  };
+
   const handleExportProject = async () => {
     setIsExporting(true);
     try {
-      await ProjectExporter.exportProject();
+      await ProjectExporter.exportProject(fullExportOptions);
     } finally {
       setIsExporting(false);
     }
@@ -144,21 +155,7 @@ export function ProjectExportCard() {
                     variant="outline" 
                     className="w-full h-24 flex flex-col items-center justify-center gap-2"
                     onClick={() => {
-                      const dockerConfig = `# Dockerfile per l'applicazione
-FROM node:18-alpine as build
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]`;
+                      const dockerConfig = ProjectExporter.generateDockerConfig();
                       saveExportedDataToFile(dockerConfig, "Dockerfile");
                     }}
                   >

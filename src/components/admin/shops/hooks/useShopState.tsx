@@ -88,6 +88,7 @@ export const useShopState = (): UseShopStateReturnType => {
         shop.id === shopId ? { ...shop, isActive, lastUpdated: new Date().toISOString() } : shop
       )
     );
+    toast.success(`Negozio ${isActive ? 'attivato' : 'disattivato'} con successo`);
   };
   
   const handleApproveShop = (shopId: string, isApproved: boolean) => {
@@ -96,6 +97,7 @@ export const useShopState = (): UseShopStateReturnType => {
         shop.id === shopId ? { ...shop, isApproved, lastUpdated: new Date().toISOString() } : shop
       )
     );
+    toast.success(`Negozio ${isApproved ? 'approvato' : 'messo in attesa'} con successo`);
   };
   
   return {

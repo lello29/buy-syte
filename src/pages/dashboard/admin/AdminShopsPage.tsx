@@ -7,18 +7,35 @@ import ShopDialogs from "@/components/admin/shops/ShopDialogs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useShopState } from "@/components/admin/shops/hooks/useShopState";
 import { toast } from "sonner";
+import { Shop } from "@/types";
 
 export default function AdminShopsPage() {
   const isMobile = useIsMobile();
   const {
     shopsList,
+    selectedShop,
+    setSelectedShop,
+    isViewShopOpen,
+    setIsViewShopOpen,
+    isEditShopOpen,
+    setIsEditShopOpen,
+    isAddShopOpen,
+    setIsAddShopOpen,
     handleAddShop,
-    handleViewShop,
-    handleEditShop,
-    handleToggleStatus,
     handleDeleteShop,
+    handleToggleStatus,
     handleApproveShop
   } = useShopState();
+  
+  const handleViewShop = (shop: Shop) => {
+    setSelectedShop(shop);
+    setIsViewShopOpen(true);
+  };
+  
+  const handleEditShop = (shop: Shop) => {
+    setSelectedShop(shop);
+    setIsEditShopOpen(true);
+  };
   
   return (
     <div className="flex flex-col min-h-screen bg-background">

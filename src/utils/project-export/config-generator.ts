@@ -7,6 +7,34 @@ import { ProjectConfig } from "./types";
  * @returns La configurazione del progetto
  */
 export async function generateProjectConfig(): Promise<ProjectConfig> {
+  // Ottieni l'elenco delle tabelle nel database
+  let databaseSchema = undefined;
+  
+  try {
+    if (supabaseConfig.isConfigured) {
+      // In un'app reale, questo dovrebbe essere basato sui dati effettivi del database
+      databaseSchema = {
+        tables: [
+          'users',
+          'shops',
+          'products',
+          'categories',
+          'orders',
+          'offers',
+          'collaborators',
+          'tasks'
+        ],
+        relationships: {
+          'shops': ['users', 'products'],
+          'products': ['shops', 'categories'],
+          'orders': ['users', 'products']
+        }
+      };
+    }
+  } catch (error) {
+    console.error("Errore nel recupero dello schema del database:", error);
+  }
+  
   // Questa è una configurazione di base, in un'app reale
   // dovrebbe essere recuperata da qualche fonte di configurazione
   return {
@@ -70,8 +98,8 @@ export async function generateProjectConfig(): Promise<ProjectConfig> {
    \`\`\`
 
 5. **Importazione dei Dati**
-   - Usa la funzionalità di importazione dati nell'app admin per caricare il database
-   - Oppure importa direttamente in Supabase i dati esportati
+   - Usa il file database-export.json per importare i dati nel tuo database Supabase
+   - Puoi utilizzare lo script di importazione incluso nel pacchetto di esportazione
 
 6. **Verifica dell'Installazione**
    - Accedi all'URL del tuo sito
@@ -81,6 +109,19 @@ export async function generateProjectConfig(): Promise<ProjectConfig> {
     requirements: {
       node: ">=14.x",
       npm: ">=6.x"
-    }
+    },
+    databaseSchema,
+    frontendComponents: [
+      "shop-management",
+      "user-management",
+      "products-management",
+      "dashboard",
+      "authentication"
+    ],
+    customFiles: [
+      "src/utils/exportDatabase.ts",
+      "src/utils/projectExporter.ts",
+      "src/utils/migrateData.ts"
+    ]
   };
 }
