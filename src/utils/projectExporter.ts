@@ -300,10 +300,10 @@ CMD ["nginx", "-g", "daemon off;"]
 # Script di setup per il progetto
 
 # Colori per output
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-NC='\033[0m' # No Color
+GREEN='\x1b[0;32m'
+RED='\x1b[0;31m'
+YELLOW='\x1b[0;33m'
+NC='\x1b[0m' # No Color
 
 echo -e "${GREEN}Inizializzazione setup del progetto...${NC}"
 
