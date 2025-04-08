@@ -1,6 +1,12 @@
 
 import { exportProject, generateProjectConfig, ProjectConfig, ExportOptions } from './project-export';
-import { generateDockerConfig, generateReadme, generateNginxConfig, generateSetupScript } from './project-export/document-generators';
+import { 
+  generateDockerConfig, 
+  generateReadme, 
+  generateNginxConfig, 
+  generateSetupScript, 
+  generateDatabaseImportScript 
+} from './project-export/document-generators';
 
 /**
  * Classe per gestire l'esportazione del progetto
@@ -42,6 +48,12 @@ export class ProjectExporter {
    * @returns Script di setup come stringa
    */
   static generateSetupScript = generateSetupScript;
+  
+  /**
+   * Genera lo script per l'importazione del database
+   * @returns Script di importazione come stringa
+   */
+  static generateDatabaseImportScript = generateDatabaseImportScript;
 }
 
 // Re-export types

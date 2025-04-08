@@ -117,76 +117,72 @@ export function generateNginxConfig(): string {
  * @returns Script di setup
  */
 export function generateSetupScript(): string {
+  // Utilizzo una versione dello script che non fa riferimento a variabili di bash che TypeScript non riconosce
+  // Utilizzeremo le sequenze di escape come stringa semplice
   return `#!/bin/bash
 
-# Colori per l'output
-GREEN='\x1b[0;32m'
-RED='\x1b[0;31m'
-YELLOW='\x1b[0;33m'
-NC='\x1b[0m' # No Color
-
-echo -e "${GREEN}Script di setup per Buy-Syte${NC}"
+echo -e "\\x1b[0;32mScript di setup per Buy-Syte\\x1b[0m"
 echo "------------------------------"
 
 # Verifica Node.js
 if ! command -v node &> /dev/null; then
-    echo -e "${RED}Node.js non è installato. Installalo per continuare.${NC}"
+    echo -e "\\x1b[0;31mNode.js non è installato. Installalo per continuare.\\x1b[0m"
     exit 1
 fi
 
 # Verifica NPM
 if ! command -v npm &> /dev/null; then
-    echo -e "${RED}NPM non è installato. Installalo per continuare.${NC}"
+    echo -e "\\x1b[0;31mNPM non è installato. Installalo per continuare.\\x1b[0m"
     exit 1
 fi
 
 # Verifica versione Node.js
 NODE_VERSION=$(node -v | cut -d 'v' -f 2)
-echo -e "${YELLOW}Versione Node.js: $NODE_VERSION${NC}"
-echo -e "${YELLOW}Versione NPM: $(npm -v)${NC}"
+echo -e "\\x1b[0;33mVersione Node.js: $NODE_VERSION\\x1b[0m"
+echo -e "\\x1b[0;33mVersione NPM: $(npm -v)\\x1b[0m"
 
 # Installa dipendenze
-echo -e "${YELLOW}Installazione dipendenze...${NC}"
+echo -e "\\x1b[0;33mInstallazione dipendenze...\\x1b[0m"
 npm install
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}Dipendenze installate con successo!${NC}"
+    echo -e "\\x1b[0;32mDipendenze installate con successo!\\x1b[0m"
 else
-    echo -e "${RED}Errore durante l'installazione delle dipendenze.${NC}"
+    echo -e "\\x1b[0;31mErrore durante l'installazione delle dipendenze.\\x1b[0m"
     exit 1
 fi
 
 # Verifica esistenza file .env
 if [ ! -f .env ]; then
-    echo -e "${YELLOW}File .env non trovato. Creazione di un template...${NC}"
+    echo -e "\\x1b[0;33mFile .env non trovato. Creazione di un template...\\x1b[0m"
     echo "VITE_SUPABASE_URL=" > .env
     echo "VITE_SUPABASE_ANON_KEY=" >> .env
-    echo -e "${GREEN}File .env creato. Compila con le tue credenziali Supabase.${NC}"
+    echo -e "\\x1b[0;32mFile .env creato. Compila con le tue credenziali Supabase.\\x1b[0m"
 else
-    echo -e "${GREEN}File .env trovato.${NC}"
+    echo -e "\\x1b[0;32mFile .env trovato.\\x1b[0m"
 fi
 
 # Istruzioni per l'importazione del database
-echo -e "${YELLOW}Per importare il database, esegui:${NC}"
-echo -e "${YELLOW}node import-database.js${NC}"
+echo -e "\\x1b[0;33mPer importare il database, esegui:\\x1b[0m"
+echo -e "\\x1b[0;33mnode import-database.js\\x1b[0m"
 
 # Build del progetto
-echo -e "${YELLOW}Vuoi compilare il progetto ora? (s/n)${NC}"
+echo -e "\\x1b[0;33mVuoi compilare il progetto ora? (s/n)\\x1b[0m"
 read -r BUILD_CHOICE
 if [[ $BUILD_CHOICE =~ ^[Ss]$ ]]; then
-    echo -e "${YELLOW}Compilazione del progetto...${NC}"
+    echo -e "\\x1b[0;33mCompilazione del progetto...\\x1b[0m"
     npm run build
     if [ $? -eq 0 ]; then
-        echo -e "${GREEN}Progetto compilato con successo!${NC}"
-        echo -e "${GREEN}I file compilati sono nella cartella 'dist'.${NC}"
+        echo -e "\\x1b[0;32mProgetto compilato con successo!\\x1b[0m"
+        echo -e "\\x1b[0;32mI file compilati sono nella cartella 'dist'.\\x1b[0m"
     else
-        echo -e "${RED}Errore durante la compilazione.${NC}"
+        echo -e "\\x1b[0;31mErrore durante la compilazione.\\x1b[0m"
     fi
 fi
 
-echo -e "${GREEN}Setup completato!${NC}"
-echo -e "${YELLOW}Per avviare il server di sviluppo:${NC} npm run dev"
-echo -e "${YELLOW}Per compilare per la produzione:${NC} npm run build"
-echo -e "${YELLOW}Per importare il database:${NC} node import-database.js"
+echo -e "\\x1b[0;32mSetup completato!\\x1b[0m"
+echo -e "\\x1b[0;33mPer avviare il server di sviluppo:\\x1b[0m npm run dev"
+echo -e "\\x1b[0;33mPer compilare per la produzione:\\x1b[0m npm run build"
+echo -e "\\x1b[0;33mPer importare il database:\\x1b[0m node import-database.js"
 `;
 }
 
@@ -267,4 +263,3 @@ async function importDatabase() {
 importDatabase();
 `;
 }
-
