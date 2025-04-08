@@ -60,7 +60,7 @@ export interface Product {
   id: string;
   shopId: string;
   name: string;
-  description?: string;
+  description: string;  // Changed from optional to required to match usage in components
   price: number;
   discountPrice?: number;
   category: string;
@@ -77,6 +77,7 @@ export interface Offer {
   name: string;
   description?: string;
   discount: number;
+  discountPercentage?: number;  // Added to match usage in offers.ts
   startDate: string;
   endDate: string;
   isActive: boolean;
