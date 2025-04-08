@@ -17,9 +17,24 @@ import { DataImportExportCard } from "./DataImportExportCard";
 
 interface MobileSettingsViewProps {
   isLoading: boolean;
+  mapSettings: {
+    mapApiKey: string;
+    setMapApiKey: (value: string) => void;
+    enableMapFeature: boolean;
+    setEnableMapFeature: (value: boolean) => void;
+    enablePayments: boolean;
+    setEnablePayments: (value: boolean) => void;
+  };
+  handleSaveGeneralSettings: (e: React.FormEvent, data: any) => void;
+  handleSaveMapSettings: (e: React.FormEvent) => void;
 }
 
-export function MobileSettingsView({ isLoading }: MobileSettingsViewProps) {
+export function MobileSettingsView({
+  isLoading,
+  mapSettings,
+  handleSaveGeneralSettings,
+  handleSaveMapSettings
+}: MobileSettingsViewProps) {
   if (isLoading) {
     return <SettingsLoadingState />;
   }
@@ -30,12 +45,20 @@ export function MobileSettingsView({ isLoading }: MobileSettingsViewProps) {
         <SettingsHeader />
         
         <TabsContent value="general" className="mt-0 space-y-6">
-          <GeneralSettingsCard />
+          <GeneralSettingsCard onSubmit={handleSaveGeneralSettings} />
           <NotificationsCard />
         </TabsContent>
         
         <TabsContent value="maps" className="mt-0 space-y-6">
-          <MapSettingsCard />
+          <MapSettingsCard 
+            mapApiKey={mapSettings.mapApiKey}
+            setMapApiKey={mapSettings.setMapApiKey}
+            enableMapFeature={mapSettings.enableMapFeature}
+            setEnableMapFeature={mapSettings.setEnableMapFeature}
+            enablePayments={mapSettings.enablePayments}
+            setEnablePayments={mapSettings.setEnablePayments}
+            onSubmit={handleSaveMapSettings}
+          />
         </TabsContent>
         
         <TabsContent value="database" className="mt-0 space-y-6">

@@ -18,9 +18,26 @@ import { DataImportExportCard } from "./DataImportExportCard";
 
 interface DesktopSettingsViewProps {
   isLoading: boolean;
+  mapSettings: {
+    mapApiKey: string;
+    setMapApiKey: (value: string) => void;
+    enableMapFeature: boolean;
+    setEnableMapFeature: (value: boolean) => void;
+    enablePayments: boolean;
+    setEnablePayments: (value: boolean) => void;
+  };
+  handleSaveGeneralSettings: (e: React.FormEvent, data: any) => void;
+  handleSaveMapSettings: (e: React.FormEvent) => void;
+  databaseCards?: React.ReactNode;
 }
 
-export function DesktopSettingsView({ isLoading }: DesktopSettingsViewProps) {
+export function DesktopSettingsView({ 
+  isLoading,
+  mapSettings,
+  handleSaveGeneralSettings,
+  handleSaveMapSettings,
+  databaseCards
+}: DesktopSettingsViewProps) {
   if (isLoading) {
     return <SettingsLoadingState />;
   }
@@ -28,7 +45,11 @@ export function DesktopSettingsView({ isLoading }: DesktopSettingsViewProps) {
   return (
     <Tabs defaultValue="general" className="w-full">
       <div className="grid grid-cols-12 gap-6">
-        <SettingsLeftColumn />
+        <SettingsLeftColumn
+          mapSettings={mapSettings}
+          handleSaveGeneralSettings={handleSaveGeneralSettings}
+          handleSaveMapSettings={handleSaveMapSettings}
+        />
         
         <TabsContent value="general" className="col-span-9 mt-0 space-y-6">
           <SettingsRightColumn
@@ -36,7 +57,7 @@ export function DesktopSettingsView({ isLoading }: DesktopSettingsViewProps) {
             description="Gestisci le impostazioni di base dell'applicazione"
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <GeneralSettingsCard />
+              <GeneralSettingsCard onSubmit={handleSaveGeneralSettings} />
               <NotificationsCard />
             </div>
           </SettingsRightColumn>
@@ -47,7 +68,15 @@ export function DesktopSettingsView({ isLoading }: DesktopSettingsViewProps) {
             title="Mappe e Localizzazione"
             description="Configura le impostazioni per mappe e servizi di localizzazione"
           >
-            <MapSettingsCard />
+            <MapSettingsCard 
+              mapApiKey={mapSettings.mapApiKey}
+              setMapApiKey={mapSettings.setMapApiKey}
+              enableMapFeature={mapSettings.enableMapFeature}
+              setEnableMapFeature={mapSettings.setEnableMapFeature}
+              enablePayments={mapSettings.enablePayments}
+              setEnablePayments={mapSettings.setEnablePayments}
+              onSubmit={handleSaveMapSettings}
+            />
           </SettingsRightColumn>
         </TabsContent>
         
@@ -57,9 +86,13 @@ export function DesktopSettingsView({ isLoading }: DesktopSettingsViewProps) {
             description="Gestione del database e delle informazioni archiviate"
           >
             <div className="space-y-6">
-              <DatabaseCard />
-              <DatabaseMigrationCard />
-              <DataImportExportCard />
+              {databaseCards ? databaseCards : (
+                <>
+                  <DatabaseCard />
+                  <DatabaseMigrationCard />
+                  <DataImportExportCard />
+                </>
+              )}
             </div>
           </SettingsRightColumn>
         </TabsContent>

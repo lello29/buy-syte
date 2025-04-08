@@ -1,26 +1,27 @@
 
-import React from "react";
-import { Bell, CreditCard, Sparkles, Database } from "lucide-react";
-import { SectionTitle } from "./SectionTitle";
-import { NotificationsCard } from "@/components/admin/settings/NotificationsCard";
-import { AIPackagesCard } from "@/components/admin/settings/AIPackagesCard";
-import { AIIntegrationCard } from "@/components/admin/settings/AIIntegrationCard";
-import { DatabaseCard } from "@/components/admin/settings/DatabaseCard";
+import React, { ReactNode } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export const SettingsRightColumn = () => {
+interface SettingsRightColumnProps {
+  title: string;
+  description: string;
+  children: ReactNode;
+}
+
+export const SettingsRightColumn: React.FC<SettingsRightColumnProps> = ({
+  title,
+  description,
+  children
+}) => {
   return (
-    <div className="space-y-6">
-      <SectionTitle icon={Bell} title="Sistema di Notifiche" />
-      <NotificationsCard />
-      
-      <SectionTitle icon={CreditCard} title="Pacchetti e Crediti" />
-      <AIPackagesCard />
-      
-      <SectionTitle icon={Sparkles} title="Integrazione AI Prodotti" />
-      <AIIntegrationCard />
-      
-      <SectionTitle icon={Database} title="Gestione Database" />
-      <DatabaseCard />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {children}
+      </CardContent>
+    </Card>
   );
 };
