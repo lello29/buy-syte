@@ -11,6 +11,7 @@ import {
   tasks 
 } from '@/data/mockData';
 import { toast } from 'sonner';
+import { migrateShops } from '@/services/shop';
 
 // Funzione per trasformare le chiavi da camelCase a snake_case
 const toSnakeCase = (obj: Record<string, any>) => {
@@ -46,35 +47,43 @@ export const migrateAllData = async () => {
       toast.warning(`Alcune tabelle potrebbero essere mancanti. Tentativo di migrazione parziale.`);
     }
     
-    // Aggiungiamo l'utente admin specifico richiesto
-    const adminUser = {
-      id: `admin-${Date.now()}`,
-      name: "Admin User",
-      email: "service.online.italy@gmail.com",
-      password: "200812", // Nota: questa è solo per demo, in produzione non dovremmo salvare password in chiaro
-      role: "admin",
-      favorites: [],
-      loyaltyPoints: 0,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    // Verifica dell'utente admin
+    const { data: adminUser, error: adminError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', 'service.online.italy@gmail.com')
+      .single();
     
-    // Aggiungiamo l'admin agli utenti mock se non esiste già
-    if (!users.some(user => user.email === adminUser.email)) {
-      users.unshift(adminUser);
+    if (adminError) {
+      console.error("Errore nella verifica dell'utente admin:", adminError.message);
+      
+      // Aggiungiamo l'utente admin specifico richiesto
+      const adminUser = {
+        id: `admin-${Date.now()}`,
+        name: "Admin User",
+        email: "service.online.italy@gmail.com",
+        role: "admin",
+        favorites: [],
+        loyaltyPoints: 0,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Aggiungiamo l'admin agli utenti mock se non esiste già
+      if (!users.some(user => user.email === adminUser.email)) {
+        users.unshift(adminUser);
+      }
+    } else {
+      console.log("Utente admin trovato:", adminUser);
     }
     
-    // Mappatura delle entità e relative tabelle
+    // Utilizziamo il service migrateShops per migrare negozi e relativi dati
+    await migrateShops();
+    
+    // Mappatura delle entità e relative tabelle per altre entità non gestite da migrateShops
     const migrations = [
-      { data: users, table: 'users', transform: transformUsers },
       { data: categories, table: 'categories', transform: transformCategories },
-      { data: shops, table: 'shops', transform: transformShops },
-      { data: products, table: 'products', transform: transformProducts },
-      { data: offers, table: 'offers', transform: transformOffers },
-      { data: collaborators, table: 'collaborators', transform: transformCollaborators },
-      { data: tasks, table: 'tasks', transform: transformTasks },
-      { data: orders, table: 'orders', transform: transformOrders }
     ];
     
     let successCount = 0;
