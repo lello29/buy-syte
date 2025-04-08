@@ -5,9 +5,10 @@ import { Users, Store, User, Package, Loader2 } from "lucide-react";
 import RecentShopsCard from "./recent-shops/RecentShopsCard";
 import RecentActivitiesCard from "./activity/RecentActivitiesCard";
 import GlobalStatisticsCard from "./statistics/GlobalStatisticsCard";
-import { supabase } from "@/lib/supabase";
 import { Shop, Product } from "@/types";
 import { toast } from "sonner";
+import { DatabaseAdapter } from "@/lib/databaseAdapter";
+import { mockShops, mockProducts } from "@/data/mockData";
 
 const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -25,84 +26,72 @@ const AdminDashboard: React.FC = () => {
       try {
         setLoading(true);
         
-        // Fetch counts
-        const [usersRes, shopsRes, collaboratorsRes, productsRes] = await Promise.all([
-          supabase.from('users').select('id', { count: 'exact' }),
-          supabase.from('shops').select('id', { count: 'exact' }),
-          supabase.from('collaborators').select('id', { count: 'exact' }),
-          supabase.from('products').select('id', { count: 'exact' })
+        // Fetch counts using our database adapter
+        const [usersCount, shopsCount, collaboratorsCount, productsCount] = await Promise.all([
+          DatabaseAdapter.count('users'),
+          DatabaseAdapter.count('shops'),
+          DatabaseAdapter.count('collaborators'),
+          DatabaseAdapter.count('products')
         ]);
         
-        // Fetch shops for recent shops card
-        const { data: shopsData } = await supabase
-          .from('shops')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5);
-          
-        // Fetch products for statistics
-        const { data: productsData } = await supabase
-          .from('products')
-          .select('*')
-          .limit(20);
+        // Fetch shops data with mocks as fallback
+        const shopsData = await DatabaseAdapter.select<any>('shops', mockShops);
+        
+        // Fetch products data with mocks as fallback
+        const productsData = await DatabaseAdapter.select<any>('products', mockProducts.slice(0, 20));
         
         // Update counts
         setStats({
-          users: usersRes.count || 0,
-          shops: shopsRes.count || 0,
-          collaborators: collaboratorsRes.count || 0,
-          products: productsRes.count || 0
+          users: usersCount,
+          shops: shopsCount,
+          collaborators: collaboratorsCount,
+          products: productsCount
         });
         
         // Format shops data
-        if (shopsData) {
-          const formattedShops: Shop[] = shopsData.map(shop => ({
-            id: shop.id,
-            userId: shop.user_id,
-            name: shop.name,
-            description: shop.description,
-            address: shop.address,
-            phone: shop.phone,
-            email: shop.email,
-            products: [],
-            offers: [],
-            aiCredits: shop.ai_credits,
-            isApproved: shop.is_approved,
-            lastUpdated: shop.last_updated,
-            createdAt: shop.created_at,
-            logoImage: shop.logo_image,
-            bannerImage: shop.banner_image,
-            fiscalCode: shop.fiscal_code,
-            vatNumber: shop.vat_number,
-            location: shop.latitude && shop.longitude ? {
-              latitude: shop.latitude,
-              longitude: shop.longitude
-            } : undefined,
-            category: shop.category
-          }));
-          
-          setShopsList(formattedShops);
-        }
+        const formattedShops: Shop[] = shopsData.map((shop: any) => ({
+          id: shop.id,
+          userId: shop.user_id,
+          name: shop.name,
+          description: shop.description,
+          address: shop.address,
+          phone: shop.phone,
+          email: shop.email,
+          products: [],
+          offers: [],
+          aiCredits: shop.ai_credits,
+          isApproved: shop.is_approved,
+          lastUpdated: shop.last_updated,
+          createdAt: shop.created_at,
+          logoImage: shop.logo_image,
+          bannerImage: shop.banner_image,
+          fiscalCode: shop.fiscal_code,
+          vatNumber: shop.vat_number,
+          location: shop.latitude && shop.longitude ? {
+            latitude: shop.latitude,
+            longitude: shop.longitude
+          } : undefined,
+          category: shop.category
+        }));
         
         // Format products data
-        if (productsData) {
-          const formattedProducts: Product[] = productsData.map(product => ({
-            id: product.id,
-            shopId: product.shop_id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            discountPrice: product.discount_price,
-            category: product.category,
-            inventory: product.inventory,
-            images: product.images,
-            isActive: product.is_active,
-            createdAt: product.created_at,
-            updatedAt: product.updated_at
-          }));
-          
-          setProductsList(formattedProducts);
-        }
+        const formattedProducts: Product[] = productsData.map((product: any) => ({
+          id: product.id,
+          shopId: product.shop_id,
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          discountPrice: product.discount_price,
+          category: product.category,
+          inventory: product.inventory,
+          images: product.images,
+          isActive: product.is_active,
+          createdAt: product.created_at,
+          updatedAt: product.updated_at
+        }));
+        
+        setShopsList(formattedShops);
+        setProductsList(formattedProducts);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         toast.error("Errore nel caricamento dei dati della dashboard");

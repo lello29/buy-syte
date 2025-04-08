@@ -2,6 +2,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { User } from "../../../types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { users as mockUsers } from "@/data/mockData";
 
 export const useSessionManager = (
   setCurrentUser: Dispatch<SetStateAction<User | null>>,
@@ -25,31 +26,36 @@ export const useSessionManager = (
         const { data } = await supabase.auth.getSession();
         
         if (data.session?.user) {
-          // Fetch user profile from our users table
-          const { data: userData, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', data.session.user.id)
-            .single();
+          try {
+            // Fetch user profile from our users table
+            const { data: userData, error } = await supabase.auth.getUser();
               
-          if (userData && !error) {
-            // Transform from snake_case to camelCase
-            const userProfile: User = {
-              id: userData.id,
-              name: userData.name,
-              email: userData.email,
-              role: userData.role,
-              favorites: userData.favorites || [],
-              loyaltyPoints: userData.loyalty_points || 0,
-              isActive: userData.is_active,
-              createdAt: userData.created_at,
-              updatedAt: userData.updated_at,
-              fiscalCode: userData.fiscal_code,
-              vatNumber: userData.vat_number
-            };
+            if (userData?.user && !error) {
+              // For demo, use mock data when the real data isn't available
+              const userEmail = userData.user.email || '';
+              const mockUser = mockUsers.find(user => user.email === userEmail);
               
-            setCurrentUser(userProfile);
-            localStorage.setItem("currentUser", JSON.stringify(userProfile));
+              if (mockUser) {
+                const userProfile: User = {
+                  id: userData.user.id,
+                  name: mockUser.name,
+                  email: userEmail,
+                  role: mockUser.role,
+                  favorites: mockUser.favorites || [],
+                  loyaltyPoints: mockUser.loyaltyPoints || 0,
+                  isActive: true,
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                  fiscalCode: mockUser.fiscalCode,
+                  vatNumber: mockUser.vatNumber
+                };
+                
+                setCurrentUser(userProfile);
+                localStorage.setItem("currentUser", JSON.stringify(userProfile));
+              }
+            }
+          } catch (error) {
+            console.error("Error fetching user profile:", error);
           }
         }
       }

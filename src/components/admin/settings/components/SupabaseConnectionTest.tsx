@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, Check, Database } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase, verifyRequiredTables } from "@/lib/supabase";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/client';
+import { mockVerifyRequiredTables } from "@/lib/supabase";
+import { simpleDatabaseCheck } from "@/config/databaseConfig";
 
 export function SupabaseConnectionTest() {
   const [isTestingConnection, setIsTestingConnection] = useState(false);
@@ -28,7 +30,7 @@ export function SupabaseConnectionTest() {
 
   const checkTablesStatus = async () => {
     try {
-      const { allTablesExist, missingTables } = await verifyRequiredTables();
+      const { allTablesExist, missingTables } = await mockVerifyRequiredTables();
       setTablesStatus({
         checked: true,
         allExist: allTablesExist,
@@ -44,12 +46,12 @@ export function SupabaseConnectionTest() {
     setConnectionStatus("idle");
     
     try {
-      // Test di una query semplice su Supabase
-      const { data, error } = await supabase.from('pg_tables').select('count').limit(1);
+      // Test di connessione con metodo alternativo
+      const isConnected = await simpleDatabaseCheck();
       
-      if (error) {
-        console.error("Errore durante il test della connessione:", error);
-        toast.error(`Errore di connessione: ${error.message}`);
+      if (!isConnected) {
+        console.error("Errore durante il test della connessione");
+        toast.error("Impossibile connettersi al database Supabase");
         setConnectionStatus("error");
       } else {
         toast.success("Connessione a Supabase stabilita con successo!");

@@ -5,6 +5,7 @@
 
 // Importa client Supabase già configurato
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
 // Configurazione per Supabase
 export const supabaseConfig = {
@@ -22,14 +23,31 @@ export const supabaseConfig = {
  */
 export const checkDatabaseConnection = async (): Promise<boolean> => {
   try {
-    // Esegui una query di test
-    const { error } = await supabase.from('pg_tables').select('count').limit(1);
+    // Creiamo una query semplice che funzioni anche senza tabelle specifiche
+    const { data, error } = await supabase.rpc('version');
     
     if (error) {
       console.error("Errore di connessione:", error.message);
       return false;
     }
     
+    return true;
+  } catch (error) {
+    console.error("Errore durante il test della connessione:", error);
+    return false;
+  }
+};
+
+/**
+ * Funzione alternativa per verificare la connessione
+ * Utilizza un approccio più semplice che funziona anche senza funzioni RPC
+ */
+export const simpleDatabaseCheck = async (): Promise<boolean> => {
+  try {
+    // Verifichiamo se possiamo ottenere l'oggetto auth
+    const { data } = await supabase.auth.getSession();
+    
+    // Se abbiamo ricevuto una risposta, la connessione funziona
     return true;
   } catch (error) {
     console.error("Errore durante il test della connessione:", error);

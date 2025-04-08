@@ -2,8 +2,9 @@
 import React, { useState } from "react";
 import { UserFormValues } from "./schemas/userFormSchema";
 import { User as UserType } from "@/types";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
+import { DatabaseAdapter } from "@/lib/databaseAdapter";
 
 interface UserFormHandlerProps {
   user: UserType;
@@ -49,15 +50,11 @@ const UserFormHandler: React.FC<UserFormHandlerProps> = ({
       console.log("Aggiornamento utente con dati:", updateData);
       
       if (isSupabaseConfigured) {
-        // Aggiorna l'utente in Supabase
-        const { error: supabaseError } = await supabase
-          .from('users')
-          .update(updateData)
-          .eq('id', user.id);
+        // Aggiorna l'utente usando il nostro adapter
+        const success = await DatabaseAdapter.update('users', updateData, 'id', user.id);
           
-        if (supabaseError) {
-          console.error("Errore nell'aggiornamento dell'utente:", supabaseError.message);
-          setError(`Errore nell'aggiornamento dell'utente: ${supabaseError.message}`);
+        if (!success) {
+          setError(`Errore nell'aggiornamento dell'utente`);
           toast.error("Errore durante l'aggiornamento dell'utente");
           return;
         }
