@@ -8,8 +8,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useShopState } from "@/components/admin/shops/hooks/useShopState";
 import { toast } from "sonner";
 import { Shop } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
 export default function AdminShopsPage() {
+  const { currentUser } = useAuth();
   const isMobile = useIsMobile();
   const {
     shopsList,
@@ -26,6 +29,10 @@ export default function AdminShopsPage() {
     handleToggleStatus,
     handleApproveShop
   } = useShopState();
+  
+  if (!currentUser || currentUser.role !== "admin") {
+    return <Navigate to="/dashboard" />;
+  }
   
   const handleViewShop = (shop: Shop) => {
     setSelectedShop(shop);

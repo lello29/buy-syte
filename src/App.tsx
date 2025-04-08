@@ -19,6 +19,11 @@ import OrdersPage from '@/pages/dashboard/user/OrdersPage';
 import FavoritesPage from '@/pages/dashboard/user/FavoritesPage';
 import LoyaltyPage from '@/pages/dashboard/user/LoyaltyPage';
 import TasksPage from '@/pages/dashboard/collaborator/TasksPage';
+import AdminDashboardPage from '@/pages/dashboard/admin/AdminDashboardPage';
+import AdminUsersPage from '@/pages/dashboard/admin/UsersPage';
+import AdminShopsPage from '@/pages/dashboard/admin/AdminShopsPage';
+import AdminCollaboratorsPage from '@/pages/dashboard/admin/CollaboratorsPage';
+import AdminSettingsPage from '@/pages/dashboard/admin/SettingsPage';
 
 // Create placeholder components for missing pages
 const ProfilePage = () => <div>Profile Page</div>;
@@ -39,14 +44,9 @@ const ReviewsPage = () => <div>Reviews Page</div>;
 const EarningsPage = () => <div>Earnings Page</div>;
 const AvailableTasksPage = () => <div>Available Tasks Page</div>;
 const CollaboratorSettingsPage = () => <div>Collaborator Settings Page</div>;
-const AdminDashboardPage = () => <div>Admin Dashboard Page</div>;
-const AdminUsersPage = () => <div>Admin Users Page</div>;
-const AdminShopsPage = () => <div>Admin Shops Page</div>;
-const AdminCollaboratorsPage = () => <div>Admin Collaborators Page</div>;
 const AdminProductsPage = () => <div>Admin Products Page</div>;
 const AdminOrdersPage = () => <div>Admin Orders Page</div>;
 const AdminCategoriesPage = () => <div>Admin Categories Page</div>;
-const AdminSettingsPage = () => <div>Admin Settings Page</div>;
 
 function App() {
   return (
@@ -137,24 +137,48 @@ function App() {
                 <CollaboratorSettingsPage />
               </RoleRoute>
             } />
-          </Route>
-          
-          {/* Admin Routes */}
-          <Route path="/dashboard/admin" element={
-            <RoleRoute allowedRoles={['admin']}>
-              <AdminLayout>
-                <Outlet />
-              </AdminLayout>
-            </RoleRoute>
-          }>
-            <Route index element={<AdminDashboardPage />} />
-            <Route path="users" element={<AdminUsersPage />} />
-            <Route path="shops" element={<AdminShopsPage />} />
-            <Route path="collaborators" element={<AdminCollaboratorsPage />} />
-            <Route path="products" element={<AdminProductsPage />} />
-            <Route path="orders" element={<AdminOrdersPage />} />
-            <Route path="categories" element={<AdminCategoriesPage />} />
-            <Route path="settings" element={<AdminSettingsPage />} />
+            
+            {/* Admin Routes */}
+            <Route path="admin" element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminDashboardPage />
+              </RoleRoute>
+            } />
+            <Route path="admin/users" element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminUsersPage />
+              </RoleRoute>
+            } />
+            <Route path="admin/shops" element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminShopsPage />
+              </RoleRoute>
+            } />
+            <Route path="admin/collaborators" element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminCollaboratorsPage />
+              </RoleRoute>
+            } />
+            <Route path="admin/products" element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminProductsPage />
+              </RoleRoute>
+            } />
+            <Route path="admin/orders" element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminOrdersPage />
+              </RoleRoute>
+            } />
+            <Route path="admin/categories" element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminCategoriesPage />
+              </RoleRoute>
+            } />
+            <Route path="admin/settings" element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminSettingsPage />
+              </RoleRoute>
+            } />
           </Route>
           
           {/* 404 Route */}

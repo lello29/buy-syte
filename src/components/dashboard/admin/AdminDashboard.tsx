@@ -28,10 +28,10 @@ const AdminDashboard: React.FC = () => {
         
         // Fetch counts using our database adapter
         const [usersCount, shopsCount, collaboratorsCount, productsCount] = await Promise.all([
-          DatabaseAdapter.count('users'),
-          DatabaseAdapter.count('shops'),
-          DatabaseAdapter.count('collaborators'),
-          DatabaseAdapter.count('products')
+          DatabaseAdapter.count('users', 10),
+          DatabaseAdapter.count('shops', 5),
+          DatabaseAdapter.count('collaborators', 8),
+          DatabaseAdapter.count('products', 25)
         ]);
         
         // Fetch shops data with mocks as fallback
@@ -59,7 +59,7 @@ const AdminDashboard: React.FC = () => {
           email: shop.email,
           products: [],
           offers: [],
-          aiCredits: shop.ai_credits,
+          aiCredits: shop.ai_credits || 100,
           isApproved: shop.is_approved,
           lastUpdated: shop.last_updated,
           createdAt: shop.created_at,
@@ -95,6 +95,19 @@ const AdminDashboard: React.FC = () => {
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         toast.error("Errore nel caricamento dei dati della dashboard");
+        
+        // Use mock data as fallback
+        setStats({
+          users: 10,
+          shops: 5,
+          collaborators: 8,
+          products: 25
+        });
+        setShopsList(mockShops.map(shop => ({
+          ...shop,
+          aiCredits: shop.aiCredits || 100
+        })));
+        setProductsList(mockProducts.slice(0, 20));
       } finally {
         setLoading(false);
       }
