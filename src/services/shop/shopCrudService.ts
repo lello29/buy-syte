@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Shop } from "@/types";
 import { shopBaseService } from "./shopBaseService";
-import { data } from "@/data";
+import { shops } from "@/data/mock-data/shops-data";
 
 /**
  * Delete a shop
@@ -24,9 +24,9 @@ export const deleteShop = async (shopId: string): Promise<boolean> => {
         console.error("Supabase error deleting shop:", error.message);
         // Fall back to mock data
         console.log("Falling back to mock data for deletion");
-        const index = data.shops.findIndex(s => s.id === shopId);
+        const index = shops.findIndex(s => s.id === shopId);
         if (index !== -1) {
-          data.shops.splice(index, 1);
+          shops.splice(index, 1);
           toast.success("Negozio eliminato con successo");
           return true;
         }
@@ -38,9 +38,9 @@ export const deleteShop = async (shopId: string): Promise<boolean> => {
     } else {
       // Use mock data
       console.log("Using mock data for deletion");
-      const index = data.shops.findIndex(s => s.id === shopId);
+      const index = shops.findIndex(s => s.id === shopId);
       if (index !== -1) {
-        data.shops.splice(index, 1);
+        shops.splice(index, 1);
         toast.success("Negozio eliminato con successo");
         return true;
       }
@@ -84,13 +84,16 @@ export const createShop = async (shop: Omit<Shop, 'id' | 'lastUpdated'>): Promis
       lastUpdated: new Date().toISOString()
     };
     
-    data.shops.push(mockShop);
+    shops.push(mockShop);
     return mockShop;
   } catch (error) {
     shopBaseService.handleError("la creazione del negozio", error);
     return null;
   }
 };
+
+// Export createShop as addShop for backward compatibility
+export const addShop = createShop;
 
 /**
  * Update a shop
@@ -153,16 +156,16 @@ export const updateShop = async (shopId: string, updatedData: Partial<Shop>): Pr
     }
     
     // Use mock data if Supabase is not configured
-    const shopIndex = data.shops.findIndex(s => s.id === shopId);
+    const shopIndex = shops.findIndex(s => s.id === shopId);
     if (shopIndex === -1) return null;
     
     const updatedShop = {
-      ...data.shops[shopIndex],
+      ...shops[shopIndex],
       ...updatedData,
       lastUpdated: new Date().toISOString()
     };
     
-    data.shops[shopIndex] = updatedShop;
+    shops[shopIndex] = updatedShop;
     return updatedShop;
   } catch (error) {
     shopBaseService.handleError("l'aggiornamento del negozio", error);

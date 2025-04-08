@@ -35,5 +35,35 @@ export const shopBaseService = {
   handleError: (actionName: string, error: any): void => {
     console.error(`Errore durante ${actionName}:`, error);
     toast.error(`Si è verificato un errore durante ${actionName}`);
+  },
+
+  /**
+   * Transforms a shop record from database format to application format
+   */
+  transformShopFromDB: (shopData: any): Shop => {
+    return {
+      id: shopData.id,
+      userId: shopData.user_id || '',
+      name: shopData.name,
+      description: shopData.description,
+      address: shopData.address,
+      phone: shopData.phone,
+      email: shopData.email,
+      fiscalCode: shopData.fiscal_code,
+      vatNumber: shopData.vat_number,
+      category: shopData.category,
+      logoImage: shopData.logo_image,
+      bannerImage: shopData.banner_image,
+      isActive: shopData.is_active !== null ? shopData.is_active : true,
+      isApproved: shopData.is_approved !== null ? shopData.is_approved : false,
+      aiCredits: shopData.ai_credits,
+      createdAt: shopData.created_at,
+      lastUpdated: shopData.last_updated,
+      location: shopData.latitude && shopData.longitude 
+        ? { latitude: shopData.latitude, longitude: shopData.longitude } 
+        : null,
+      products: [],
+      offers: []
+    };
   }
 };
