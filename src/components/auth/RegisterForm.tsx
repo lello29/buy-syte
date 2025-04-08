@@ -77,7 +77,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="bg-white p-5 rounded-lg shadow-sm">
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Nome completo</Label>

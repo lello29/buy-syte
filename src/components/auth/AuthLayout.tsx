@@ -1,55 +1,50 @@
-
-import React from "react";
+import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Store } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AuthLayoutProps {
+  children: ReactNode;
   title: string;
   description: string;
-  children: React.ReactNode;
-  footerText?: string;
-  footerLink?: {
+  footerText: string;
+  footerLink: {
     text: string;
     to: string;
   };
 }
 
-const AuthLayout: React.FC<AuthLayoutProps> = ({ 
-  title, 
-  description, 
-  children, 
+const AuthLayout: React.FC<AuthLayoutProps> = ({
+  children,
+  title,
+  description,
   footerText,
-  footerLink
+  footerLink,
 }) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <div className="flex justify-center mb-4">
-            <Store className="h-12 w-12 text-primary" />
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <div className="flex items-center justify-center py-12 sm:px-6 lg:px-8">
+        <div className="w-full space-y-8">
+          <div>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              {title}
+            </h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+              {description}
+            </p>
           </div>
-          <CardTitle className="text-2xl text-center">{title}</CardTitle>
-          <CardDescription className="text-center">
-            {description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
           {children}
-        </CardContent>
-        {(footerText || footerLink) && (
-          <CardFooter className="flex justify-center">
-            <div className="text-center text-sm">
-              {footerText}{" "}
-              {footerLink && (
-                <Link to={footerLink.to} className="text-primary hover:underline">
-                  {footerLink.text}
-                </Link>
-              )}
-            </div>
-          </CardFooter>
-        )}
-      </Card>
+        </div>
+      </div>
+
+      <div className="mt-auto text-center py-4 text-sm text-gray-500">
+        {footerText}{" "}
+        <Link
+          to={footerLink.to}
+          className="font-medium text-primary hover:text-primary-focus"
+        >
+          {footerLink.text}
+        </Link>
+      </div>
     </div>
   );
 };

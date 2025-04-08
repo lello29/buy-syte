@@ -11,7 +11,9 @@ const RegisterPage = () => {
       footerText="Hai già un account?"
       footerLink={{ text: "Accedi", to: "/login" }}
     >
-      <RegisterForm />
+      <div className="w-full max-w-md mx-auto">
+        <RegisterForm />
+      </div>
     </AuthLayout>
   );
 };
