@@ -17,18 +17,18 @@ import { DatabaseCard } from "@/components/admin/settings/DatabaseCard";
 import { DesktopSettingsView } from "@/components/admin/settings/DesktopSettingsView";
 import { MobileSettingsView } from "@/components/admin/settings/MobileSettingsView";
 import { useIsMobile } from "@/hooks/use-mobile";
-import useAdminSettings from "@/hooks/useAdminSettings";
+import { useAdminSettings } from "@/hooks/useAdminSettings"; // Fixed import
 
 export default function SettingsPage() {
   const isMobile = useIsMobile();
-  const { settings, isLoading, saveSettings } = useAdminSettings();
+  const { isLoading, settings, saveSettings, handleSaveGeneralSettings, handleSaveMapSettings } = useAdminSettings();
   const [activeTab, setActiveTab] = useState("general");
   
   if (isLoading) {
     return <SettingsLoadingState />;
   }
 
-  // Nuovo componente di test per Supabase aggiunto alle impostazioni del database
+  // Database components for testing Supabase connection
   const databaseCards = (
     <div className="space-y-6">
       <SupabaseConnectionTest />
@@ -40,19 +40,19 @@ export default function SettingsPage() {
   if (isMobile) {
     return (
       <MobileSettingsView
-        settings={settings}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        saveSettings={saveSettings}
-        databaseCards={databaseCards}
+        isLoading={isLoading}
+        mapSettings={settings}
+        handleSaveGeneralSettings={handleSaveGeneralSettings}
+        handleSaveMapSettings={handleSaveMapSettings}
       />
     );
   }
 
   return (
     <DesktopSettingsView 
-      settings={settings}
-      saveSettings={saveSettings}
+      mapSettings={settings}
+      handleSaveGeneralSettings={handleSaveGeneralSettings}
+      handleSaveMapSettings={handleSaveMapSettings}
       databaseCards={databaseCards}
     />
   );

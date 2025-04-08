@@ -11,19 +11,32 @@ interface GeneralSettingsFormData {
   maintenanceMode: boolean;
 }
 
+// Export the hook directly (not as default)
 export const useAdminSettings = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [mapApiKey, setMapApiKey] = useState("");
   const [enableMapFeature, setEnableMapFeature] = useState(true);
   const [enablePayments, setEnablePayments] = useState(false);
 
   // Load settings from storage when component mounts
   useEffect(() => {
-    setMapApiKey(loadSettingsFromStorage("mapApiKey", ""));
-    setEnableMapFeature(loadSettingsFromStorage("enableMapFeature", true));
-    setEnablePayments(loadSettingsFromStorage("enablePayments", false));
-    
-    console.log("Admin settings loaded");
+    try {
+      setMapApiKey(loadSettingsFromStorage("mapApiKey", ""));
+      setEnableMapFeature(loadSettingsFromStorage("enableMapFeature", true));
+      setEnablePayments(loadSettingsFromStorage("enablePayments", false));
+      
+      console.log("Admin settings loaded");
+    } catch (error) {
+      console.error("Error loading admin settings:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  // Function to save individual settings
+  const saveSettings = (key: string, value: any) => {
+    localStorage.setItem(key, typeof value === 'boolean' ? value.toString() : value);
+  };
 
   // Handler for saving general settings
   const handleSaveGeneralSettings = (e: React.FormEvent, data: GeneralSettingsFormData) => {
@@ -55,7 +68,8 @@ export const useAdminSettings = () => {
   };
 
   return {
-    mapSettings: {
+    isLoading,
+    settings: {
       mapApiKey,
       setMapApiKey,
       enableMapFeature,
@@ -63,6 +77,7 @@ export const useAdminSettings = () => {
       enablePayments,
       setEnablePayments,
     },
+    saveSettings,
     handleSaveGeneralSettings,
     handleSaveMapSettings,
   };
