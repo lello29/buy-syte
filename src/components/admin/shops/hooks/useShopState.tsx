@@ -39,8 +39,12 @@ export const useShopState = () => {
     setIsMigrating(true);
     try {
       const migratedShops = await migrateShops();
-      setShopsList(migratedShops);
-      toast.success("Negozi migrati con successo!");
+      if (migratedShops && migratedShops.length > 0) {
+        setShopsList(migratedShops);
+        toast.success("Negozi migrati con successo!");
+      } else {
+        toast.error("Errore durante la migrazione dei negozi");
+      }
     } catch (error) {
       console.error("Error migrating shops:", error);
       toast.error("Si è verificato un errore durante la migrazione dei negozi");
