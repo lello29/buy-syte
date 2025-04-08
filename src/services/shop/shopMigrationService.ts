@@ -1,7 +1,8 @@
+
 import { Shop } from "@/types";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { shops as mockShops } from "@/data/mock-data/shop-query";
+import { shops as mockShops } from "@/data/mock-data/shops-data";
 import { users } from "@/data/users";
 
 /**
@@ -231,8 +232,8 @@ const migrateUsers = async (): Promise<boolean> => {
  */
 const migrateProducts = async (shops: Shop[]): Promise<boolean> => {
   try {
-    const { data: productsData } = await import('@/data/products');
-    const products = productsData.products || [];
+    // Import products directly
+    const { products } = await import('@/data/products');
     
     if (products.length === 0) {
       console.log("Nessun prodotto da migrare");
