@@ -19,6 +19,8 @@ import DashboardIndex from '@/pages/dashboard/DashboardIndex';
 import OrdersPage from '@/pages/dashboard/user/OrdersPage';
 import FavoritesPage from '@/pages/dashboard/user/FavoritesPage';
 import LoyaltyPage from '@/pages/dashboard/user/LoyaltyPage';
+import ConvertToShopPage from '@/pages/dashboard/profile/ConvertToShopPage';
+import ConvertToCollaboratorPage from '@/pages/dashboard/profile/ConvertToCollaboratorPage';
 import TasksPage from '@/pages/dashboard/collaborator/TasksPage';
 import AdminDashboardPage from '@/pages/dashboard/admin/AdminDashboardPage';
 import AdminUsersPage from '@/pages/dashboard/admin/UsersPage';
@@ -74,6 +76,10 @@ function App() {
               <Route path="loyalty" element={<LoyaltyPage />} />
               <Route path="notifications" element={<NotificationsPage />} />
               <Route path="settings" element={<SettingsPage />} />
+              
+              {/* Add Convert to Shop and Collaborator Routes */}
+              <Route path="convert-to-shop" element={<ConvertToShopPage />} />
+              <Route path="convert-to-collaborator" element={<ConvertToCollaboratorPage />} />
               
               {/* Shop Dashboard Routes */}
               <Route path="products" element={
