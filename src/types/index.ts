@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -26,6 +27,10 @@ export interface Shop {
   vatNumber?: string;
   category?: string;
   logoImage?: string;
+  bannerImage?: string;
+  websiteUrl?: string;
+  openingHours?: string;
+  aboutUs?: string;
   isActive?: boolean;
   isApproved?: boolean;
   aiCredits?: number;
@@ -34,6 +39,12 @@ export interface Shop {
   location: ShopLocation | null;
   products: Product[];
   offers: Offer[];
+  categories?: string[];
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+  };
   user?: {  // Aggiungiamo un campo opzionale per le informazioni sull'utente
     name?: string;
     email?: string;
@@ -69,6 +80,7 @@ export interface Offer {
   startDate: string;
   endDate: string;
   isActive: boolean;
+  title?: string;
 }
 
 export interface Collaborator {

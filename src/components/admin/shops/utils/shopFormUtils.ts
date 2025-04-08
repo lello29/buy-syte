@@ -90,5 +90,6 @@ export const createNewShopObject = (shopData: {
     fiscalCode: shopData.fiscalCode,
     vatNumber: shopData.vatNumber,
     category: shopData.category,
+    location: null // Adding required location property
   };
 };

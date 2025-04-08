@@ -1,4 +1,3 @@
-
 import { Shop, Product, Task, Order, Collaborator } from "@/types";
 
 // Adding or updating mock data to support our fallback strategy
@@ -19,7 +18,8 @@ export const mockShops: Shop[] = [
     createdAt: new Date().toISOString(),
     fiscalCode: "ABCDEF12G34H567I",
     vatNumber: "12345678901",
-    category: "Abbigliamento"
+    category: "Abbigliamento",
+    location: null
   },
   {
     id: "shop-2",
@@ -37,7 +37,8 @@ export const mockShops: Shop[] = [
     createdAt: new Date().toISOString(),
     fiscalCode: "LMNOPQ12R34S567T",
     vatNumber: "09876543210",
-    category: "Elettronica"
+    category: "Elettronica",
+    location: null
   }
 ];
 

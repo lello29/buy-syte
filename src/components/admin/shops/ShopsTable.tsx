@@ -15,6 +15,7 @@ import { getProductsByShopId } from '@/data/products';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Shop } from '@/types';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface ShopsTableProps {
   shops: Shop[];
