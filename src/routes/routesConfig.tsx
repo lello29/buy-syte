@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { User } from "@/types";
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -36,7 +35,7 @@ const OfferManagementPage = () => <div>Offer Management Page</div>;
 const CollaboratorsPage = () => <div>Collaborators Page</div>;
 const CustomersPage = () => <div>Customers Page</div>;
 const ShopSettingsPage = () => <div>Shop Settings Page</div>;
-const ShopAnalyticsPage = () => <div>Shop Analytics Page</div>;
+const ShopAnalyticsPage = () => <div>Shop AnalyticsPage</div>;
 const ReviewsPage = () => <div>Reviews Page</div>;
 const EarningsPage = () => <div>Earnings Page</div>;
 const AvailableTasksPage = () => <div>Available Tasks Page</div>;
@@ -94,7 +93,6 @@ export const collaboratorDashboardRoutes = [
 
 // Admin-specific dashboard routes
 export const adminDashboardRoutes = [
-  { path: "admin", element: <AdminDashboardPage />, roles: ['admin'] },
   { path: "admin/users", element: <AdminUsersPage />, roles: ['admin'] },
   { path: "admin/shops", element: <AdminShopsPage />, roles: ['admin'] },
   { path: "admin/collaborators", element: <AdminCollaboratorsPage />, roles: ['admin'] },

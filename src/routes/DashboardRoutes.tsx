@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/routes/ProtectedRoutes';
 import DashboardIndex from '@/pages/dashboard/DashboardIndex';
+import AdminDashboardPage from '@/pages/dashboard/admin/AdminDashboardPage';
 import { 
   commonDashboardRoutes, 
   userDashboardRoutes, 
@@ -26,6 +27,9 @@ const DashboardRoutes = () => {
       >
         {/* Index route - dashboard home */}
         <Route index element={<DashboardIndex />} />
+        
+        {/* Admin dashboard index route - explicitly defined */}
+        <Route path="admin" element={<AdminDashboardPage />} />
         
         {/* Common dashboard routes */}
         {commonDashboardRoutes.map((route, index) => (
