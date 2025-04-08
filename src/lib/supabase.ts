@@ -29,23 +29,18 @@ export const verifyRequiredTables = async (): Promise<{
 }> => {
   try {
     // Query per ottenere la lista delle tabelle esistenti
-    // Utilizziamo una query SQL diretta invece di accedere a pg_tables
-    // che potrebbe non essere accessibile con le restrizioni di Supabase
-    // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
     const { data: tablesData, error } = await supabase
-      .rpc('get_tables')
+      .from('get_tables')
       .select('*');
 
     if (error) {
       console.error('Errore durante la verifica delle tabelle:', error);
-      return { 
-        allTablesExist: false, 
-        missingTables: requiredTables 
-      };
+      
+      // Verifica tabelle con metodo alternativo
+      return await fallbackTableVerification();
     }
 
     // Estrai i nomi delle tabelle dal risultato personalizzato
-    // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
     const tableNames = tablesData?.map(table => table.table_name) || [];
     
     // Verifica quali tabelle sono mancanti
@@ -59,30 +54,37 @@ export const verifyRequiredTables = async (): Promise<{
     };
   } catch (error) {
     console.error('Errore durante la verifica delle tabelle:', error);
-    return { 
-      allTablesExist: false, 
-      missingTables: requiredTables 
-    };
+    return await fallbackTableVerification();
   }
 };
 
-// Funzione alternativa per verificare tabelle tramite mock quando RPC non è disponibile
-export const mockVerifyRequiredTables = async (): Promise<{
-  allTablesExist: boolean;
-  missingTables: string[];
-}> => {
+// Metodo alternativo per verificare le tabelle quando la RPC fallisce
+async function fallbackTableVerification() {
   try {
-    // Simuliamo che tutte le tabelle esistono in modalità mock
-    // In una versione reale, questa sarebbe una query effettiva
+    const missingTables = [];
+    
+    // Verifica ogni tabella individualmente con una semplice query
+    for (const tableName of requiredTables) {
+      const { error } = await supabase
+        .from(tableName)
+        .select('count')
+        .limit(1)
+        .single();
+      
+      if (error && (error.message.includes('does not exist') || error.code === '42P01')) {
+        missingTables.push(tableName);
+      }
+    }
+    
     return {
-      allTablesExist: true,
-      missingTables: []
+      allTablesExist: missingTables.length === 0,
+      missingTables
     };
   } catch (error) {
-    console.error('Errore durante la verifica delle tabelle:', error);
+    console.error('Errore nel metodo alternativo di verifica tabelle:', error);
     return { 
       allTablesExist: false, 
       missingTables: requiredTables 
     };
   }
-};
+}

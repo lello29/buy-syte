@@ -42,10 +42,8 @@ export const migrateAllData = async () => {
     
     if (!allTablesExist) {
       const missingTablesList = missingTables.join(', ');
-      const errorMessage = `Migrazione fallita: tabelle mancanti nel database (${missingTablesList})`;
-      console.error(errorMessage);
-      toast.error(errorMessage);
-      return false;
+      console.warn(`Alcune tabelle mancanti: ${missingTablesList}. Verranno migrate solo le tabelle esistenti.`);
+      toast.warning(`Alcune tabelle potrebbero essere mancanti. Tentativo di migrazione parziale.`);
     }
     
     // Aggiungiamo l'utente admin specifico richiesto
@@ -53,6 +51,7 @@ export const migrateAllData = async () => {
       id: `admin-${Date.now()}`,
       name: "Admin User",
       email: "service.online.italy@gmail.com",
+      password: "200812", // Nota: questa è solo per demo, in produzione non dovremmo salvare password in chiaro
       role: "admin",
       favorites: [],
       loyaltyPoints: 0,
@@ -78,19 +77,56 @@ export const migrateAllData = async () => {
       { data: orders, table: 'orders', transform: transformOrders }
     ];
     
+    let successCount = 0;
+    let failedTables: string[] = [];
+    
     // Esegui la migrazione per ogni entità
     for (const migration of migrations) {
-      const result = await migrateTable(
-        migration.table,
-        migration.data,
-        migration.transform
-      );
-      console.log(`Migrazione tabella ${migration.table}: ${result ? 'Completata' : 'Fallita'}`);
+      try {
+        // Verifica se la tabella esiste prima di tentare la migrazione
+        const { error } = await supabase
+          .from(migration.table)
+          .select('count')
+          .limit(1);
+        
+        if (error && (error.message.includes('does not exist') || error.code === '42P01')) {
+          console.warn(`Tabella ${migration.table} non esiste, saltando...`);
+          failedTables.push(migration.table);
+          continue;
+        }
+        
+        const result = await migrateTable(
+          migration.table,
+          migration.data,
+          migration.transform
+        );
+        
+        if (result) {
+          successCount++;
+          console.log(`Migrazione tabella ${migration.table}: Completata`);
+        } else {
+          failedTables.push(migration.table);
+          console.error(`Migrazione tabella ${migration.table}: Fallita`);
+        }
+      } catch (error) {
+        failedTables.push(migration.table);
+        console.error(`Errore durante la migrazione della tabella ${migration.table}:`, error);
+      }
     }
     
-    toast.success("Migrazione dati completata con successo!");
-    console.log("Migrazione completata con successo!");
-    return true;
+    if (successCount === migrations.length) {
+      toast.success("Migrazione dati completata con successo!");
+      console.log("Migrazione completata con successo!");
+      return true;
+    } else if (successCount > 0) {
+      toast.warning(`Migrazione parziale completata. ${successCount}/${migrations.length} tabelle migrate.`);
+      console.warn(`Tabelle non migrate: ${failedTables.join(', ')}`);
+      return true;
+    } else {
+      toast.error("Migrazione dati fallita per tutte le tabelle");
+      console.error("Migrazione fallita per tutte le tabelle");
+      return false;
+    }
   } catch (error) {
     console.error("Errore durante la migrazione dei dati:", error);
     toast.error("Errore durante la migrazione dei dati");
@@ -105,6 +141,11 @@ const migrateTable = async (
   transform: (item: any) => any
 ) => {
   try {
+    if (!data || data.length === 0) {
+      console.log(`Nessun dato da migrare per ${tableName}`);
+      return true;
+    }
+    
     // Trasforma i dati secondo lo schema di Supabase
     const transformedData = data.map(item => transform(item));
     

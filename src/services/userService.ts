@@ -16,8 +16,9 @@ export const fetchUsers = async (): Promise<User[]> => {
         if (error) {
           console.error("Error fetching users:", error.message);
           // If the table doesn't exist yet, just use mock data without showing error toast
-          if (error.message.includes("does not exist")) {
+          if (error.message.includes("does not exist") || error.code === '42P01') {
             console.log("Users table does not exist yet, using mock data");
+            toast.warning("Tabella utenti non trovata. Migra i dati dal pannello Impostazioni prima di procedere.");
             return mockUsers;
           }
           
@@ -39,10 +40,15 @@ export const fetchUsers = async (): Promise<User[]> => {
             fiscalCode: user.fiscal_code,
             vatNumber: user.vat_number
           }));
+        } else {
+          // Se non ci sono utenti nel database, probabilmente dobbiamo fare la migrazione
+          toast.warning("Nessun utente trovato nel database. Migra i dati dal pannello Impostazioni.");
+          return mockUsers;
         }
       } catch (dbError) {
         console.error("Database error:", dbError);
         // Silent fallback to mock data for database issues
+        return mockUsers;
       }
     }
     

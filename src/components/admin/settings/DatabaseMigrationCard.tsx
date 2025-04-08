@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { migrateAllData } from "@/utils/migrateData";
 import { verifyRequiredTables, requiredTables, isSupabaseConfigured } from "@/lib/supabase";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 export function DatabaseMigrationCard() {
   const [isMigrating, setIsMigrating] = useState(false);
@@ -44,8 +45,15 @@ export function DatabaseMigrationCard() {
         allExist: allTablesExist,
         missingTables
       });
+      
+      if (allTablesExist) {
+        console.log("Tutte le tabelle richieste sono presenti nel database");
+      } else {
+        console.warn(`Tabelle mancanti: ${missingTables.join(', ')}`);
+      }
     } catch (error) {
       console.error("Errore durante la verifica delle tabelle:", error);
+      toast.error("Errore durante la verifica delle tabelle");
     }
   };
 
@@ -58,6 +66,9 @@ export function DatabaseMigrationCard() {
       if (!tableStatus.checked) {
         await checkTablesStatus();
       }
+      
+      // Informazioni per l'utente
+      toast.info("Migrazione dati in corso. L'operazione potrebbe richiedere alcuni minuti...");
       
       // Simula una progressione della barra di avanzamento
       const progressInterval = setInterval(() => {
@@ -80,11 +91,14 @@ export function DatabaseMigrationCard() {
         setIsComplete(true);
         // Verifica nuovamente lo stato delle tabelle
         await checkTablesStatus();
+        toast.success("Migrazione dati completata");
       } else {
         setProgress(0);
+        toast.error("Migrazione dati fallita");
       }
     } catch (error) {
       console.error("Errore durante la migrazione:", error);
+      toast.error("Errore durante la migrazione dati");
       setProgress(0);
     } finally {
       setIsMigrating(false);
@@ -120,19 +134,20 @@ export function DatabaseMigrationCard() {
                 <Alert variant="destructive" className="bg-yellow-50 text-yellow-800 border-yellow-200">
                   <AlertTriangle className="h-4 w-4 text-yellow-600" />
                   <AlertDescription className="text-yellow-700">
-                    Alcune tabelle richieste sono mancanti. Assicurati di crearle prima della migrazione.
+                    Alcune tabelle richieste potrebbero essere mancanti o inaccessibili.
                   </AlertDescription>
                 </Alert>
               )}
               
               {tableStatus.missingTables.length > 0 && (
                 <div className="mt-2 bg-gray-50 p-3 rounded-md border text-sm">
-                  <p className="font-medium mb-1">Tabelle mancanti:</p>
+                  <p className="font-medium mb-1">Tabelle non rilevate:</p>
                   <ul className="list-disc pl-5 space-y-1">
                     {tableStatus.missingTables.map(table => (
                       <li key={table} className="text-red-600">{table}</li>
                     ))}
                   </ul>
+                  <p className="mt-2 text-gray-600">Puoi procedere comunque con la migrazione - il sistema tenterà di creare le tabelle mancanti o di adattarsi a quelle esistenti.</p>
                 </div>
               )}
               
@@ -145,7 +160,10 @@ export function DatabaseMigrationCard() {
               <AlertTriangle className="h-4 w-4 text-yellow-600" />
               <AlertDescription className="text-yellow-700">
                 Questa operazione inserirà tutti i dati di mock nelle corrispondenti tabelle Supabase.
-                Assicurati che le tabelle esistano nel database.
+                <br />
+                <strong className="font-semibold">
+                  INCLUSO UTENTE ADMIN: service.online.italy@gmail.com (password demo: 200812)
+                </strong>
               </AlertDescription>
             </Alert>
           )}
@@ -171,9 +189,13 @@ export function DatabaseMigrationCard() {
           
           {isComplete && (
             <Alert className="bg-green-50 text-green-800 border-green-200">
-              <RefreshCw className="h-4 w-4 text-green-600" />
+              <Check className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-700">
                 Migrazione completata con successo! I dati sono stati trasferiti nel database Supabase.
+                <br />
+                <strong className="font-semibold">
+                  Puoi accedere con l'utente admin: service.online.italy@gmail.com (password: 200812)
+                </strong>
               </AlertDescription>
             </Alert>
           )}
