@@ -6,7 +6,7 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { handleMockLogin, isTestAccount } from "./mockAuth";
 import { supabaseAuth } from "./supabase/auth";
 import { userProfileService } from "./supabase/userProfile";
-import { shopService } from "./supabase/shopService";
+import { shopService } from "./supabase/shop";
 
 /**
  * Handles user authentication
