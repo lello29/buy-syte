@@ -9,6 +9,7 @@ import { shopBaseService } from "./shopBaseService";
  */
 export const fetchShops = async (): Promise<Shop[]> => {
   try {
+    // Try to fetch from Supabase if configured
     if (shopBaseService.ensureSupabaseConfigured()) {
       try {
         const { data, error } = await supabase
@@ -18,10 +19,11 @@ export const fetchShops = async (): Promise<Shop[]> => {
           
         if (error) {
           console.error("Error fetching shops:", error.message);
-          // Se la tabella non esiste ancora, usa i dati mock senza mostrare toast di errore
+          
+          // More friendly error for missing tables
           if (error.message.includes("does not exist") || error.code === '42P01') {
             console.log("Shops table does not exist yet, using mock data");
-            toast.warning("Tabella negozi non trovata. Accedi al pannello Impostazioni e clicca su 'Migra Negozi di Esempio'");
+            toast.warning("Tabella negozi non trovata. Clicca su 'Migra Negozi di Esempio'");
             return shopBaseService.getMockShops();
           }
           
@@ -29,52 +31,23 @@ export const fetchShops = async (): Promise<Shop[]> => {
           return shopBaseService.getMockShops();
         }
         
+        // Check if we got data back
         if (data && data.length > 0) {
-          return data.map(shop => {
-            // Estrazione delle informazioni dell'utente dalla relazione
-            const userInfo = shop.users ? {
-              name: shop.users.name,
-              email: shop.users.email
-            } : null;
-            
-            return {
-              id: shop.id,
-              userId: shop.user_id || '', // Convert from user_id and provide default
-              name: shop.name,
-              description: shop.description,
-              address: shop.address,
-              phone: shop.phone,
-              email: shop.email,
-              fiscalCode: shop.fiscal_code,
-              vatNumber: shop.vat_number,
-              category: shop.category,
-              logoImage: shop.logo_image,
-              isActive: shop.is_active !== null ? shop.is_active : true,
-              isApproved: shop.is_approved !== null ? shop.is_approved : false,
-              aiCredits: shop.ai_credits,
-              createdAt: shop.created_at,
-              lastUpdated: shop.last_updated,
-              location: shop.latitude && shop.longitude 
-                ? { latitude: shop.latitude, longitude: shop.longitude } 
-                : null,
-              products: [], // Add missing required property with default empty array
-              offers: [], // Add missing required property with default empty array
-              user: userInfo // Aggiungiamo informazioni sull'utente associato
-            };
-          });
+          return data.map(shop => shopBaseService.transformShopFromDB(shop));
         } else {
-          // Se non ci sono negozi nel database, usa i dati mock
-          toast.warning("Nessun negozio trovato nel database. Accedi al pannello Impostazioni e clicca su 'Migra Negozi di Esempio'");
+          console.log("No shops found in database, using mock data");
+          toast.warning("Nessun negozio trovato nel database. Clicca su 'Migra Negozi di Esempio'");
           return shopBaseService.getMockShops();
         }
       } catch (dbError) {
         console.error("Database error:", dbError);
         return shopBaseService.getMockShops();
       }
+    } else {
+      // Supabase not configured, use mock data
+      console.log("Supabase not configured, using mock data");
+      return shopBaseService.getMockShops();
     }
-    
-    console.log("No shops found or Supabase not configured correctly, using mock data");
-    return shopBaseService.getMockShops();
   } catch (error) {
     console.error("Error fetching shops:", error);
     toast.error("Si è verificato un errore durante il caricamento dei negozi");
@@ -97,7 +70,10 @@ export const fetchShopById = async (shopId: string): Promise<Shop | null> => {
       if (error) {
         console.error("Error fetching shop:", error.message);
         toast.error("Errore nel caricamento del negozio");
-        return null;
+        
+        // Try fallback to mock data
+        const mockShop = shopBaseService.getMockShops().find(s => s.id === shopId);
+        return mockShop || null;
       }
       
       if (!data) {
@@ -105,39 +81,10 @@ export const fetchShopById = async (shopId: string): Promise<Shop | null> => {
         return null;
       }
       
-      // Estrazione delle informazioni dell'utente dalla relazione
-      const userInfo = data.users ? {
-        name: data.users.name,
-        email: data.users.email
-      } : null;
-      
-      return {
-        id: data.id,
-        userId: data.user_id || '',
-        name: data.name,
-        description: data.description,
-        address: data.address,
-        phone: data.phone,
-        email: data.email,
-        fiscalCode: data.fiscal_code,
-        vatNumber: data.vat_number,
-        category: data.category,
-        logoImage: data.logo_image,
-        isActive: data.is_active !== null ? data.is_active : true,
-        isApproved: data.is_approved !== null ? data.is_approved : false,
-        aiCredits: data.ai_credits,
-        createdAt: data.created_at,
-        lastUpdated: data.last_updated,
-        location: data.latitude && data.longitude 
-          ? { latitude: data.latitude, longitude: data.longitude } 
-          : null,
-        products: [],
-        offers: [],
-        user: userInfo // Aggiungiamo informazioni sull'utente associato
-      };
+      return shopBaseService.transformShopFromDB(data);
     }
     
-    // Se Supabase non è configurato, cerca nei dati mock
+    // If Supabase is not configured, search in mock data
     const mockShop = shopBaseService.getMockShops().find(shop => shop.id === shopId);
     if (mockShop) {
       return mockShop;

@@ -3,14 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 import { supabase as supabaseClient } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 
-// Utilizziamo direttamente il client predefinito di Lovable
-// che è già correttamente tipizzato con il tipo Database
+// Use the pre-configured Lovable Supabase client
 export const supabase = supabaseClient;
 
-// Verifichiamo se Supabase è configurato controllando il client
+// Check if Supabase is configured (always true for Lovable integrated Supabase)
 export const isSupabaseConfigured = true;
 
-// Lista delle tabelle richieste dall'applicazione
+// List of required tables for the app
 export const requiredTables = [
   'users',
   'shops',
@@ -22,56 +21,49 @@ export const requiredTables = [
   'tasks'
 ];
 
-// Funzione per verificare l'esistenza di tutte le tabelle richieste
+// Function to verify required tables exist
 export const verifyRequiredTables = async (): Promise<{
   allTablesExist: boolean;
   missingTables: string[];
 }> => {
   try {
-    // Query per ottenere la lista delle tabelle esistenti
-    const { data: tablesData, error } = await supabase
-      .from('get_tables')
-      .select('*');
-
-    if (error) {
-      console.error('Errore durante la verifica delle tabelle:', error);
-      
-      // Verifica tabelle con metodo alternativo
-      return await fallbackTableVerification();
-    }
-
-    // Estrai i nomi delle tabelle dal risultato personalizzato
-    const tableNames = tablesData?.map(table => table.table_name) || [];
+    console.log("Verifying required tables...");
     
-    // Verifica quali tabelle sono mancanti
-    const missingTables = requiredTables.filter(
-      tableName => !tableNames.includes(tableName)
-    );
-
-    return {
-      allTablesExist: missingTables.length === 0,
-      missingTables
-    };
-  } catch (error) {
-    console.error('Errore durante la verifica delle tabelle:', error);
-    return await fallbackTableVerification();
-  }
-};
-
-// Metodo alternativo per verificare le tabelle quando la RPC fallisce
-async function fallbackTableVerification() {
-  try {
+    // Try to get tables using the get_tables function (may not exist yet)
+    try {
+      const { data: tablesData, error } = await supabase.rpc('get_tables');
+      
+      if (!error && tablesData) {
+        console.log("Tables data:", tablesData);
+        const tableNames = tablesData.map(table => table.table_name);
+        const missingTables = requiredTables.filter(
+          tableName => !tableNames.includes(tableName)
+        );
+        
+        return {
+          allTablesExist: missingTables.length === 0,
+          missingTables
+        };
+      }
+    } catch (e) {
+      console.log("Error with RPC get_tables, trying alternative method");
+    }
+    
+    // Alternative approach - check each table individually
     const missingTables = [];
     
-    // Verifica ogni tabella individualmente con una semplice query
     for (const tableName of requiredTables) {
-      const { error } = await supabase
-        .from(tableName)
-        .select('count')
-        .limit(1)
-        .single();
-      
-      if (error && (error.message.includes('does not exist') || error.code === '42P01')) {
+      try {
+        const { error } = await supabase
+          .from(tableName)
+          .select('count')
+          .limit(1);
+        
+        if (error && (error.message.includes('does not exist') || error.code === '42P01')) {
+          missingTables.push(tableName);
+        }
+      } catch (e) {
+        // If we can't check, assume it's missing
         missingTables.push(tableName);
       }
     }
@@ -81,10 +73,21 @@ async function fallbackTableVerification() {
       missingTables
     };
   } catch (error) {
-    console.error('Errore nel metodo alternativo di verifica tabelle:', error);
-    return { 
-      allTablesExist: false, 
-      missingTables: requiredTables 
+    console.error('Error verifying tables:', error);
+    return {
+      allTablesExist: false,
+      missingTables: requiredTables
     };
   }
-}
+};
+
+// Create a helper function to run SQL
+export const runSql = async (sql: string): Promise<boolean> => {
+  try {
+    await supabase.rpc('run_sql', { sql });
+    return true;
+  } catch (error) {
+    console.error('Error running SQL:', error);
+    return false;
+  }
+};

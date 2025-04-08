@@ -10,14 +10,14 @@ import { useAuth } from "@/contexts/auth/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Database, AlertTriangle, Loader2 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { verifyRequiredTables } from "@/lib/supabase";
 import { toast } from "sonner";
+import { verifyRequiredTables } from "@/lib/supabase";
 
 export default function AdminShopsPage() {
   const { currentUser } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  
   const {
     shopsList,
     isLoading,
@@ -65,7 +65,7 @@ export default function AdminShopsPage() {
       <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md mt-4">
         <Button 
           onClick={handleMigrateShops} 
-          className="flex-1 flex items-center justify-center gap-2"
+          className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600"
           disabled={isMigrating}
         >
           {isMigrating ? (
@@ -93,7 +93,9 @@ export default function AdminShopsPage() {
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <ShopsPageHeader 
           handleAddShop={handleAddShop} 
-          isMobile={isMobile !== null ? isMobile : false} 
+          isMobile={isMobile !== null ? isMobile : false}
+          onMigrateShops={handleMigrateShops}
+          isMigrating={isMigrating}
         />
         
         {isLoading ? (

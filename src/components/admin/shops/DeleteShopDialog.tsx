@@ -9,22 +9,23 @@ import {
   DialogFooter 
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Loader2 } from 'lucide-react';
 
 interface DeleteShopDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onDelete: () => void;
+  isDeleting?: boolean;
 }
 
 const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
   open,
   onOpenChange,
-  onDelete
+  onDelete,
+  isDeleting = false
 }) => {
   const handleDelete = () => {
     onDelete();
-    onOpenChange(false);
   };
 
   return (
@@ -37,9 +38,20 @@ const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
-          <Button variant="destructive" onClick={handleDelete}>
-            <Trash2 className="w-4 h-4 mr-2" /> Elimina
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isDeleting}>
+            Annulla
+          </Button>
+          <Button 
+            variant="destructive" 
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Trash2 className="w-4 h-4 mr-2" />
+            )}
+            {isDeleting ? "Eliminando..." : "Elimina"}
           </Button>
         </DialogFooter>
       </DialogContent>

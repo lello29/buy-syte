@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
 import { fetchShops, migrateShops } from '@/services/shop';
@@ -35,13 +35,22 @@ export const useShopState = () => {
   );
   
   // Function to migrate shops
-  const handleMigrateShops = async () => {
+  const handleMigrateShops = useCallback(async () => {
     setIsMigrating(true);
     try {
+      console.log("Starting migration process...");
       const migratedShops = await migrateShops();
+      console.log("Migration complete, returned shops:", migratedShops.length);
+      
       if (migratedShops && migratedShops.length > 0) {
         setShopsList(migratedShops);
         toast.success("Negozi migrati con successo!");
+        
+        // Reload shops from database to verify migration worked
+        const freshShops = await fetchShops();
+        if (freshShops.length > 0) {
+          setShopsList(freshShops);
+        }
       } else {
         toast.error("Errore durante la migrazione dei negozi");
       }
@@ -51,14 +60,16 @@ export const useShopState = () => {
     } finally {
       setIsMigrating(false);
     }
-  };
+  }, []);
   
   // Load shops data
   useEffect(() => {
     const loadShops = async () => {
       setIsLoading(true);
       try {
+        console.log("Loading shops data...");
         const shopsData = await fetchShops();
+        console.log("Shops loaded:", shopsData.length);
         setShopsList(shopsData);
       } catch (error) {
         console.error("Error loading shops:", error);
