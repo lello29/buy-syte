@@ -2,7 +2,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { ProtectedRoute } from '@/components/routes/ProtectedRoutes';
+import { ProtectedRoute, AdminRoute } from '@/components/routes/ProtectedRoutes';
 import DashboardIndex from '@/pages/dashboard/DashboardIndex';
 import AdminDashboardPage from '@/pages/dashboard/admin/AdminDashboardPage';
 import SettingsPage from '@/pages/dashboard/admin/SettingsPage';
@@ -29,11 +29,24 @@ const DashboardRoutes = () => {
         {/* Index route - dashboard home */}
         <Route index element={<DashboardIndex />} />
         
-        {/* Admin dashboard index route - explicitly defined */}
-        <Route path="admin" element={<AdminDashboardPage />} />
+        {/* Admin routes - explicitly defined with AdminRoute protection */}
+        <Route 
+          path="admin" 
+          element={
+            <AdminRoute>
+              <AdminDashboardPage />
+            </AdminRoute>
+          } 
+        />
         
-        {/* Admin settings page - explicitly defined */}
-        <Route path="admin/settings" element={<SettingsPage />} />
+        <Route 
+          path="admin/settings" 
+          element={
+            <AdminRoute>
+              <SettingsPage />
+            </AdminRoute>
+          } 
+        />
         
         {/* Common dashboard routes */}
         {commonDashboardRoutes.map((route, index) => (
@@ -63,12 +76,16 @@ const DashboardRoutes = () => {
           />
         ))}
         
-        {/* Admin-specific dashboard routes */}
+        {/* Admin-specific dashboard routes - making sure they're wrapped properly */}
         {adminDashboardRoutes.map((route, index) => (
           <Route 
             key={`admin-${index}`} 
             path={route.path} 
-            element={getProtectedElement(route, index)}
+            element={
+              <AdminRoute>
+                {route.element}
+              </AdminRoute>
+            }
           />
         ))}
       </Route>

@@ -17,11 +17,9 @@ import LoyaltyPage from '@/pages/dashboard/user/LoyaltyPage';
 import ConvertToShopPage from '@/pages/dashboard/profile/ConvertToShopPage';
 import ConvertToCollaboratorPage from '@/pages/dashboard/profile/ConvertToCollaboratorPage';
 import TasksPage from '@/pages/dashboard/collaborator/TasksPage';
-import AdminDashboardPage from '@/pages/dashboard/admin/AdminDashboardPage';
 import AdminUsersPage from '@/pages/dashboard/admin/UsersPage';
 import AdminShopsPage from '@/pages/dashboard/admin/AdminShopsPage';
 import AdminCollaboratorsPage from '@/pages/dashboard/admin/CollaboratorsPage';
-import AdminSettingsPage from '@/pages/dashboard/admin/SettingsPage';
 import NotFound from '@/pages/NotFound';
 
 // Define placeholder components for missing pages
