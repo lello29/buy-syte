@@ -12,6 +12,17 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { toast } from "sonner";
+import { z } from "zod";
+
+const registerSchema = z.object({
+  name: z.string().min(1, "Inserisci il tuo nome completo"),
+  email: z.string().email("Inserisci un indirizzo email valido"),
+  password: z.string().min(6, "La password deve contenere almeno 6 caratteri"),
+  confirmPassword: z.string(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Le password non corrispondono",
+  path: ["confirmPassword"]
+});
 
 const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -28,28 +39,35 @@ const RegisterForm = () => {
   const navigate = useNavigate();
 
   const validateForm = () => {
-    if (!name.trim()) {
-      toast.error("Inserisci il tuo nome completo");
+    try {
+      registerSchema.parse({
+        name,
+        email,
+        password,
+        confirmPassword
+      });
+      setPasswordError("");
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const formattedErrors = error.format();
+        
+        if (formattedErrors.name?._errors) {
+          toast.error(formattedErrors.name._errors[0]);
+        } else if (formattedErrors.email?._errors) {
+          toast.error(formattedErrors.email._errors[0]);
+        } else if (formattedErrors.password?._errors) {
+          setPasswordError(formattedErrors.password._errors[0]);
+          toast.error(formattedErrors.password._errors[0]);
+        } else if (formattedErrors.confirmPassword?._errors) {
+          setPasswordError(formattedErrors.confirmPassword._errors[0]);
+          toast.error(formattedErrors.confirmPassword._errors[0]);
+        }
+      } else {
+        toast.error("Si è verificato un errore durante la validazione del form");
+      }
       return false;
     }
-    
-    if (!email.trim() || !email.includes('@')) {
-      toast.error("Inserisci un indirizzo email valido");
-      return false;
-    }
-    
-    if (password !== confirmPassword) {
-      setPasswordError("Le password non corrispondono");
-      return false;
-    }
-    
-    if (password.length < 6) {
-      setPasswordError("La password deve contenere almeno 6 caratteri");
-      return false;
-    }
-    
-    setPasswordError("");
-    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +79,13 @@ const RegisterForm = () => {
     
     try {
       console.log("Attempting to register user:", { name, email });
-      const success = await register(name, email, password);
+      // Passa anche i campi opzionali se sono stati compilati
+      const userData = {
+        fiscalCode: showBusinessFields && fiscalCode ? fiscalCode : undefined,
+        vatNumber: showBusinessFields && vatNumber ? vatNumber : undefined
+      };
+      
+      const success = await register(name, email, password, userData);
       
       if (success) {
         console.log("Registration successful, redirecting to dashboard");

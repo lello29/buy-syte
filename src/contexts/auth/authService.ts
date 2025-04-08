@@ -1,7 +1,7 @@
 
 import { User, UserRole } from "../../types";
 import { toast } from "sonner";
-import { ShopData } from "./types";
+import { ShopData, UserRegistrationData } from "./types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { handleMockLogin, isTestAccount } from "./mockAuth";
 import { supabaseAuth } from "./supabase/auth";
@@ -68,10 +68,11 @@ export const authService = {
   /**
    * Handles user registration
    */
-  register: async (name: string, email: string, password: string): Promise<User | null> => {
+  register: async (name: string, email: string, password: string, userData?: UserRegistrationData): Promise<User | null> => {
     try {
       if (isSupabaseConfigured) {
-        const user = await supabaseAuth.signUp(name, email, password);
+        // Passa i dati utente aggiuntivi alla funzione signup
+        const user = await supabaseAuth.signUp(name, email, password, userData);
         if (user) {
           return user;
         }
@@ -88,7 +89,9 @@ export const authService = {
           loyaltyPoints: 0,
           isActive: true,
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
+          ...(userData?.fiscalCode && { fiscalCode: userData.fiscalCode }),
+          ...(userData?.vatNumber && { vatNumber: userData.vatNumber })
         };
         
         toast.success("Registrazione mock completata con successo!");

@@ -2,6 +2,7 @@
 import { supabase } from "@/lib/supabase";
 import { User } from "@/types";
 import { toast } from "sonner";
+import { UserRegistrationData } from "../types";
 
 /**
  * Handles Supabase authentication operations for sign in and sign up
@@ -67,16 +68,21 @@ export const supabaseAuth = {
   /**
    * Register a new user with Supabase
    */
-  signUp: async (name: string, email: string, password: string): Promise<User | null> => {
+  signUp: async (name: string, email: string, password: string, userData?: UserRegistrationData): Promise<User | null> => {
     try {
+      // Prepara i dati utente aggiuntivi da salvare nei metadati
+      const userMetadata = {
+        name,
+        ...(userData?.fiscalCode && { fiscal_code: userData.fiscalCode }),
+        ...(userData?.vatNumber && { vat_number: userData.vatNumber })
+      };
+
       // First create the auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            name
-          }
+          data: userMetadata
         }
       });
 
@@ -101,7 +107,9 @@ export const supabaseAuth = {
         loyaltyPoints: 0,
         isActive: true,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        ...(userData?.fiscalCode && { fiscalCode: userData.fiscalCode }),
+        ...(userData?.vatNumber && { vatNumber: userData.vatNumber })
       };
 
       // Insert the user data into our users table
@@ -116,7 +124,9 @@ export const supabaseAuth = {
           loyalty_points: newUser.loyaltyPoints,
           is_active: newUser.isActive,
           created_at: newUser.createdAt,
-          updated_at: newUser.updatedAt
+          updated_at: newUser.updatedAt,
+          fiscal_code: userData?.fiscalCode,
+          vat_number: userData?.vatNumber
         });
 
       if (profileError) {

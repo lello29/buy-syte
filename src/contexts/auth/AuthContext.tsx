@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User } from "../../types";
 import { toast } from "sonner";
-import { AuthContextType } from "./types";
+import { AuthContextType, UserRegistrationData } from "./types";
 import { authService } from "./authService";
 import { useSessionManager } from "./hooks/useSessionManager";
 import { getNearestShopsHelper, getUserShopHelper } from "./utils";
@@ -48,8 +48,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
-    const user = await authService.register(name, email, password);
+  const register = async (name: string, email: string, password: string, userData?: UserRegistrationData): Promise<boolean> => {
+    const user = await authService.register(name, email, password, userData);
     if (user) {
       setCurrentUser(user);
       localStorage.setItem("currentUser", JSON.stringify(user));

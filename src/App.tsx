@@ -1,15 +1,15 @@
 
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SupabaseWrapper } from '@/components/supabase/SupabaseWrapper';
+import { AuthProvider } from '@/contexts/auth/AuthContext';
 
 // Import existing components and pages
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/routes/ProtectedRoutes';
 import RoleRoute from '@/components/routes/RoleRoute';
 import AppLayout from '@/components/layout/AppLayout';
-import AdminLayout from '@/components/layout/AdminLayout';
 import Index from '@/pages/Index';
 import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
@@ -52,139 +52,141 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="ui-theme">
       <SupabaseWrapper>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<AppLayout><Index /></AppLayout>} />
-          <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
-          <Route path="/register" element={<AppLayout><RegisterPage /></AppLayout>} />
-          <Route path="/shops" element={<AppLayout><ShopsPage /></AppLayout>} />
-          <Route path="/shops/:id" element={<AppLayout><ShopDetailPage /></AppLayout>} />
-          
-          {/* Dashboard Routes (Protected) */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<DashboardIndex />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="orders" element={<OrdersPage />} />
-            <Route path="favorites" element={<FavoritesPage />} />
-            <Route path="loyalty" element={<LoyaltyPage />} />
-            <Route path="notifications" element={<NotificationsPage />} />
-            <Route path="settings" element={<SettingsPage />} />
+        <AuthProvider>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<AppLayout><Index /></AppLayout>} />
+            <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
+            <Route path="/register" element={<AppLayout><RegisterPage /></AppLayout>} />
+            <Route path="/shops" element={<AppLayout><ShopsPage /></AppLayout>} />
+            <Route path="/shops/:id" element={<AppLayout><ShopDetailPage /></AppLayout>} />
             
-            {/* Shop Dashboard Routes */}
-            <Route path="products" element={
-              <RoleRoute allowedRoles={['shop', 'admin']}>
-                <ProductsPage />
-              </RoleRoute>
-            } />
-            <Route path="orders-management" element={
-              <RoleRoute allowedRoles={['shop', 'admin']}>
-                <OrderManagementPage />
-              </RoleRoute>
-            } />
-            <Route path="offers" element={
-              <RoleRoute allowedRoles={['shop', 'admin']}>
-                <OfferManagementPage />
-              </RoleRoute>
-            } />
-            <Route path="collaborators" element={
-              <RoleRoute allowedRoles={['shop', 'admin']}>
-                <CollaboratorsPage />
-              </RoleRoute>
-            } />
-            <Route path="customers" element={
-              <RoleRoute allowedRoles={['shop', 'admin']}>
-                <CustomersPage />
-              </RoleRoute>
-            } />
-            <Route path="shop-settings" element={
-              <RoleRoute allowedRoles={['shop', 'admin']}>
-                <ShopSettingsPage />
-              </RoleRoute>
-            } />
-            <Route path="analytics" element={
-              <RoleRoute allowedRoles={['shop', 'admin']}>
-                <ShopAnalyticsPage />
-              </RoleRoute>
-            } />
+            {/* Dashboard Routes (Protected) */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<DashboardIndex />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="favorites" element={<FavoritesPage />} />
+              <Route path="loyalty" element={<LoyaltyPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              
+              {/* Shop Dashboard Routes */}
+              <Route path="products" element={
+                <RoleRoute allowedRoles={['shop', 'admin']}>
+                  <ProductsPage />
+                </RoleRoute>
+              } />
+              <Route path="orders-management" element={
+                <RoleRoute allowedRoles={['shop', 'admin']}>
+                  <OrderManagementPage />
+                </RoleRoute>
+              } />
+              <Route path="offers" element={
+                <RoleRoute allowedRoles={['shop', 'admin']}>
+                  <OfferManagementPage />
+                </RoleRoute>
+              } />
+              <Route path="collaborators" element={
+                <RoleRoute allowedRoles={['shop', 'admin']}>
+                  <CollaboratorsPage />
+                </RoleRoute>
+              } />
+              <Route path="customers" element={
+                <RoleRoute allowedRoles={['shop', 'admin']}>
+                  <CustomersPage />
+                </RoleRoute>
+              } />
+              <Route path="shop-settings" element={
+                <RoleRoute allowedRoles={['shop', 'admin']}>
+                  <ShopSettingsPage />
+                </RoleRoute>
+              } />
+              <Route path="analytics" element={
+                <RoleRoute allowedRoles={['shop', 'admin']}>
+                  <ShopAnalyticsPage />
+                </RoleRoute>
+              } />
+              
+              {/* Collaborator Dashboard Routes */}
+              <Route path="tasks" element={
+                <RoleRoute allowedRoles={['collaborator', 'admin']}>
+                  <TasksPage />
+                </RoleRoute>
+              } />
+              <Route path="reviews" element={
+                <RoleRoute allowedRoles={['collaborator', 'admin']}>
+                  <ReviewsPage />
+                </RoleRoute>
+              } />
+              <Route path="earnings" element={
+                <RoleRoute allowedRoles={['collaborator', 'admin']}>
+                  <EarningsPage />
+                </RoleRoute>
+              } />
+              <Route path="available-tasks" element={
+                <RoleRoute allowedRoles={['collaborator', 'admin']}>
+                  <AvailableTasksPage />
+                </RoleRoute>
+              } />
+              <Route path="collaborator-settings" element={
+                <RoleRoute allowedRoles={['collaborator', 'admin']}>
+                  <CollaboratorSettingsPage />
+                </RoleRoute>
+              } />
+              
+              {/* Admin Routes */}
+              <Route path="admin" element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminDashboardPage />
+                </RoleRoute>
+              } />
+              <Route path="admin/users" element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminUsersPage />
+                </RoleRoute>
+              } />
+              <Route path="admin/shops" element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminShopsPage />
+                </RoleRoute>
+              } />
+              <Route path="admin/collaborators" element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminCollaboratorsPage />
+                </RoleRoute>
+              } />
+              <Route path="admin/products" element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminProductsPage />
+                </RoleRoute>
+              } />
+              <Route path="admin/orders" element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminOrdersPage />
+                </RoleRoute>
+              } />
+              <Route path="admin/categories" element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminCategoriesPage />
+                </RoleRoute>
+              } />
+              <Route path="admin/settings" element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminSettingsPage />
+                </RoleRoute>
+              } />
+            </Route>
             
-            {/* Collaborator Dashboard Routes */}
-            <Route path="tasks" element={
-              <RoleRoute allowedRoles={['collaborator', 'admin']}>
-                <TasksPage />
-              </RoleRoute>
-            } />
-            <Route path="reviews" element={
-              <RoleRoute allowedRoles={['collaborator', 'admin']}>
-                <ReviewsPage />
-              </RoleRoute>
-            } />
-            <Route path="earnings" element={
-              <RoleRoute allowedRoles={['collaborator', 'admin']}>
-                <EarningsPage />
-              </RoleRoute>
-            } />
-            <Route path="available-tasks" element={
-              <RoleRoute allowedRoles={['collaborator', 'admin']}>
-                <AvailableTasksPage />
-              </RoleRoute>
-            } />
-            <Route path="collaborator-settings" element={
-              <RoleRoute allowedRoles={['collaborator', 'admin']}>
-                <CollaboratorSettingsPage />
-              </RoleRoute>
-            } />
-            
-            {/* Admin Routes */}
-            <Route path="admin" element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminDashboardPage />
-              </RoleRoute>
-            } />
-            <Route path="admin/users" element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminUsersPage />
-              </RoleRoute>
-            } />
-            <Route path="admin/shops" element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminShopsPage />
-              </RoleRoute>
-            } />
-            <Route path="admin/collaborators" element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminCollaboratorsPage />
-              </RoleRoute>
-            } />
-            <Route path="admin/products" element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminProductsPage />
-              </RoleRoute>
-            } />
-            <Route path="admin/orders" element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminOrdersPage />
-              </RoleRoute>
-            } />
-            <Route path="admin/categories" element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminCategoriesPage />
-              </RoleRoute>
-            } />
-            <Route path="admin/settings" element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminSettingsPage />
-              </RoleRoute>
-            } />
-          </Route>
-          
-          {/* 404 Route */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-        <Toaster />
+            {/* 404 Route */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+          <Toaster />
+        </AuthProvider>
       </SupabaseWrapper>
     </ThemeProvider>
   );
