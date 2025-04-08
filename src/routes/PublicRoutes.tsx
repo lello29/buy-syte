@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { publicRoutes } from './routesConfig';
 
 const PublicRoutes = () => {
   return (
-    <>
+    <Routes>
       {publicRoutes.map((route, index) => {
         // For routes with layout
         if (route.layout) {
@@ -23,7 +23,7 @@ const PublicRoutes = () => {
           <Route key={index} path={route.path} element={route.element} />
         );
       })}
-    </>
+    </Routes>
   );
 };
 

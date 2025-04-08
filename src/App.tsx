@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SupabaseWrapper } from '@/components/supabase/SupabaseWrapper';
@@ -13,11 +12,11 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="ui-theme">
       <SupabaseWrapper>
         <AuthProvider>
-          <Routes>
+          <>
             <PublicRoutes />
             <DashboardRoutes />
-          </Routes>
-          <Toaster />
+            <Toaster />
+          </>
         </AuthProvider>
       </SupabaseWrapper>
     </ThemeProvider>
