@@ -10,6 +10,7 @@ import { ProtectedRoute } from '@/components/routes/ProtectedRoutes';
 import RoleRoute from '@/components/routes/RoleRoute';
 import AppLayout from '@/components/layout/AppLayout';
 import AdminLayout from '@/components/layout/AdminLayout';
+import Index from '@/pages/Index';
 
 // Dashboard pages
 import DashboardIndex from '@/pages/dashboard/DashboardIndex';
@@ -22,7 +23,6 @@ import TasksPage from '@/pages/dashboard/collaborator/TasksPage';
 const ProfilePage = () => <div>Profile Page</div>;
 const NotificationsPage = () => <div>Notifications Page</div>;
 const SettingsPage = () => <div>Settings Page</div>;
-const HomePage = () => <div>Home Page</div>;
 const LoginPage = () => <div>Login Page</div>;
 const RegisterPage = () => <div>Register Page</div>;
 const ShopsPage = () => <div>Shops Page</div>;
@@ -54,7 +54,7 @@ function App() {
       <SupabaseWrapper>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
+          <Route path="/" element={<AppLayout><Index /></AppLayout>} />
           <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
           <Route path="/register" element={<AppLayout><RegisterPage /></AppLayout>} />
           <Route path="/shops" element={<AppLayout><ShopsPage /></AppLayout>} />

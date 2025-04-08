@@ -12,7 +12,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow">
+      <main className="flex-grow pt-16"> {/* Added pt-16 to account for fixed navbar */}
         {children || <Outlet />}
       </main>
       <Footer />
