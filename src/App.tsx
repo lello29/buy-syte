@@ -12,13 +12,13 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="ui-theme">
       <SupabaseWrapper>
-        <AuthProvider>
-          <BrowserRouter>
+        <BrowserRouter>
+          <AuthProvider>
             <PublicRoutes />
             <DashboardRoutes />
             <Toaster />
-          </BrowserRouter>
-        </AuthProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </SupabaseWrapper>
     </ThemeProvider>
   );
