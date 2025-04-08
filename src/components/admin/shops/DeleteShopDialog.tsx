@@ -26,6 +26,11 @@ const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
   isDeleting = false,
   shopName = "questo negozio"
 }) => {
+  const handleDelete = () => {
+    console.log("Delete button clicked, executing onDelete callback");
+    onDelete();
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -41,7 +46,7 @@ const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
           </Button>
           <Button 
             variant="destructive" 
-            onClick={onDelete}
+            onClick={handleDelete}
             disabled={isDeleting}
           >
             {isDeleting ? (

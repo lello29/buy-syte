@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { fetchShops, migrateShops } from '@/services/shop';
+import { fetchShops, migrateShops, deleteShop } from '@/services/shop';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopForm } from './useShopForm';
 import { useShopActions } from './useShopActions';
@@ -35,6 +35,30 @@ export const useShopState = () => {
     setShopsList,
     setIsDeleting
   );
+  
+  // Function to delete a shop
+  const handleDeleteShop = useCallback(async (shopId: string) => {
+    setIsDeleting(true);
+    try {
+      console.log("Starting shop deletion process for ID:", shopId);
+      const success = await deleteShop(shopId);
+      
+      if (success) {
+        console.log("Shop deleted successfully");
+        setShopsList(prev => prev.filter(shop => shop.id !== shopId));
+        dialogState.setIsDeleteShopOpen(false);
+        toast.success("Negozio eliminato con successo");
+      } else {
+        console.error("Failed to delete shop");
+        toast.error("Errore durante l'eliminazione del negozio");
+      }
+    } catch (error) {
+      console.error("Error deleting shop:", error);
+      toast.error("Si è verificato un errore durante l'eliminazione del negozio");
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [dialogState]);
   
   // Function to migrate shops
   const handleMigrateShops = useCallback(async () => {
@@ -104,6 +128,9 @@ export const useShopState = () => {
     
     // Migration function
     handleMigrateShops,
+    
+    // Delete function
+    handleDeleteShop,
     
     // Dialog state
     ...dialogState,
