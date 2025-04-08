@@ -3,11 +3,16 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 /**
- * Handles Supabase operations for shop management
+ * Service for creating shop records in Supabase
  */
-export const shopService = {
+export const shopCreationService = {
   /**
    * Create a shop record in Supabase
+   * @param userId - The ID of the user who owns the shop
+   * @param shopData - Basic shop information
+   * @param fiscalCode - The fiscal code for the shop
+   * @param vatNumber - The VAT number for the shop
+   * @returns A boolean indicating success or failure
    */
   createShopRecord: async (userId: string, shopData: any, fiscalCode: string, vatNumber: string): Promise<boolean> => {
     try {

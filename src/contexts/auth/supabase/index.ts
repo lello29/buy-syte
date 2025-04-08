@@ -1,7 +1,7 @@
 
 import { supabaseAuth } from './auth';
 import { userProfileService } from './userProfile';
-import { shopService } from './shopService';
+import { shopService } from './shop';
 
 /**
  * Combined Supabase services
