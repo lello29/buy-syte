@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { toggleShopStatus, approveShop } from '@/services/shop';
+import { toggleShopStatus, approveShop, deleteShop } from '@/services/shop';
 
 export const useShopActions = (
   setSelectedShop: React.Dispatch<React.SetStateAction<Shop | null>>,
@@ -77,11 +77,35 @@ export const useShopActions = (
     }
   }, [setShopsList]);
   
+  // Function to handle deleting a shop
+  const handleDeleteShop = useCallback(async (shopId: string) => {
+    try {
+      console.log("Deleting shop:", shopId);
+      setIsDeleting(true);
+      
+      const success = await deleteShop(shopId);
+      
+      if (success) {
+        setShopsList(prev => prev.filter(shop => shop.id !== shopId));
+        setIsDeleteShopOpen(false);
+        toast.success("Negozio eliminato con successo");
+      } else {
+        toast.error("Errore durante l'eliminazione del negozio");
+      }
+    } catch (error) {
+      console.error("Error deleting shop:", error);
+      toast.error("Si è verificato un errore durante l'eliminazione del negozio");
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [setShopsList, setIsDeleteShopOpen, setIsDeleting]);
+  
   return {
     handleViewShop,
     handleEditShop,
     handleAddShop,
     handleToggleStatus,
-    handleApproveShop
+    handleApproveShop,
+    handleDeleteShop
   };
 };

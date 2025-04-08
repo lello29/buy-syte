@@ -22,14 +22,11 @@ export default function AdminShopsPage() {
     shopsList,
     isLoading,
     isMigrating,
-    selectedShop,
-    setSelectedShop,
-    isDeleteShopOpen,
-    setIsDeleteShopOpen,
+    isDeleting,
     handleViewShop,
     handleEditShop,
     handleAddShop,
-    handleDeleteShop,
+    handleDeleteButtonClick,
     handleToggleStatus,
     handleApproveShop,
     handleMigrateShops
@@ -55,19 +52,6 @@ export default function AdminShopsPage() {
   if (!currentUser || currentUser.role !== "admin") {
     return <Navigate to="/dashboard" />;
   }
-
-  // Handler for delete button actions
-  const handleDeleteButtonClick = (shopId: string) => {
-    console.log("Delete button clicked for shop:", shopId);
-    const shop = shopsList.find(s => s.id === shopId);
-    if (shop) {
-      setSelectedShop(shop);
-      setIsDeleteShopOpen(true);
-    } else {
-      console.error("Shop not found with ID:", shopId);
-      toast.error("Negozio non trovato");
-    }
-  };
   
   // Empty state with migration option
   const EmptyShopsState = () => (
@@ -75,22 +59,9 @@ export default function AdminShopsPage() {
       <AlertTriangle className="h-12 w-12 text-yellow-500 mb-2" />
       <h3 className="text-lg font-medium">Nessun negozio trovato</h3>
       <p className="text-muted-foreground text-center max-w-md">
-        Non sono stati trovati negozi nel database. Clicca il pulsante per migrare i dati di esempio.
+        Non sono stati trovati negozi nel database.
       </p>
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md mt-4">
-        <Button 
-          onClick={handleMigrateShops} 
-          className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600"
-          disabled={isMigrating}
-        >
-          {isMigrating ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Database className="h-4 w-4" />
-          )}
-          {isMigrating ? "Migrazione in corso..." : "Migra Negozi di Esempio"}
-        </Button>
-        
+      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md mt-4">        
         <Button 
           variant="outline"
           className="flex-1 flex items-center justify-center gap-2"
@@ -111,8 +82,6 @@ export default function AdminShopsPage() {
         <ShopsPageHeader 
           handleAddShop={handleAddShop} 
           isMobile={isMobile !== null ? isMobile : false}
-          onMigrateShops={handleMigrateShops}
-          isMigrating={isMigrating}
         />
         
         {isLoading ? (

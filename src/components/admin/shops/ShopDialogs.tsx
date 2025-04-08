@@ -1,74 +1,37 @@
-
 import React from 'react';
-import AddShopDialog from './dialogs/AddShopDialog';
-import ViewShopDialog from './dialogs/ViewShopDialog';
-import EditShopDialog from './dialogs/EditShopDialog';
-import DeleteShopDialog from './DeleteShopDialog';
 import { useShopState } from './hooks/useShopState';
+import DeleteShopDialog from './DeleteShopDialog';
 
-const ShopDialogs: React.FC = () => {
+// Placeholder for other dialog components that will be implemented later
+// import ViewShopDialog from './ViewShopDialog';
+// import EditShopDialog from './EditShopDialog';
+// import AddShopDialog from './AddShopDialog';
+
+const ShopDialogs = () => {
+  // Get all state and handlers from our hook
   const {
-    isAddShopOpen,
-    setIsAddShopOpen,
+    selectedShop,
     isViewShopOpen,
     setIsViewShopOpen,
     isEditShopOpen,
     setIsEditShopOpen,
+    isAddShopOpen,
+    setIsAddShopOpen,
     isDeleteShopOpen,
     setIsDeleteShopOpen,
     isDeleting,
-    selectedShop,
-    newShop,
-    handleNewShopChange,
-    handleSelectChange,
-    handleCreateShop,
-    handleShopChange,
-    handleCheckboxChange,
-    handleSaveChanges,
-    handleDeleteShop
+    handleConfirmDeleteShop
   } = useShopState();
-
-  // Ensure we have a valid shop before performing actions
-  const onDeleteShop = () => {
-    if (selectedShop && selectedShop.id) {
-      console.log("Deleting shop with ID:", selectedShop.id);
-      handleDeleteShop(selectedShop.id);
-    } else {
-      console.error("Can't delete shop: No selected shop or missing ID");
-    }
-  };
 
   return (
     <>
-      <AddShopDialog 
-        open={isAddShopOpen} 
-        onOpenChange={setIsAddShopOpen}
-        newShop={newShop}
-        onInputChange={handleNewShopChange}
-        onSelectChange={handleSelectChange}
-        onCreateShop={handleCreateShop}
-      />
+      {/* We'll add more dialogs in the future (View, Edit, Add) */}
       
-      <ViewShopDialog 
-        shop={selectedShop}
-        open={isViewShopOpen}
-        onOpenChange={setIsViewShopOpen}
-      />
-      
-      <EditShopDialog 
-        shop={selectedShop}
-        open={isEditShopOpen}
-        onOpenChange={setIsEditShopOpen}
-        onShopChange={handleShopChange}
-        onSelectChange={handleSelectChange}
-        onCheckboxChange={handleCheckboxChange}
-        onSaveChanges={handleSaveChanges}
-      />
-
+      {/* Delete Shop Dialog */}
       <DeleteShopDialog
         open={isDeleteShopOpen}
         onOpenChange={setIsDeleteShopOpen}
-        onDelete={onDeleteShop}
+        onDelete={handleConfirmDeleteShop}
         isDeleting={isDeleting}
         shopName={selectedShop?.name}
       />

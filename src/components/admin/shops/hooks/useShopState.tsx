@@ -36,29 +36,23 @@ export const useShopState = () => {
     setIsDeleting
   );
   
-  // Function to delete a shop
-  const handleDeleteShop = useCallback(async (shopId: string) => {
-    setIsDeleting(true);
-    try {
-      console.log("Starting shop deletion process for ID:", shopId);
-      const success = await deleteShop(shopId);
-      
-      if (success) {
-        console.log("Shop deleted successfully");
-        setShopsList(prev => prev.filter(shop => shop.id !== shopId));
-        dialogState.setIsDeleteShopOpen(false);
-        toast.success("Negozio eliminato con successo");
-      } else {
-        console.error("Failed to delete shop");
-        toast.error("Errore durante l'eliminazione del negozio");
-      }
-    } catch (error) {
-      console.error("Error deleting shop:", error);
-      toast.error("Si è verificato un errore durante l'eliminazione del negozio");
-    } finally {
-      setIsDeleting(false);
+  // Prepare a handler for delete button clicks (opens the confirmation dialog)
+  const handleDeleteButtonClick = useCallback((shopId: string) => {
+    const shop = shopsList.find(s => s.id === shopId);
+    if (shop) {
+      dialogState.setSelectedShop(shop);
+      dialogState.setIsDeleteShopOpen(true);
+    } else {
+      toast.error("Negozio non trovato");
     }
-  }, [dialogState]);
+  }, [shopsList, dialogState]);
+  
+  // Connect the actual delete function for when confirmation is given
+  const handleConfirmDeleteShop = useCallback(() => {
+    if (dialogState.selectedShop) {
+      actions.handleDeleteShop(dialogState.selectedShop.id);
+    }
+  }, [dialogState.selectedShop, actions]);
   
   // Function to migrate shops
   const handleMigrateShops = useCallback(async () => {
@@ -66,27 +60,11 @@ export const useShopState = () => {
     try {
       console.log("Starting migration process...");
       const migratedShops = await migrateShops();
-      console.log("Migration complete, returned shops:", migratedShops?.length);
       
       if (migratedShops && migratedShops.length > 0) {
         setShopsList(migratedShops);
         toast.success("Negozi migrati con successo!");
-        
-        // Reload shops from database to verify migration worked
-        try {
-          console.log("Reloading shops after migration");
-          const freshShops = await fetchShops();
-          if (freshShops.length > 0) {
-            console.log("Successfully loaded shops after migration:", freshShops.length);
-            setShopsList(freshShops);
-          } else {
-            console.warn("No shops returned after migration");
-          }
-        } catch (reloadError) {
-          console.error("Error reloading shops after migration:", reloadError);
-        }
       } else {
-        console.error("No shops returned from migration");
         toast.error("Errore durante la migrazione dei negozi");
       }
     } catch (error) {
@@ -104,7 +82,6 @@ export const useShopState = () => {
       try {
         console.log("Loading shops data...");
         const shopsData = await fetchShops();
-        console.log("Shops loaded:", shopsData?.length);
         setShopsList(shopsData || []);
       } catch (error) {
         console.error("Error loading shops:", error);
@@ -129,8 +106,9 @@ export const useShopState = () => {
     // Migration function
     handleMigrateShops,
     
-    // Delete function
-    handleDeleteShop,
+    // Delete functions
+    handleDeleteButtonClick,
+    handleConfirmDeleteShop,
     
     // Dialog state
     ...dialogState,
