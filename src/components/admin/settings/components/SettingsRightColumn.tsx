@@ -14,10 +14,10 @@ export const SettingsRightColumn: React.FC<SettingsRightColumnProps> = ({
   children
 }) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+    <Card className="shadow-sm border-0 bg-background">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-2xl font-semibold">{title}</CardTitle>
+        <CardDescription className="text-base">{description}</CardDescription>
       </CardHeader>
       <CardContent>
         {children}
