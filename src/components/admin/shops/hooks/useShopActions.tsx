@@ -60,7 +60,8 @@ export const useShopActions = (
   const handleApproveShop = useCallback(async (shopId: string) => {
     try {
       console.log("Approving shop:", shopId);
-      const updatedShop = await approveShop(shopId);
+      // Fix: Adding the second parameter (true) as required by the approveShop function
+      const updatedShop = await approveShop(shopId, true);
       
       if (updatedShop) {
         setShopsList(prev => 
