@@ -51,6 +51,7 @@ export const verifyRequiredTables = async (): Promise<{
     
     // Alternative approach - check each table individually
     const missingTables = [];
+    const existingTables = [];
     
     for (const tableName of requiredTables) {
       try {
@@ -61,12 +62,17 @@ export const verifyRequiredTables = async (): Promise<{
         
         if (error && (error.message.includes('does not exist') || error.code === '42P01')) {
           missingTables.push(tableName);
+        } else {
+          existingTables.push(tableName);
         }
       } catch (e) {
         // If we can't check, assume it's missing
         missingTables.push(tableName);
       }
     }
+    
+    console.log("Existing tables:", existingTables);
+    console.log("Missing tables:", missingTables);
     
     return {
       allTablesExist: missingTables.length === 0,

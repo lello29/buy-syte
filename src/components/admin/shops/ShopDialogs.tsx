@@ -16,6 +16,7 @@ const ShopDialogs: React.FC = () => {
     setIsEditShopOpen,
     isDeleteShopOpen,
     setIsDeleteShopOpen,
+    isDeleting,
     selectedShop,
     newShop,
     handleNewShopChange,
@@ -58,6 +59,7 @@ const ShopDialogs: React.FC = () => {
         open={isDeleteShopOpen}
         onOpenChange={setIsDeleteShopOpen}
         onDelete={() => selectedShop && handleDeleteShop(selectedShop.id)}
+        isDeleting={isDeleting}
       />
     </>
   );

@@ -11,6 +11,7 @@ export const useShopState = () => {
   const [shopsList, setShopsList] = useState<Shop[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isMigrating, setIsMigrating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   // Get dialog state management
   const dialogState = useShopDialogState();
@@ -24,14 +25,15 @@ export const useShopState = () => {
     setShopsList
   );
   
-  // Get shop actions
+  // Get shop actions with loading states
   const actions = useShopActions(
     dialogState.setSelectedShop,
     dialogState.setIsViewShopOpen,
     dialogState.setIsEditShopOpen,
     dialogState.setIsAddShopOpen,
     dialogState.setIsDeleteShopOpen,
-    setShopsList
+    setShopsList,
+    setIsDeleting
   );
   
   // Function to migrate shops
@@ -88,6 +90,7 @@ export const useShopState = () => {
     setShopsList,
     isLoading,
     isMigrating,
+    isDeleting,
     
     // Migration function
     handleMigrateShops,

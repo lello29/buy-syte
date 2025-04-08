@@ -19,7 +19,8 @@ export const useShopActions = (
   setIsEditShopOpen: React.Dispatch<React.SetStateAction<boolean>>,
   setIsAddShopOpen: React.Dispatch<React.SetStateAction<boolean>>,
   setIsDeleteShopOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  setShopsList: React.Dispatch<React.SetStateAction<Shop[]>>
+  setShopsList: React.Dispatch<React.SetStateAction<Shop[]>>,
+  setIsDeleting?: React.Dispatch<React.SetStateAction<boolean>>
 ): UseShopActionsReturn => {
   const handleAddShop = useCallback(() => {
     setIsAddShopOpen(true);
@@ -38,17 +39,21 @@ export const useShopActions = (
   const handleDeleteShop = useCallback(async (shopId: string) => {
     try {
       console.log("Deleting shop with ID:", shopId);
+      if (setIsDeleting) setIsDeleting(true);
       const success = await deleteShopService(shopId);
       if (success) {
         setShopsList(prev => prev.filter(shop => shop.id !== shopId));
         setSelectedShop(null);
+        setIsDeleteShopOpen(false);
         toast.success("Negozio eliminato con successo");
       }
     } catch (error) {
       console.error("Error deleting shop:", error);
       toast.error("Errore nell'eliminazione del negozio");
+    } finally {
+      if (setIsDeleting) setIsDeleting(false);
     }
-  }, [setShopsList, setSelectedShop]);
+  }, [setShopsList, setSelectedShop, setIsDeleteShopOpen, setIsDeleting]);
   
   const handleToggleStatus = useCallback(async (shopId: string, isActive: boolean) => {
     try {
