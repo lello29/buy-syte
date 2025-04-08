@@ -50,18 +50,22 @@ const RegisterForm = () => {
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const formattedErrors = error.format();
+        // Get all validation errors
+        const errors = error.errors;
         
-        if (formattedErrors.name?._errors) {
-          toast.error(formattedErrors.name._errors[0]);
-        } else if (formattedErrors.email?._errors) {
-          toast.error(formattedErrors.email._errors[0]);
-        } else if (formattedErrors.password?._errors) {
-          setPasswordError(formattedErrors.password._errors[0]);
-          toast.error(formattedErrors.password._errors[0]);
-        } else if (formattedErrors.confirmPassword?._errors) {
-          setPasswordError(formattedErrors.confirmPassword._errors[0]);
-          toast.error(formattedErrors.confirmPassword._errors[0]);
+        // Find the first error to display
+        const firstError = errors[0];
+        if (firstError) {
+          const errorMessage = firstError.message;
+          const path = firstError.path[0] as string;
+          
+          // Show toast with error message
+          toast.error(errorMessage);
+          
+          // Set password error if it's related to password fields
+          if (path === "password" || path === "confirmPassword") {
+            setPasswordError(errorMessage);
+          }
         }
       } else {
         toast.error("Si è verificato un errore durante la validazione del form");
