@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { 
   SidebarProvider, 
   SidebarInset,
@@ -13,7 +13,11 @@ import { Menu, Home, LogOut, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const DashboardLayout = () => {
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { currentUser, logout, isLoading } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -134,7 +138,7 @@ const DashboardLayout = () => {
         
         {/* Content area with padding for the fixed header */}
         <main className="flex-1 pt-20 pb-6 px-4">
-          <Outlet />
+          {children}
         </main>
       </div>
     );
@@ -165,7 +169,7 @@ const DashboardLayout = () => {
                 </div>
               </div>
               <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
-                <Outlet />
+                {children}
               </div>
             </div>
           </SidebarInset>

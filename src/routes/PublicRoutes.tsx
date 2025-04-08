@@ -9,18 +9,23 @@ const PublicRoutes = () => {
       {publicRoutes.map((route, index) => {
         // For routes with layout
         if (route.layout) {
+          const Layout = route.layout;
           return (
             <Route 
               key={index} 
-              path={route.path} 
-              element={<route.layout>{route.element}</route.layout>} 
+              path={route.path.replace(/^\/+/, '')} 
+              element={<Layout>{route.element}</Layout>} 
             />
           );
         }
         
         // For routes without layout
         return (
-          <Route key={index} path={route.path} element={route.element} />
+          <Route 
+            key={index} 
+            path={route.path.replace(/^\/+/, '')} 
+            element={route.element} 
+          />
         );
       })}
     </Routes>
