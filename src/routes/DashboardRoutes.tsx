@@ -19,7 +19,7 @@ const DashboardRoutes = () => {
   return (
     <Routes>
       <Route
-        path="/dashboard"
+        path="/"
         element={
           <ProtectedRoute>
             <DashboardLayout />
@@ -27,11 +27,11 @@ const DashboardRoutes = () => {
         }
       >
         {/* Index route - dashboard home */}
-        <Route index element={<DashboardIndex />} />
+        <Route path="dashboard" element={<DashboardIndex />} />
         
-        {/* Admin routes - explicitly defined with AdminRoute protection */}
+        {/* Admin routes explicitly defined */}
         <Route 
-          path="admin" 
+          path="dashboard/admin" 
           element={
             <AdminRoute>
               <AdminDashboardPage />
@@ -40,7 +40,7 @@ const DashboardRoutes = () => {
         />
         
         <Route 
-          path="admin/settings" 
+          path="dashboard/admin/settings" 
           element={
             <AdminRoute>
               <SettingsPage />
@@ -50,19 +50,27 @@ const DashboardRoutes = () => {
         
         {/* Common dashboard routes */}
         {commonDashboardRoutes.map((route, index) => (
-          <Route key={`common-${index}`} path={route.path} element={route.element} />
+          <Route 
+            key={`common-${index}`} 
+            path={`dashboard/${route.path}`} 
+            element={route.element} 
+          />
         ))}
         
         {/* User-specific dashboard routes */}
         {userDashboardRoutes.map((route, index) => (
-          <Route key={`user-${index}`} path={route.path} element={route.element} />
+          <Route 
+            key={`user-${index}`} 
+            path={`dashboard/${route.path}`} 
+            element={route.element} 
+          />
         ))}
         
         {/* Shop-specific dashboard routes */}
         {shopDashboardRoutes.map((route, index) => (
           <Route 
             key={`shop-${index}`} 
-            path={route.path} 
+            path={`dashboard/${route.path}`} 
             element={getProtectedElement(route, index)}
           />
         ))}
@@ -71,16 +79,16 @@ const DashboardRoutes = () => {
         {collaboratorDashboardRoutes.map((route, index) => (
           <Route 
             key={`collab-${index}`} 
-            path={route.path} 
+            path={`dashboard/${route.path}`} 
             element={getProtectedElement(route, index)}
           />
         ))}
         
-        {/* Admin-specific dashboard routes - making sure they're wrapped properly */}
+        {/* Admin-specific dashboard routes */}
         {adminDashboardRoutes.map((route, index) => (
           <Route 
             key={`admin-${index}`} 
-            path={route.path} 
+            path={`dashboard/${route.path}`} 
             element={
               <AdminRoute>
                 {route.element}

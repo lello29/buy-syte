@@ -14,8 +14,8 @@ function App() {
       <SupabaseWrapper>
         <BrowserRouter>
           <AuthProvider>
-            <PublicRoutes />
             <DashboardRoutes />
+            <PublicRoutes />
             <Toaster />
           </AuthProvider>
         </BrowserRouter>
