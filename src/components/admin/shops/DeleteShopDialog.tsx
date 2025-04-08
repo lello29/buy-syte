@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -24,10 +24,6 @@ const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
   onDelete,
   isDeleting = false
 }) => {
-  const handleDelete = () => {
-    onDelete();
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -43,7 +39,7 @@ const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
           </Button>
           <Button 
             variant="destructive" 
-            onClick={handleDelete}
+            onClick={onDelete}
             disabled={isDeleting}
           >
             {isDeleting ? (

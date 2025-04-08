@@ -53,6 +53,17 @@ export default function AdminShopsPage() {
   if (!currentUser || currentUser.role !== "admin") {
     return <Navigate to="/dashboard" />;
   }
+
+  // Handler for delete button actions
+  const handleDeleteButtonClick = (shopId: string) => {
+    const shop = shopsList.find(s => s.id === shopId);
+    if (shop) {
+      setSelectedShop(shop);
+      setIsDeleteShopOpen(true);
+    } else {
+      toast.error("Negozio non trovato");
+    }
+  };
   
   // Empty state with migration option
   const EmptyShopsState = () => (
@@ -111,13 +122,7 @@ export default function AdminShopsPage() {
             onViewShop={handleViewShop}
             onEditShop={handleEditShop}
             onToggleStatus={handleToggleStatus}
-            onDeleteShop={(shopId) => {
-              const shop = shopsList.find(s => s.id === shopId);
-              if (shop) {
-                setSelectedShop(shop);
-                setIsDeleteShopOpen(true);
-              }
-            }}
+            onDeleteShop={handleDeleteButtonClick}
             onAddShop={handleAddShop}
             onApproveShop={handleApproveShop}
           />
@@ -127,13 +132,7 @@ export default function AdminShopsPage() {
             onViewShop={handleViewShop}
             onEditShop={handleEditShop}
             onToggleStatus={handleToggleStatus}
-            onDeleteShop={(shopId) => {
-              const shop = shopsList.find(s => s.id === shopId);
-              if (shop) {
-                setSelectedShop(shop);
-                setIsDeleteShopOpen(true);
-              }
-            }}
+            onDeleteShop={handleDeleteButtonClick}
             onApproveShop={handleApproveShop}
           />
         )}

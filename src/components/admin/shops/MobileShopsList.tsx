@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Ban, CheckCircle, Eye, Trash2, Store, Edit, MapPin, Mail, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Shop } from '@/types';
+import { toast } from 'sonner';
 
 interface MobileShopsListProps {
   shops: Shop[];
@@ -24,11 +25,26 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
   onAddShop,
   onApproveShop
 }) => {
+  // Helper function to safely execute actions with proper error handling
+  const safeAction = (action: Function, ...args: any[]) => {
+    try {
+      if (typeof action === 'function') {
+        action(...args);
+      } else {
+        console.error("Action is not a function", action);
+        toast.error("Errore nell'esecuzione dell'azione");
+      }
+    } catch (error) {
+      console.error("Error executing action:", error);
+      toast.error("Si è verificato un errore");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <Button 
         className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-md flex items-center justify-center"
-        onClick={onAddShop}
+        onClick={() => safeAction(onAddShop)}
       >
         <Store className="h-5 w-5 mr-2" />
         Aggiungi nuovo negozio
@@ -38,7 +54,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
         {shops.length === 0 && (
           <div className="text-center py-8 bg-white rounded-lg border">
             <p className="text-gray-500 mb-4">Nessun negozio trovato.</p>
-            <Button onClick={onAddShop} size="sm">
+            <Button onClick={() => safeAction(onAddShop)} size="sm">
               <Store className="mr-2 h-4 w-4" />
               Aggiungi il primo negozio
             </Button>
@@ -88,7 +104,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-gray-700 hover:bg-gray-100"
-                onClick={() => onToggleStatus(shop.id, !shop.isActive)}
+                onClick={() => shop.id && safeAction(onToggleStatus, shop.id, !shop.isActive)}
               >
                 <Ban className="h-5 w-5 mr-1" /> 
                 {shop.isActive ? "Disattiva" : "Attiva"}
@@ -97,7 +113,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-blue-700 hover:bg-blue-50"
-                onClick={() => onViewShop(shop)}
+                onClick={() => safeAction(onViewShop, shop)}
               >
                 <Eye className="h-5 w-5 mr-1" />
                 Dettagli
@@ -106,7 +122,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-green-700 hover:bg-green-50"
-                onClick={() => onEditShop(shop)}
+                onClick={() => safeAction(onEditShop, shop)}
               >
                 <Edit className="h-5 w-5 mr-1" />
                 Modifica
@@ -116,7 +132,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
                 <Button 
                   variant="ghost" 
                   className="flex-1 rounded-none h-12 text-emerald-600 hover:bg-emerald-50"
-                  onClick={() => onApproveShop(shop.id, true)}
+                  onClick={() => shop.id && safeAction(onApproveShop, shop.id, true)}
                 >
                   <CheckCircle className="h-5 w-5 mr-1" />
                   Approva
@@ -126,7 +142,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-red-600 hover:bg-red-50"
-                onClick={() => onDeleteShop(shop.id)}
+                onClick={() => shop.id && safeAction(onDeleteShop, shop.id)}
               >
                 <Trash2 className="h-5 w-5 mr-1" />
                 Elimina

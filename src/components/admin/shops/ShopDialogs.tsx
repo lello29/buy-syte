@@ -28,6 +28,13 @@ const ShopDialogs: React.FC = () => {
     handleDeleteShop
   } = useShopState();
 
+  // Ensure we have a valid shop before performing actions
+  const onDeleteShop = () => {
+    if (selectedShop && selectedShop.id) {
+      handleDeleteShop(selectedShop.id);
+    }
+  };
+
   return (
     <>
       <AddShopDialog 
@@ -58,7 +65,7 @@ const ShopDialogs: React.FC = () => {
       <DeleteShopDialog
         open={isDeleteShopOpen}
         onOpenChange={setIsDeleteShopOpen}
-        onDelete={() => selectedShop && handleDeleteShop(selectedShop.id)}
+        onDelete={onDeleteShop}
         isDeleting={isDeleting}
       />
     </>
