@@ -10,6 +10,33 @@ import { shopBaseService } from "./shopBaseService";
 export const deleteShop = async (shopId: string): Promise<boolean> => {
   try {
     if (shopBaseService.ensureSupabaseConfigured()) {
+      // Verifica se l'ID è in formato UUID
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(shopId);
+      
+      // Se non è un UUID, utilizza una query di selezione per trovare il negozio
+      if (!isUUID && shopId.startsWith('shop-')) {
+        console.log(`ID non in formato UUID: ${shopId}, cercando corrispondenza...`);
+        
+        const { data: shopData, error: shopError } = await supabase
+          .from('shops')
+          .select('id')
+          .eq('name', shopId.replace('shop-', 'Negozio Demo '));
+          
+        if (shopError) {
+          console.error("Errore durante la ricerca del negozio:", shopError.message);
+          return false;
+        }
+        
+        if (shopData && shopData.length > 0) {
+          shopId = shopData[0].id;
+          console.log(`Trovato ID UUID per il negozio: ${shopId}`);
+        } else {
+          console.error(`Nessun negozio trovato con il nome: ${shopId}`);
+          toast.error("Negozio non trovato nel database");
+          return false;
+        }
+      }
+      
       const { error } = await supabase
         .from('shops')
         .delete()
@@ -72,7 +99,8 @@ export const addShop = async (shopData: Partial<Shop>): Promise<Shop | null> => 
           created_at: newShop.createdAt,
           last_updated: newShop.lastUpdated,
           latitude: newShop.location?.latitude,
-          longitude: newShop.location?.longitude
+          longitude: newShop.location?.longitude,
+          user_id: newShop.userId // Assicuriamoci di salvare correttamente l'userId
         })
         .select();
         
@@ -98,6 +126,33 @@ export const addShop = async (shopData: Partial<Shop>): Promise<Shop | null> => 
 export const updateShop = async (shopId: string, shopData: Partial<Shop>): Promise<boolean> => {
   try {
     if (shopBaseService.ensureSupabaseConfigured()) {
+      // Verifica se l'ID è in formato UUID
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(shopId);
+      
+      // Se non è un UUID, utilizza una query di selezione per trovare il negozio
+      if (!isUUID && shopId.startsWith('shop-')) {
+        console.log(`ID non in formato UUID: ${shopId}, cercando corrispondenza...`);
+        
+        const { data: shopData, error: shopError } = await supabase
+          .from('shops')
+          .select('id')
+          .eq('name', shopId.replace('shop-', 'Negozio Demo '));
+          
+        if (shopError) {
+          console.error("Errore durante la ricerca del negozio:", shopError.message);
+          return false;
+        }
+        
+        if (shopData && shopData.length > 0) {
+          shopId = shopData[0].id;
+          console.log(`Trovato ID UUID per il negozio: ${shopId}`);
+        } else {
+          console.error(`Nessun negozio trovato con il nome: ${shopId}`);
+          toast.error("Negozio non trovato nel database");
+          return false;
+        }
+      }
+      
       const { error } = await supabase
         .from('shops')
         .update({
@@ -114,7 +169,8 @@ export const updateShop = async (shopId: string, shopData: Partial<Shop>): Promi
           ai_credits: shopData.aiCredits,
           last_updated: new Date().toISOString(),
           latitude: shopData.location?.latitude,
-          longitude: shopData.location?.longitude
+          longitude: shopData.location?.longitude,
+          user_id: shopData.userId // Assicuriamoci di aggiornare correttamente l'userId
         })
         .eq('id', shopId);
         

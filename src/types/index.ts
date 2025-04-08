@@ -1,65 +1,74 @@
-
-export type UserRole = 'user' | 'shop' | 'collaborator' | 'admin';
-
 export interface User {
   id: string;
   name: string;
   email: string;
   role: UserRole;
-  favorites: string[]; // IDs of favorite shops
+  favorites: string[];
   loyaltyPoints: number;
-  isActive?: boolean;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  fiscalCode?: string; // Optional for normal users
-  vatNumber?: string; // Optional for normal users
+  fiscalCode?: string;
+  vatNumber?: string;
 }
+
+export type UserRole = "user" | "shop" | "collaborator" | "admin";
 
 export interface Shop {
   id: string;
   userId: string;
   name: string;
-  description: string;
-  address: string;
-  phone: string;
-  email: string;
+  description?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  fiscalCode?: string;
+  vatNumber?: string;
+  category?: string;
+  logoImage?: string;
+  isActive?: boolean;
+  isApproved?: boolean;
+  aiCredits?: number;
+  createdAt: string;
+  lastUpdated: string;
+  location: ShopLocation | null;
   products: Product[];
   offers: Offer[];
-  aiCredits: number;
-  isApproved?: boolean;
-  isActive?: boolean; // Added this property
-  promotionPackage?: PromotionPackage;
-  promotionExpiryDate?: string;
-  lastUpdated: string;
-  createdAt: string;
-  logoImage?: string;
-  bannerImage?: string;
-  websiteUrl?: string;
-  openingHours?: string;
-  aboutUs?: string;
-  categories?: string[];
-  fiscalCode: string; // Required for shops
-  vatNumber: string; // Required for shops
-  location?: {
-    latitude: number;
-    longitude: number;
-  };
-  category?: string; // Shop category
-  socialLinks?: {
-    facebook?: string;
-    instagram?: string;
-    twitter?: string;
+  user?: {  // Aggiungiamo un campo opzionale per le informazioni sull'utente
+    name?: string;
+    email?: string;
   };
 }
 
-export interface PromotionPackage {
+export interface ShopLocation {
+  latitude: number;
+  longitude: number;
+}
+
+export interface Product {
   id: string;
+  shopId: string;
   name: string;
-  description: string;
-  durationDays: number;
+  description?: string;
   price: number;
+  discountPrice?: number;
+  category: string;
+  inventory: number;
+  images: string[];
   isActive: boolean;
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface Offer {
+  id: string;
+  shopId: string;
+  name: string;
+  description?: string;
+  discount: number;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
 }
 
 export interface Collaborator {
@@ -72,31 +81,31 @@ export interface Collaborator {
   availability: string;
   rating: number;
   completedTasks: number;
-  isActive?: boolean;
+  isActive: boolean;
   createdAt: string;
 }
 
-export interface Product {
+export interface Task {
   id: string;
   shopId: string;
-  name: string;
+  collaboratorId: string;
+  title: string;
   description: string;
-  price: number;
-  discountPrice?: number;
-  category: string;
-  inventory: number;
-  images: string[];
-  isActive: boolean;
+  status: TaskStatus;
+  reward: number;
+  dueDate: string;
   createdAt: string;
   updatedAt: string;
 }
+
+export type TaskStatus = "open" | "assigned" | "completed";
 
 export interface Order {
   id: string;
   userId: string;
   shopId: string;
-  products: OrderItem[];
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  products: OrderProduct[];
+  status: OrderStatus;
   totalPrice: number;
   shippingAddress: string;
   paymentMethod: string;
@@ -104,42 +113,18 @@ export interface Order {
   updatedAt: string;
 }
 
-export interface OrderItem {
+export interface OrderProduct {
   productId: string;
   productName: string;
   quantity: number;
   price: number;
 }
 
-export interface Offer {
-  id: string;
-  shopId: string;
-  title: string;
-  description: string;
-  discountPercentage: number;
-  startDate: string;
-  endDate: string;
-  isActive: boolean;
-  createdAt: string;
-}
+export type OrderStatus = "pending" | "processing" | "shipped" | "delivered" | "cancelled";
 
-export interface WishlistItem {
+export interface Category {
   id: string;
-  userId: string;
-  productId: string;
-  shopId: string;
-  addedAt: string;
-}
-
-export interface Task {
-  id: string;
-  shopId: string;
-  collaboratorId?: string;
-  title: string;
-  description: string;
-  status: 'open' | 'assigned' | 'completed' | 'cancelled';
-  reward: number;
-  dueDate: string;
-  createdAt: string;
-  updatedAt: string;
+  name: string;
+  description?: string;
+  slug: string;
 }

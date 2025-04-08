@@ -2,7 +2,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Pencil, CheckCircle, Ban, Trash2 } from 'lucide-react';
+import { Eye, Pencil, CheckCircle, Ban, Trash2, User } from 'lucide-react';
 import { 
   Table, 
   TableBody, 
@@ -14,6 +14,7 @@ import {
 import { getProductsByShopId } from '@/data/products';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Shop } from '@/types';
+import { useNavigate } from 'react-router-dom';
 
 interface ShopsTableProps {
   shops: Shop[];
@@ -22,6 +23,7 @@ interface ShopsTableProps {
   onToggleStatus?: (shopId: string, isActive: boolean) => void;
   onDeleteShop?: (shopId: string) => void;
   onApproveShop?: (shopId: string, isApproved: boolean) => void;
+  onViewUser?: (userId: string) => void;
 }
 
 const ShopsTable: React.FC<ShopsTableProps> = ({ 
@@ -30,13 +32,28 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
   onEditShop,
   onToggleStatus,
   onDeleteShop,
-  onApproveShop
+  onApproveShop,
+  onViewUser
 }) => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   
   const handleDeleteClick = (shopId: string) => {
     if (onDeleteShop && window.confirm('Sei sicuro di voler eliminare questo negozio?')) {
       onDeleteShop(shopId);
+    }
+  };
+  
+  const handleViewUser = (userId: string) => {
+    if (userId) {
+      if (onViewUser) {
+        onViewUser(userId);
+      } else {
+        // Naviga alla pagina di visualizzazione dell'utente
+        navigate(`/dashboard/admin/users?id=${userId}`);
+      }
+    } else {
+      toast.error("Nessun utente associato a questo negozio");
     }
   };
   
@@ -47,6 +64,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
           <TableHead>Nome</TableHead>
           <TableHead>Indirizzo</TableHead>
           <TableHead>Prodotti</TableHead>
+          <TableHead>Utente</TableHead>
           <TableHead>Crediti AI</TableHead>
           <TableHead>Ultimo aggiornamento</TableHead>
           <TableHead>Stato</TableHead>
@@ -56,7 +74,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
       <TableBody>
         {shops.length === 0 && (
           <TableRow>
-            <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+            <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
               Nessun negozio trovato
             </TableCell>
           </TableRow>
@@ -67,6 +85,21 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
             <TableCell className="font-medium">{shop.name}</TableCell>
             <TableCell>{shop.address}</TableCell>
             <TableCell>{getProductsByShopId(shop.id).length}</TableCell>
+            <TableCell>
+              {shop.userId ? (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handleViewUser(shop.userId)}
+                  className="px-2 h-8"
+                >
+                  <User className="h-4 w-4 mr-1" />
+                  {shop.user?.name || shop.userId.substring(0, 8)}
+                </Button>
+              ) : (
+                <span className="text-muted-foreground">Nessuno</span>
+              )}
+            </TableCell>
             <TableCell>{shop.aiCredits}</TableCell>
             <TableCell>{new Date(shop.lastUpdated).toLocaleDateString()}</TableCell>
             <TableCell>
