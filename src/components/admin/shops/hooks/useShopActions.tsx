@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { deleteShop as deleteShopService, toggleShopStatus, approveShop as approveShopService } from '@/services/shopService';
+import { deleteShop as deleteShopService, toggleShopStatus, approveShop as approveShopService } from '@/services/shop';
 
 export interface UseShopActionsReturn {
   handleAddShop: () => void;

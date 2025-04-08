@@ -1,8 +1,7 @@
-
 import { useState, useCallback } from 'react';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { addShop, updateShop } from '@/services/shopService';
+import { addShop, updateShop } from '@/services/shop';
 
 export interface ShopFormData {
   name: string;
@@ -44,7 +43,6 @@ export const useShopForm = (
     category: '',
   });
   
-  // Handlers for new shop form
   const handleNewShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewShop(prev => ({ ...prev, [name]: value }));
@@ -78,7 +76,6 @@ export const useShopForm = (
     }
   }, [newShop, setShopsList, setIsAddShopOpen]);
   
-  // Handlers for edit shop form
   const handleShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (!selectedShop) return;
     
@@ -118,7 +115,6 @@ export const useShopForm = (
     }
   }, [selectedShop, setShopsList, setIsEditShopOpen]);
   
-  // Combined select change handler
   const handleSelectChange = useCallback((field: string, value: string) => {
     if (selectedShop) {
       setSelectedShop(prev => prev ? { ...prev, [field]: value } : null);

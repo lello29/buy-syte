@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { fetchShops } from '@/services/shopService';
+import { fetchShops } from '@/services/shop';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopForm } from './useShopForm';
 import { useShopActions } from './useShopActions';
