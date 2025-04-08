@@ -18,29 +18,32 @@ export const migrateShops = async (): Promise<Shop[]> => {
           const { error: tablesError } = await supabase.rpc('get_tables');
           if (tablesError && tablesError.message.includes('does not exist')) {
             // Create the shops table if it doesn't exist
-            const { error: createTableError } = await supabase.query(`
-              CREATE TABLE IF NOT EXISTS public.shops (
-                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                user_id UUID,
-                name TEXT NOT NULL,
-                description TEXT,
-                address TEXT,
-                phone TEXT,
-                email TEXT,
-                logo_image TEXT,
-                banner_image TEXT,
-                fiscal_code TEXT,
-                vat_number TEXT,
-                category TEXT,
-                latitude DOUBLE PRECISION,
-                longitude DOUBLE PRECISION,
-                is_active BOOLEAN DEFAULT true,
-                is_approved BOOLEAN DEFAULT false,
-                ai_credits INTEGER DEFAULT 100,
-                created_at TIMESTAMPTZ DEFAULT NOW(),
-                last_updated TIMESTAMPTZ DEFAULT NOW()
-              );
-            `);
+            const { error: createTableError } = await supabase.from('_schema').insert({
+              name: 'shops',
+              definition: `
+                CREATE TABLE IF NOT EXISTS public.shops (
+                  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                  user_id UUID,
+                  name TEXT NOT NULL,
+                  description TEXT,
+                  address TEXT,
+                  phone TEXT,
+                  email TEXT,
+                  logo_image TEXT,
+                  banner_image TEXT,
+                  fiscal_code TEXT,
+                  vat_number TEXT,
+                  category TEXT,
+                  latitude DOUBLE PRECISION,
+                  longitude DOUBLE PRECISION,
+                  is_active BOOLEAN DEFAULT true,
+                  is_approved BOOLEAN DEFAULT false,
+                  ai_credits INTEGER DEFAULT 100,
+                  created_at TIMESTAMPTZ DEFAULT NOW(),
+                  last_updated TIMESTAMPTZ DEFAULT NOW()
+                );
+              `
+            });
             
             if (createTableError) {
               console.error("Error creating shops table:", createTableError);
