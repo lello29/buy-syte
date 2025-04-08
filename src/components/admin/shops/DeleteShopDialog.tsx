@@ -22,6 +22,11 @@ const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
   onOpenChange,
   onDelete
 }) => {
+  const handleDelete = () => {
+    onDelete();
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -33,7 +38,7 @@ const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
-          <Button variant="destructive" onClick={onDelete}>
+          <Button variant="destructive" onClick={handleDelete}>
             <Trash2 className="w-4 h-4 mr-2" /> Elimina
           </Button>
         </DialogFooter>

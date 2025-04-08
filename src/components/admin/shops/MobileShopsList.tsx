@@ -24,12 +24,6 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
   onAddShop,
   onApproveShop
 }) => {
-  const handleDeleteClick = (shopId: string) => {
-    if (window.confirm('Sei sicuro di voler eliminare questo negozio?')) {
-      onDeleteShop(shopId);
-    }
-  };
-
   return (
     <div className="space-y-4">
       <Button 
@@ -132,7 +126,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-red-600 hover:bg-red-50"
-                onClick={() => handleDeleteClick(shop.id)}
+                onClick={() => onDeleteShop(shop.id)}
               >
                 <Trash2 className="h-5 w-5 mr-1" />
                 Elimina

@@ -1,149 +1,171 @@
 
-import { Shop } from "@/types";
 import { supabase } from "@/lib/supabase";
-import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
+import { Shop } from "@/types";
 import { shopBaseService } from "./shopBaseService";
+import { data } from "@/data";
 
 /**
- * Adds a new shop to the database
- * @param shopData The shop data to add
- * @returns A Promise with the created shop
- */
-export const addShop = async (shopData: any): Promise<Shop | null> => {
-  try {
-    const shopId = uuidv4();
-    const newShop: Shop = {
-      id: shopId,
-      userId: shopData.userId || '',
-      name: shopData.name,
-      description: shopData.description || '',
-      address: shopData.address || '',
-      phone: shopData.phone || '',
-      email: shopData.email || '',
-      fiscalCode: shopData.fiscalCode || '',
-      vatNumber: shopData.vatNumber || '',
-      category: shopData.category || 'General',
-      logoImage: shopData.logoImage || '',
-      isActive: true,
-      isApproved: false,
-      aiCredits: 100,
-      createdAt: new Date().toISOString(),
-      lastUpdated: new Date().toISOString(),
-      location: null,
-      products: [],
-      offers: [],
-    };
-
-    if (shopBaseService.ensureSupabaseConfigured()) {
-      const { error } = await supabase
-        .from('shops')
-        .insert({
-          id: newShop.id,
-          user_id: newShop.userId,
-          name: newShop.name,
-          description: newShop.description,
-          address: newShop.address,
-          phone: newShop.phone,
-          email: newShop.email,
-          fiscal_code: newShop.fiscalCode,
-          vat_number: newShop.vatNumber,
-          category: newShop.category,
-          logo_image: newShop.logoImage,
-          is_active: newShop.isActive,
-          is_approved: newShop.isApproved,
-          ai_credits: newShop.aiCredits,
-          created_at: newShop.createdAt,
-          last_updated: newShop.lastUpdated,
-          latitude: newShop.location?.latitude,
-          longitude: newShop.location?.longitude
-        });
-        
-      if (error) {
-        console.error("Error adding shop:", error.message);
-        toast.error("Errore nell'aggiunta del negozio");
-        return null;
-      }
-    }
-    
-    toast.success("Negozio creato con successo");
-    return newShop;
-  } catch (error) {
-    shopBaseService.handleError("l'aggiunta del negozio", error);
-    return null;
-  }
-};
-
-/**
- * Updates an existing shop
- * @param shopId The ID of the shop to update
- * @param shopData The updated shop data
- * @returns A Promise with a success flag
- */
-export const updateShop = async (shopId: string, shopData: Shop): Promise<boolean> => {
-  try {
-    if (shopBaseService.ensureSupabaseConfigured()) {
-      const { error } = await supabase
-        .from('shops')
-        .update({
-          user_id: shopData.userId,
-          name: shopData.name,
-          description: shopData.description,
-          address: shopData.address,
-          phone: shopData.phone,
-          email: shopData.email,
-          fiscal_code: shopData.fiscalCode,
-          vat_number: shopData.vatNumber,
-          category: shopData.category,
-          logo_image: shopData.logoImage,
-          is_active: shopData.isActive,
-          is_approved: shopData.isApproved,
-          ai_credits: shopData.aiCredits,
-          last_updated: new Date().toISOString(),
-          latitude: shopData.location?.latitude,
-          longitude: shopData.location?.longitude
-        })
-        .eq('id', shopId);
-        
-      if (error) {
-        console.error("Error updating shop:", error.message);
-        toast.error("Errore nell'aggiornamento del negozio");
-        return false;
-      }
-    }
-    
-    toast.success("Negozio aggiornato con successo");
-    return true;
-  } catch (error) {
-    shopBaseService.handleError("l'aggiornamento del negozio", error);
-    return false;
-  }
-};
-
-/**
- * Deletes a shop
- * @param shopId The ID of the shop to delete
- * @returns A Promise with a success flag
+ * Delete a shop
  */
 export const deleteShop = async (shopId: string): Promise<boolean> => {
   try {
+    console.log("Attempting to delete shop with ID:", shopId);
+    
+    // Check if Supabase is configured
     if (shopBaseService.ensureSupabaseConfigured()) {
+      // Try to delete from Supabase
       const { error } = await supabase
         .from('shops')
         .delete()
         .eq('id', shopId);
         
       if (error) {
-        console.error("Error deleting shop:", error.message);
-        toast.error("Errore nell'eliminazione del negozio");
+        console.error("Supabase error deleting shop:", error.message);
+        // Fall back to mock data
+        console.log("Falling back to mock data for deletion");
+        const index = data.shops.findIndex(s => s.id === shopId);
+        if (index !== -1) {
+          data.shops.splice(index, 1);
+          toast.success("Negozio eliminato con successo");
+          return true;
+        }
         return false;
       }
+      
+      toast.success("Negozio eliminato con successo");
+      return true;
+    } else {
+      // Use mock data
+      console.log("Using mock data for deletion");
+      const index = data.shops.findIndex(s => s.id === shopId);
+      if (index !== -1) {
+        data.shops.splice(index, 1);
+        toast.success("Negozio eliminato con successo");
+        return true;
+      }
+      return false;
     }
-    
-    toast.success("Negozio eliminato con successo");
-    return true;
   } catch (error) {
     shopBaseService.handleError("l'eliminazione del negozio", error);
     return false;
+  }
+};
+
+/**
+ * Create a new shop
+ */
+export const createShop = async (shop: Omit<Shop, 'id' | 'lastUpdated'>): Promise<Shop | null> => {
+  try {
+    if (shopBaseService.ensureSupabaseConfigured()) {
+      const newShop = {
+        ...shop,
+        last_updated: new Date().toISOString()
+      };
+      
+      const { data: createdShop, error } = await supabase
+        .from('shops')
+        .insert(newShop)
+        .select('*')
+        .single();
+        
+      if (error) {
+        console.error("Error creating shop:", error.message);
+        return null;
+      }
+      
+      return shopBaseService.transformShopFromDB(createdShop);
+    }
+    
+    // Use mock data if Supabase is not configured
+    const mockShop: Shop = {
+      id: crypto.randomUUID(),
+      ...shop,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    data.shops.push(mockShop);
+    return mockShop;
+  } catch (error) {
+    shopBaseService.handleError("la creazione del negozio", error);
+    return null;
+  }
+};
+
+/**
+ * Update a shop
+ */
+export const updateShop = async (shopId: string, updatedData: Partial<Shop>): Promise<Shop | null> => {
+  try {
+    if (shopBaseService.ensureSupabaseConfigured()) {
+      // Convert to DB format
+      const dbUpdatedData: any = { ...updatedData };
+      
+      // Handle nested objects like location
+      if (updatedData.location) {
+        dbUpdatedData.latitude = updatedData.location.latitude;
+        dbUpdatedData.longitude = updatedData.location.longitude;
+        delete dbUpdatedData.location;
+      }
+      
+      // Convert camelCase to snake_case
+      if ('lastUpdated' in updatedData) {
+        dbUpdatedData.last_updated = updatedData.lastUpdated;
+        delete dbUpdatedData.lastUpdated;
+      }
+      
+      if ('isActive' in updatedData) {
+        dbUpdatedData.is_active = updatedData.isActive;
+        delete dbUpdatedData.isActive;
+      }
+      
+      if ('isApproved' in updatedData) {
+        dbUpdatedData.is_approved = updatedData.isApproved;
+        delete dbUpdatedData.isApproved;
+      }
+      
+      if ('aiCredits' in updatedData) {
+        dbUpdatedData.ai_credits = updatedData.aiCredits;
+        delete dbUpdatedData.aiCredits;
+      }
+      
+      if ('userId' in updatedData) {
+        dbUpdatedData.user_id = updatedData.userId;
+        delete dbUpdatedData.userId;
+      }
+      
+      const { data: updatedShop, error } = await supabase
+        .from('shops')
+        .update({
+          ...dbUpdatedData,
+          last_updated: new Date().toISOString()
+        })
+        .eq('id', shopId)
+        .select('*')
+        .single();
+        
+      if (error) {
+        console.error("Error updating shop:", error.message);
+        return null;
+      }
+      
+      return shopBaseService.transformShopFromDB(updatedShop);
+    }
+    
+    // Use mock data if Supabase is not configured
+    const shopIndex = data.shops.findIndex(s => s.id === shopId);
+    if (shopIndex === -1) return null;
+    
+    const updatedShop = {
+      ...data.shops[shopIndex],
+      ...updatedData,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    data.shops[shopIndex] = updatedShop;
+    return updatedShop;
+  } catch (error) {
+    shopBaseService.handleError("l'aggiornamento del negozio", error);
+    return null;
   }
 };

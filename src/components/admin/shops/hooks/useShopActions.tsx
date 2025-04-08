@@ -37,19 +37,22 @@ export const useShopActions = (
   
   const handleDeleteShop = useCallback(async (shopId: string) => {
     try {
+      console.log("Deleting shop with ID:", shopId);
       const success = await deleteShopService(shopId);
       if (success) {
         setShopsList(prev => prev.filter(shop => shop.id !== shopId));
-        setIsDeleteShopOpen(false);
+        setSelectedShop(null);
+        toast.success("Negozio eliminato con successo");
       }
     } catch (error) {
       console.error("Error deleting shop:", error);
       toast.error("Errore nell'eliminazione del negozio");
     }
-  }, [setShopsList, setIsDeleteShopOpen]);
+  }, [setShopsList, setSelectedShop]);
   
   const handleToggleStatus = useCallback(async (shopId: string, isActive: boolean) => {
     try {
+      console.log("Toggling status for shop ID:", shopId, "to:", isActive);
       const success = await toggleShopStatus(shopId, isActive);
       if (success) {
         setShopsList(prev => 
@@ -57,6 +60,7 @@ export const useShopActions = (
             shop.id === shopId ? { ...shop, isActive, lastUpdated: new Date().toISOString() } : shop
           )
         );
+        toast.success(`Negozio ${isActive ? 'attivato' : 'disattivato'} con successo`);
       }
     } catch (error) {
       console.error("Error toggling shop status:", error);
@@ -66,6 +70,7 @@ export const useShopActions = (
   
   const handleApproveShop = useCallback(async (shopId: string, isApproved: boolean) => {
     try {
+      console.log("Approving shop ID:", shopId);
       const success = await approveShopService(shopId, isApproved);
       if (success) {
         setShopsList(prev => 
@@ -73,6 +78,7 @@ export const useShopActions = (
             shop.id === shopId ? { ...shop, isApproved, lastUpdated: new Date().toISOString() } : shop
           )
         );
+        toast.success(`Negozio ${isApproved ? 'approvato' : 'messo in attesa'} con successo`);
       }
     } catch (error) {
       console.error("Error approving shop:", error);
