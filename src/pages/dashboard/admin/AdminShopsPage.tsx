@@ -57,7 +57,7 @@ export default function AdminShopsPage() {
       <AlertTriangle className="h-12 w-12 text-yellow-500 mb-2" />
       <h3 className="text-lg font-medium">Nessun negozio trovato</h3>
       <p className="text-muted-foreground text-center max-w-md">
-        Non sono stati trovati negozi nel database. È possibile migrare i dati di esempio per testare le funzionalità.
+        Non sono stati trovati negozi nel database. Clicca il pulsante per migrare i dati di esempio.
       </p>
       <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md mt-4">
         <Button 

@@ -21,7 +21,7 @@ export const fetchShops = async (): Promise<Shop[]> => {
           // Se la tabella non esiste ancora, usa i dati mock senza mostrare toast di errore
           if (error.message.includes("does not exist") || error.code === '42P01') {
             console.log("Shops table does not exist yet, using mock data");
-            toast.warning("Tabella negozi non trovata. Migra i dati dal pannello Impostazioni prima di procedere.");
+            toast.warning("Tabella negozi non trovata. Accedi al pannello Impostazioni e clicca su 'Migra Negozi di Esempio'");
             return shopBaseService.getMockShops();
           }
           
@@ -64,7 +64,7 @@ export const fetchShops = async (): Promise<Shop[]> => {
           });
         } else {
           // Se non ci sono negozi nel database, usa i dati mock
-          toast.warning("Nessun negozio trovato nel database. Migra i dati dal pannello Impostazioni.");
+          toast.warning("Nessun negozio trovato nel database. Accedi al pannello Impostazioni e clicca su 'Migra Negozi di Esempio'");
           return shopBaseService.getMockShops();
         }
       } catch (dbError) {
