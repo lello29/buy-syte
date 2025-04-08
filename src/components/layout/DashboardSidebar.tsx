@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   Sidebar, 
@@ -45,7 +45,7 @@ const DashboardSidebar = () => {
         links = [
           { icon: Store, label: "Dashboard Negozio", path: "/dashboard" },
           { icon: Package, label: "Gestione Prodotti", path: "/dashboard/products" },
-          { icon: CreditCard, label: "Ordini Ricevuti", path: "/dashboard/shop-orders" },
+          { icon: CreditCard, label: "Ordini Ricevuti", path: "/dashboard/orders-management" },
           { icon: Calendar, label: "Offerte", path: "/dashboard/offers" },
           { icon: Bell, label: "Notifiche", path: "/dashboard/notifications" },
           { icon: Users, label: "Collaboratori", path: "/dashboard/collaborators" },
@@ -66,6 +66,7 @@ const DashboardSidebar = () => {
           { icon: Store, label: "Negozi", path: "/dashboard/admin/shops" },
           { icon: Package, label: "Prodotti", path: "/dashboard/admin/products" },
           { icon: Briefcase, label: "Collaboratori", path: "/dashboard/admin/collaborators" },
+          { icon: Settings, label: "Impostazioni", path: "/dashboard/admin/settings" },
         ];
         break;
       default:

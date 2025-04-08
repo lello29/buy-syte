@@ -11,6 +11,7 @@ import {
 import DashboardSidebar from "./DashboardSidebar";
 import { Menu, Home, LogOut, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const DashboardLayout = () => {
   const { currentUser, logout, isLoading } = useAuth();
@@ -40,23 +41,19 @@ const DashboardLayout = () => {
 
   // Check if user is authenticated
   if (!currentUser) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg mb-4">Accesso negato</p>
-          <p>Effettua il login per accedere alla dashboard</p>
-          <Button onClick={() => navigate("/login")} className="mt-4">Vai al Login</Button>
-        </div>
-      </div>
-    );
+    toast.error("Effettua il login per accedere alla dashboard");
+    navigate("/login", { replace: true });
+    return null;
   }
 
   const handleLogout = async () => {
     try {
       await logout();
+      toast.success("Logout effettuato con successo");
       navigate("/login");
     } catch (error) {
       console.error("Errore durante il logout:", error);
+      toast.error("Si è verificato un errore durante il logout");
     }
   };
 
@@ -86,6 +83,8 @@ const DashboardLayout = () => {
     if (location.pathname.includes("/favorites")) return "Preferiti";
     if (location.pathname.includes("/loyalty")) return "Punti Fedeltà";
     if (location.pathname.includes("/tasks")) return "Incarichi";
+    if (location.pathname.includes("/convert-to-shop")) return "Diventa Negozio";
+    if (location.pathname.includes("/convert-to-collaborator")) return "Diventa Collaboratore";
     return "Dashboard";
   };
 

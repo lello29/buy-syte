@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SupabaseWrapper } from '@/components/supabase/SupabaseWrapper';
 import { AuthProvider } from '@/contexts/auth/AuthContext';
+import NotFound from '@/pages/NotFound';
 
 // Import existing components and pages
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -34,7 +35,6 @@ const NotificationsPage = () => <div>Notifications Page</div>;
 const SettingsPage = () => <div>Settings Page</div>;
 const ShopsPage = () => <div>Shops Page</div>;
 const ShopDetailPage = () => <div>Shop Detail Page</div>;
-const NotFoundPage = () => <div>404 - Not Found</div>;
 const ProductsPage = () => <div>Products Page</div>;
 const OrderManagementPage = () => <div>Order Management Page</div>;
 const OfferManagementPage = () => <div>Offer Management Page</div>;
@@ -189,7 +189,8 @@ function App() {
             </Route>
             
             {/* 404 Route */}
-            <Route path="*" element={<NotFoundPage />} />
+            <Route path="/404" element={<NotFound />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
         </AuthProvider>
