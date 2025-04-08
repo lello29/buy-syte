@@ -1,8 +1,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
-import { getOrdersByUserId } from "@/data/mockData";
 import { Order } from "@/types";
+
+// Mock data helper function
+const getOrdersByUserId = (userId: string): Order[] => {
+  return []; // Return empty array as placeholder
+};
 
 const OrdersPage: React.FC = () => {
   const { currentUser } = useAuth();

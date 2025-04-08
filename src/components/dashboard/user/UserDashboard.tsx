@@ -3,9 +3,13 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Calendar, Gift, ShoppingBag } from "lucide-react";
-import { User, Order } from "@/types";
-import { users, getOrdersByUserId } from "@/data/mockData";
+import { User, Order, UserRole } from "@/types";
 import DashboardCard from "../cards/DashboardCard";
+
+// Mock data helper functions
+const getOrdersByUserId = (userId: string): Order[] => {
+  return []; // Return empty array as placeholder
+};
 
 interface UserDashboardProps {
   userId: string;
@@ -16,10 +20,24 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ userId }) => {
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   
   useEffect(() => {
-    // Find user data
-    const user = users.find(u => u.id === userId);
+    // Find user data in mock data
+    const mockUsers = [
+      {
+        id: "1",
+        name: "Mock User",
+        email: "user@example.com",
+        role: "user" as UserRole, // Cast as UserRole to fix type issue
+        favorites: [],
+        loyaltyPoints: 100,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+    
+    const user = mockUsers.find(u => u.id === userId);
     if (user) {
-      setUserData(user);
+      setUserData(user as User);
     }
     
     // Get recent orders

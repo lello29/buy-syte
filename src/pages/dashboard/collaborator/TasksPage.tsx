@@ -1,8 +1,14 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
-import { getTasksByCollaboratorId, collaborators } from "@/data/mockData";
 import { Task, Collaborator } from "@/types";
+
+// Mock data helper functions
+const getTasksByCollaboratorId = (collaboratorId: string): Task[] => {
+  return []; // Return empty array as placeholder
+};
+
+const collaborators: Collaborator[] = []; // Empty placeholder array
 
 const TasksPage: React.FC = () => {
   const { currentUser } = useAuth();
