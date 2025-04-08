@@ -26,12 +26,12 @@ const AdminDashboard: React.FC = () => {
       try {
         setLoading(true);
         
-        // Fetch counts using our database adapter
+        // Fetch counts using our database adapter (fixed by removing second argument)
         const [usersCount, shopsCount, collaboratorsCount, productsCount] = await Promise.all([
-          DatabaseAdapter.count('users', 10),
-          DatabaseAdapter.count('shops', 5),
-          DatabaseAdapter.count('collaborators', 8),
-          DatabaseAdapter.count('products', 25)
+          DatabaseAdapter.count('users'),
+          DatabaseAdapter.count('shops'),
+          DatabaseAdapter.count('collaborators'),
+          DatabaseAdapter.count('products')
         ]);
         
         // Fetch shops data with mocks as fallback

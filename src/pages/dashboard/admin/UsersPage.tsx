@@ -1,12 +1,13 @@
 
 import React from "react";
-import { useAuth } from "@/contexts/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileUsersList from "@/components/admin/users/MobileUsersList";
 import DesktopUsersView from "@/components/admin/users/DesktopUsersView";
 import UserDialogs from "@/components/admin/users/UserDialogs";
 import UserLoadingState from "@/components/admin/users/UserLoadingState";
 import { useUsers } from "@/components/admin/users/hooks/useUsers";
+import { Navigate } from "react-router-dom";
 
 const UsersPage = () => {
   const { currentUser } = useAuth();
@@ -34,11 +35,7 @@ const UsersPage = () => {
   } = useUsers();
 
   if (!currentUser || currentUser.role !== "admin") {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p>Non sei autorizzato a visualizzare questa pagina.</p>
-      </div>
-    );
+    return <Navigate to="/dashboard" />;
   }
 
   if (loading) {

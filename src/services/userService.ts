@@ -7,35 +7,46 @@ import { toast } from "sonner";
 export const fetchUsers = async (): Promise<User[]> => {
   try {
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (error) {
+          console.error("Error fetching users:", error.message);
+          // If the table doesn't exist yet, just use mock data without showing error toast
+          if (error.message.includes("does not exist")) {
+            console.log("Users table does not exist yet, using mock data");
+            return mockUsers;
+          }
+          
+          toast.error("Errore nel caricamento degli utenti");
+          return mockUsers;
+        }
         
-      if (error) {
-        console.error("Error fetching users:", error.message);
-        toast.error("Errore nel caricamento degli utenti");
-        return mockUsers;
-      }
-      
-      if (data && data.length > 0) {
-        return data.map(user => ({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          favorites: user.favorites || [],
-          loyaltyPoints: user.loyalty_points || 0,
-          isActive: user.is_active,
-          createdAt: user.created_at,
-          updatedAt: user.updated_at,
-          fiscalCode: user.fiscal_code,
-          vatNumber: user.vat_number
-        }));
+        if (data && data.length > 0) {
+          return data.map(user => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            favorites: user.favorites || [],
+            loyaltyPoints: user.loyalty_points || 0,
+            isActive: user.is_active,
+            createdAt: user.created_at,
+            updatedAt: user.updated_at,
+            fiscalCode: user.fiscal_code,
+            vatNumber: user.vat_number
+          }));
+        }
+      } catch (dbError) {
+        console.error("Database error:", dbError);
+        // Silent fallback to mock data for database issues
       }
     }
     
-    console.log("No users found or Supabase not configured, using mock data");
+    console.log("No users found or Supabase not configured correctly, using mock data");
     return mockUsers;
   } catch (error) {
     console.error("Error fetching users:", error);
