@@ -1,9 +1,10 @@
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Shop } from '@/types';
 import { shops as initialShops } from '@/data/mock-data/shops-data';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 interface UseShopStateReturnType {
   shopsList: Shop[];
@@ -16,6 +17,8 @@ interface UseShopStateReturnType {
   setIsEditShopOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isAddShopOpen: boolean;
   setIsAddShopOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isDeleteShopOpen: boolean;
+  setIsDeleteShopOpen: React.Dispatch<React.SetStateAction<boolean>>;
   newShop: {
     name: string;
     description: string;
@@ -36,12 +39,19 @@ interface UseShopStateReturnType {
     vatNumber: string;
     category: string;
   }>>;
+  handleNewShopChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleSelectChange: (field: string, value: string) => void;
+  handleCreateShop: () => void;
+  handleShopChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleCheckboxChange: (field: string, checked: boolean) => void;
+  handleSaveChanges: () => void;
   handleAddShop: () => void;
   handleViewShop: (shop: Shop) => void;
   handleEditShop: (shop: Shop) => void;
   handleDeleteShop: (shopId: string) => void;
   handleToggleStatus: (shopId: string, isActive: boolean) => void;
   handleApproveShop: (shopId: string, isApproved: boolean) => void;
+  isLoading: boolean;
 }
 
 export const useShopState = (): UseShopStateReturnType => {
@@ -50,6 +60,8 @@ export const useShopState = (): UseShopStateReturnType => {
   const [isViewShopOpen, setIsViewShopOpen] = useState(false);
   const [isEditShopOpen, setIsEditShopOpen] = useState(false);
   const [isAddShopOpen, setIsAddShopOpen] = useState(false);
+  const [isDeleteShopOpen, setIsDeleteShopOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   
   const [newShop, setNewShop] = useState({
@@ -63,42 +75,144 @@ export const useShopState = (): UseShopStateReturnType => {
     category: '',
   });
   
-  const handleAddShop = () => {
-    setIsAddShopOpen(true);
-  };
+  // Gestione inserimento nuovi dati nel form
+  const handleNewShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewShop(prev => ({ ...prev, [name]: value }));
+  }, []);
   
-  const handleViewShop = (shop: Shop) => {
+  // Gestione select nei form
+  const handleSelectChange = useCallback((field: string, value: string) => {
+    if (selectedShop) {
+      setSelectedShop(prev => prev ? { ...prev, [field]: value } : null);
+    } else {
+      setNewShop(prev => ({ ...prev, [field]: value }));
+    }
+  }, [selectedShop]);
+  
+  // Apre il dialog per aggiungere un negozio
+  const handleAddShop = useCallback(() => {
+    setIsAddShopOpen(true);
+  }, []);
+  
+  // Crea un nuovo negozio
+  const handleCreateShop = useCallback(() => {
+    // Validazione campi obbligatori
+    if (!newShop.name || !newShop.email || !newShop.address) {
+      toast.error('Compila tutti i campi obbligatori');
+      return;
+    }
+    
+    const shopId = `shop-${Date.now()}`;
+    const newShopItem: Shop = {
+      id: shopId,
+      name: newShop.name,
+      description: newShop.description,
+      address: newShop.address,
+      phone: newShop.phone,
+      email: newShop.email,
+      fiscalCode: newShop.fiscalCode,
+      vatNumber: newShop.vatNumber,
+      category: newShop.category,
+      isActive: true,
+      isApproved: false,
+      aiCredits: 100,
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
+      location: null
+    };
+    
+    setShopsList(prev => [newShopItem, ...prev]);
+    setNewShop({
+      name: '',
+      description: '',
+      address: '',
+      phone: '',
+      email: '',
+      fiscalCode: '',
+      vatNumber: '',
+      category: '',
+    });
+    
+    setIsAddShopOpen(false);
+    toast.success('Negozio aggiunto con successo');
+  }, [newShop]);
+  
+  // Apre il dialog per visualizzare un negozio
+  const handleViewShop = useCallback((shop: Shop) => {
     setSelectedShop(shop);
     setIsViewShopOpen(true);
-  };
+  }, []);
   
-  const handleEditShop = (shop: Shop) => {
+  // Apre il dialog per modificare un negozio
+  const handleEditShop = useCallback((shop: Shop) => {
     setSelectedShop(shop);
     setIsEditShopOpen(true);
-  };
+  }, []);
   
-  const handleDeleteShop = (shopId: string) => {
+  // Modifica un campo del negozio selezionato
+  const handleShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (!selectedShop) return;
+    
+    const { name, value } = e.target;
+    setSelectedShop(prev => prev ? { ...prev, [name]: value } : null);
+  }, [selectedShop]);
+  
+  // Gestisce la modifica dei checkbox
+  const handleCheckboxChange = useCallback((field: string, checked: boolean) => {
+    if (!selectedShop) return;
+    
+    setSelectedShop(prev => prev ? { ...prev, [field]: checked } : null);
+  }, [selectedShop]);
+  
+  // Salva le modifiche al negozio
+  const handleSaveChanges = useCallback(() => {
+    if (!selectedShop) return;
+    
+    // Validazione campi obbligatori
+    if (!selectedShop.name || !selectedShop.email || !selectedShop.address) {
+      toast.error('Compila tutti i campi obbligatori');
+      return;
+    }
+    
+    setShopsList(prev => 
+      prev.map(shop => 
+        shop.id === selectedShop.id 
+          ? { ...selectedShop, lastUpdated: new Date().toISOString() } 
+          : shop
+      )
+    );
+    
+    setIsEditShopOpen(false);
+    toast.success('Modifiche salvate con successo');
+  }, [selectedShop]);
+  
+  // Elimina un negozio
+  const handleDeleteShop = useCallback((shopId: string) => {
     setShopsList(prev => prev.filter(shop => shop.id !== shopId));
+    setIsDeleteShopOpen(false);
     toast.success('Negozio eliminato con successo');
-  };
+  }, []);
   
-  const handleToggleStatus = (shopId: string, isActive: boolean) => {
+  // Attiva/disattiva un negozio
+  const handleToggleStatus = useCallback((shopId: string, isActive: boolean) => {
     setShopsList(prev => 
       prev.map(shop => 
         shop.id === shopId ? { ...shop, isActive, lastUpdated: new Date().toISOString() } : shop
       )
     );
     toast.success(`Negozio ${isActive ? 'attivato' : 'disattivato'} con successo`);
-  };
+  }, []);
   
-  const handleApproveShop = (shopId: string, isApproved: boolean) => {
+  // Approva/disapprova un negozio
+  const handleApproveShop = useCallback((shopId: string, isApproved: boolean) => {
     setShopsList(prev => 
       prev.map(shop => 
         shop.id === shopId ? { ...shop, isApproved, lastUpdated: new Date().toISOString() } : shop
       )
     );
     toast.success(`Negozio ${isApproved ? 'approvato' : 'messo in attesa'} con successo`);
-  };
+  }, []);
   
   return {
     shopsList,
@@ -111,13 +225,22 @@ export const useShopState = (): UseShopStateReturnType => {
     setIsEditShopOpen,
     isAddShopOpen,
     setIsAddShopOpen,
+    isDeleteShopOpen,
+    setIsDeleteShopOpen,
     newShop,
     setNewShop,
+    handleNewShopChange,
+    handleSelectChange,
+    handleCreateShop,
+    handleShopChange,
+    handleCheckboxChange,
+    handleSaveChanges,
     handleAddShop,
     handleViewShop,
     handleEditShop,
     handleDeleteShop,
     handleToggleStatus,
-    handleApproveShop
+    handleApproveShop,
+    isLoading
   };
 };

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Ban, CheckCircle, Eye, Trash2, Store, Edit, MapPin, Mail, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Shop } from '@/types';
-import { toast } from 'sonner';
 
 interface MobileShopsListProps {
   shops: Shop[];
@@ -25,21 +24,9 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
   onAddShop,
   onApproveShop
 }) => {
-  const handleDelete = (shopId: string) => {
+  const handleDeleteClick = (shopId: string) => {
     if (window.confirm('Sei sicuro di voler eliminare questo negozio?')) {
       onDeleteShop(shopId);
-    }
-  };
-
-  const handleToggleStatus = (shop: Shop) => {
-    onToggleStatus(shop.id, !shop.isActive);
-    toast.success(`Negozio ${!shop.isActive ? 'attivato' : 'disattivato'} con successo`);
-  };
-  
-  const handleApproveShop = (shopId: string) => {
-    if (onApproveShop) {
-      onApproveShop(shopId, true);
-      toast.success('Negozio approvato con successo');
     }
   };
 
@@ -107,7 +94,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-gray-700 hover:bg-gray-100"
-                onClick={() => handleToggleStatus(shop)}
+                onClick={() => onToggleStatus(shop.id, !shop.isActive)}
               >
                 <Ban className="h-5 w-5 mr-1" /> 
                 {shop.isActive ? "Disattiva" : "Attiva"}
@@ -135,7 +122,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
                 <Button 
                   variant="ghost" 
                   className="flex-1 rounded-none h-12 text-emerald-600 hover:bg-emerald-50"
-                  onClick={() => handleApproveShop(shop.id)}
+                  onClick={() => onApproveShop(shop.id, true)}
                 >
                   <CheckCircle className="h-5 w-5 mr-1" />
                   Approva
@@ -145,7 +132,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-red-600 hover:bg-red-50"
-                onClick={() => handleDelete(shop.id)}
+                onClick={() => handleDeleteClick(shop.id)}
               >
                 <Trash2 className="h-5 w-5 mr-1" />
                 Elimina

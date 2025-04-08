@@ -1,13 +1,11 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ShopsPageHeader from "@/components/admin/shops/ShopsPageHeader";
 import ShopsTable from "@/components/admin/shops/ShopsTable";
 import MobileShopsList from "@/components/admin/shops/MobileShopsList";
 import ShopDialogs from "@/components/admin/shops/ShopDialogs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useShopState } from "@/components/admin/shops/hooks/useShopState";
-import { toast } from "sonner";
-import { Shop } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 
@@ -16,14 +14,10 @@ export default function AdminShopsPage() {
   const isMobile = useIsMobile();
   const {
     shopsList,
+    isLoading,
     selectedShop,
-    setSelectedShop,
-    isViewShopOpen,
-    setIsViewShopOpen,
-    isEditShopOpen,
-    setIsEditShopOpen,
-    isAddShopOpen,
-    setIsAddShopOpen,
+    handleViewShop,
+    handleEditShop,
     handleAddShop,
     handleDeleteShop,
     handleToggleStatus,
@@ -34,16 +28,6 @@ export default function AdminShopsPage() {
     return <Navigate to="/dashboard" />;
   }
   
-  const handleViewShop = (shop: Shop) => {
-    setSelectedShop(shop);
-    setIsViewShopOpen(true);
-  };
-  
-  const handleEditShop = (shop: Shop) => {
-    setSelectedShop(shop);
-    setIsEditShopOpen(true);
-  };
-  
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -52,8 +36,11 @@ export default function AdminShopsPage() {
           isMobile={isMobile !== null ? isMobile : false} 
         />
         
-        {/* Responsive layout based on screen size */}
-        {isMobile ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center h-40">
+            <p className="text-muted-foreground">Caricamento...</p>
+          </div>
+        ) : isMobile ? (
           <MobileShopsList 
             shops={shopsList}
             onViewShop={handleViewShop}
@@ -74,7 +61,6 @@ export default function AdminShopsPage() {
           />
         )}
         
-        {/* Dialogs for adding, editing, and viewing shops */}
         <ShopDialogs />
       </div>
     </div>

@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { useShopDialogs } from './hooks/useShopDialogs';
 import AddShopDialog from './dialogs/AddShopDialog';
 import ViewShopDialog from './dialogs/ViewShopDialog';
 import EditShopDialog from './dialogs/EditShopDialog';
+import DeleteShopDialog from './DeleteShopDialog';
+import { useShopState } from './hooks/useShopState';
 
 const ShopDialogs: React.FC = () => {
   const {
@@ -13,17 +14,19 @@ const ShopDialogs: React.FC = () => {
     setIsViewShopOpen,
     isEditShopOpen,
     setIsEditShopOpen,
+    isDeleteShopOpen,
+    setIsDeleteShopOpen,
     selectedShop,
     newShop,
-    isLocating,
+    setNewShop,
     handleNewShopChange,
     handleSelectChange,
     handleCreateShop,
     handleShopChange,
     handleCheckboxChange,
-    handleGetLocation,
-    handleSaveChanges
-  } = useShopDialogs();
+    handleSaveChanges,
+    handleDeleteShop
+  } = useShopState();
 
   return (
     <>
@@ -49,9 +52,18 @@ const ShopDialogs: React.FC = () => {
         onShopChange={handleShopChange}
         onSelectChange={handleSelectChange}
         onCheckboxChange={handleCheckboxChange}
-        onGetLocation={handleGetLocation}
         onSaveChanges={handleSaveChanges}
-        isLocating={isLocating}
+      />
+
+      <DeleteShopDialog
+        open={isDeleteShopOpen}
+        onOpenChange={setIsDeleteShopOpen}
+        onDelete={() => {
+          if (selectedShop) {
+            handleDeleteShop(selectedShop.id);
+            setIsDeleteShopOpen(false);
+          }
+        }}
       />
     </>
   );

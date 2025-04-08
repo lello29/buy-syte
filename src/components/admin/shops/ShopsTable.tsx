@@ -14,7 +14,6 @@ import {
 import { getProductsByShopId } from '@/data/products';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Shop } from '@/types';
-import { toast } from 'sonner';
 
 interface ShopsTableProps {
   shops: Shop[];
@@ -35,10 +34,9 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
-  const handleApproveShop = (shopId: string, isCurrentlyApproved: boolean) => {
-    if (onApproveShop) {
-      onApproveShop(shopId, !isCurrentlyApproved);
-      toast.success(`Negozio ${!isCurrentlyApproved ? 'approvato' : 'sospeso'} con successo`);
+  const handleDeleteClick = (shopId: string) => {
+    if (onDeleteShop && window.confirm('Sei sicuro di voler eliminare questo negozio?')) {
+      onDeleteShop(shopId);
     }
   };
   
@@ -101,7 +99,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => onToggleStatus(shop.id, !(shop.isActive))}
+                    onClick={() => onToggleStatus(shop.id, !shop.isActive)}
                   >
                     <Ban className="mr-1 h-4 w-4" /> {!isMobile && (shop.isActive ? "Disattiva" : "Attiva")}
                   </Button>
@@ -111,7 +109,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                     variant="outline" 
                     size="sm"
                     className="text-green-500 hover:text-green-700"
-                    onClick={() => handleApproveShop(shop.id, false)}
+                    onClick={() => onApproveShop(shop.id, true)}
                   >
                     <CheckCircle className="mr-1 h-4 w-4" /> {!isMobile && "Approva"}
                   </Button>
@@ -121,11 +119,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                     variant="outline" 
                     size="sm"
                     className="text-red-500 hover:text-red-700"
-                    onClick={() => {
-                      if (window.confirm('Sei sicuro di voler eliminare questo negozio?')) {
-                        onDeleteShop(shop.id);
-                      }
-                    }}
+                    onClick={() => handleDeleteClick(shop.id)}
                   >
                     <Trash2 className="mr-1 h-4 w-4" /> {!isMobile && "Elimina"}
                   </Button>
