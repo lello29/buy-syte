@@ -48,6 +48,24 @@ export const migrateAllData = async () => {
       return false;
     }
     
+    // Aggiungiamo l'utente admin specifico richiesto
+    const adminUser = {
+      id: `admin-${Date.now()}`,
+      name: "Admin User",
+      email: "service.online.italy@gmail.com",
+      role: "admin",
+      favorites: [],
+      loyaltyPoints: 0,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    // Aggiungiamo l'admin agli utenti mock se non esiste già
+    if (!users.some(user => user.email === adminUser.email)) {
+      users.unshift(adminUser);
+    }
+    
     // Mappatura delle entità e relative tabelle
     const migrations = [
       { data: users, table: 'users', transform: transformUsers },
