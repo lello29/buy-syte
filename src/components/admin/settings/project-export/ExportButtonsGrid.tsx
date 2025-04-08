@@ -1,26 +1,25 @@
 
 import React from "react";
-import { DatabaseExportButton } from "./DatabaseExportButton";
+import { Button } from "@/components/ui/button";
+import { Grid2X2 } from "lucide-react";
 import { ConfigExportButton } from "./ConfigExportButton";
-import { DeployInstructionsButton } from "./DeployInstructionsButton";
+import { DatabaseExportButton } from "./DatabaseExportButton";
 import { DockerfileButton } from "./DockerfileButton";
 import { EnvExampleButton } from "./EnvExampleButton";
 import { ImportScriptButton } from "./ImportScriptButton";
+import { DeployInstructionsButton } from "./DeployInstructionsButton";
+import { ExcelExportButton } from "./ExcelExportButton";
 
 export function ExportButtonsGrid() {
   return (
-    <>
-      <div className="grid gap-3 grid-cols-2">
-        <DatabaseExportButton />
-        <ConfigExportButton />
-        <DeployInstructionsButton />
-        <DockerfileButton />
-      </div>
-
-      <div className="grid gap-3 grid-cols-2">
-        <EnvExampleButton />
-        <ImportScriptButton />
-      </div>
-    </>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      <ConfigExportButton />
+      <DatabaseExportButton />
+      <ExcelExportButton />
+      <EnvExampleButton />
+      <DockerfileButton />
+      <ImportScriptButton />
+      <DeployInstructionsButton />
+    </div>
   );
 }

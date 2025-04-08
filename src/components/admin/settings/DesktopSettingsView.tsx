@@ -1,133 +1,94 @@
 
 import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AIPackagesCard } from "./AIPackagesCard";
-import { AISettingsCard } from "./AISettingsCard";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { SettingsLoadingState } from "./components/SettingsLoadingState";
+import { SettingsLeftColumn } from "./components/SettingsLeftColumn";
+import { SettingsRightColumn } from "./components/SettingsRightColumn";
 import { GeneralSettingsCard } from "./GeneralSettingsCard";
-import { MapSettingsCard } from "./MapSettingsCard";
-import { SettingsHeader } from "./components/SettingsHeader";
+import { DatabaseCard } from "./DatabaseCard";
 import { NotificationsCard } from "./NotificationsCard";
-import { ProjectExportCard } from "./ProjectExportCard";
+import { MapSettingsCard } from "./MapSettingsCard";
+import { AISettingsCard } from "./AISettingsCard";
+import { AIPackagesCard } from "./AIPackagesCard";
+import { DatabaseMigrationCard } from "./DatabaseMigrationCard";
 import { AIIntegrationCard } from "./AIIntegrationCard";
+import { ProjectExportCard } from "./ProjectExportCard";
 import { DeploymentInfoCard } from "./DeploymentInfoCard";
-import { SectionTitle } from "./components/SectionTitle";
-import { Database, Bot, MapPin, Bell, Upload, Globe } from "lucide-react";
+import { DataImportExportCard } from "./DataImportExportCard";
 
 interface DesktopSettingsViewProps {
-  mapSettings: {
-    mapApiKey: string;
-    setMapApiKey: (value: string) => void;
-    enableMapFeature: boolean;
-    setEnableMapFeature: (value: boolean) => void;
-    enablePayments: boolean;
-    setEnablePayments: (value: boolean) => void;
-  };
-  handleSaveGeneralSettings: (e: React.FormEvent, data: any) => void;
-  handleSaveMapSettings: (e: React.FormEvent) => void;
-  databaseCards: React.ReactNode;
+  isLoading: boolean;
 }
 
-export const DesktopSettingsView: React.FC<DesktopSettingsViewProps> = ({
-  mapSettings,
-  handleSaveGeneralSettings,
-  handleSaveMapSettings,
-  databaseCards
-}) => {
+export function DesktopSettingsView({ isLoading }: DesktopSettingsViewProps) {
+  if (isLoading) {
+    return <SettingsLoadingState />;
+  }
+
   return (
-    <div className="container py-6 space-y-6 max-w-7xl">
-      <SettingsHeader />
-      
-      <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="grid grid-cols-6 w-full max-w-4xl">
-          <TabsTrigger value="general">Generali</TabsTrigger>
-          <TabsTrigger value="database">Database</TabsTrigger>
-          <TabsTrigger value="ai">AI</TabsTrigger>
-          <TabsTrigger value="maps">Mappe</TabsTrigger>
-          <TabsTrigger value="notifications">Notifiche</TabsTrigger>
-          <TabsTrigger value="export">Esportazione</TabsTrigger>
-        </TabsList>
+    <Tabs defaultValue="general" className="w-full">
+      <div className="grid grid-cols-12 gap-6">
+        <SettingsLeftColumn />
         
-        <TabsContent value="general" className="space-y-6">
-          <SectionTitle icon={Globe} title="Impostazioni Generali" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <GeneralSettingsCard onSubmit={handleSaveGeneralSettings} />
-            </div>
-            <div className="space-y-6">
-              <DeploymentInfoCard />
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="database" className="space-y-6">
-          <SectionTitle icon={Database} title="Configurazione Database" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              {databaseCards}
-            </div>
-            <div className="space-y-6">
-              <DeploymentInfoCard />
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="ai" className="space-y-6">
-          <SectionTitle icon={Bot} title="Configurazione AI" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <AIIntegrationCard />
-              <AISettingsCard />
-            </div>
-            <div className="space-y-6">
-              <AIPackagesCard />
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="maps" className="space-y-6">
-          <SectionTitle icon={MapPin} title="Impostazioni Mappe" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <MapSettingsCard 
-                mapApiKey={mapSettings.mapApiKey}
-                setMapApiKey={mapSettings.setMapApiKey}
-                enableMapFeature={mapSettings.enableMapFeature}
-                setEnableMapFeature={mapSettings.setEnableMapFeature}
-                enablePayments={mapSettings.enablePayments}
-                setEnablePayments={mapSettings.setEnablePayments}
-                onSubmit={handleSaveMapSettings}
-              />
-            </div>
-            <div className="space-y-6">
-              <DeploymentInfoCard />
-            </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="notifications" className="space-y-6">
-          <SectionTitle icon={Bell} title="Configurazione Notifiche" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
+        <TabsContent value="general" className="col-span-9 mt-0 space-y-6">
+          <SettingsRightColumn
+            title="Impostazioni Generali"
+            description="Gestisci le impostazioni di base dell'applicazione"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <GeneralSettingsCard />
               <NotificationsCard />
             </div>
-            <div className="space-y-6">
-              <DeploymentInfoCard />
-            </div>
-          </div>
+          </SettingsRightColumn>
         </TabsContent>
         
-        <TabsContent value="export" className="space-y-6">
-          <SectionTitle icon={Upload} title="Esportazione Progetto" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <TabsContent value="maps" className="col-span-9 mt-0 space-y-6">
+          <SettingsRightColumn
+            title="Mappe e Localizzazione"
+            description="Configura le impostazioni per mappe e servizi di localizzazione"
+          >
+            <MapSettingsCard />
+          </SettingsRightColumn>
+        </TabsContent>
+        
+        <TabsContent value="database" className="col-span-9 mt-0 space-y-6">
+          <SettingsRightColumn
+            title="Database e Dati"
+            description="Gestione del database e delle informazioni archiviate"
+          >
+            <div className="space-y-6">
+              <DatabaseCard />
+              <DatabaseMigrationCard />
+              <DataImportExportCard />
+            </div>
+          </SettingsRightColumn>
+        </TabsContent>
+        
+        <TabsContent value="ai" className="col-span-9 mt-0 space-y-6">
+          <SettingsRightColumn
+            title="Intelligenza Artificiale"
+            description="Configura i servizi di intelligenza artificiale"
+          >
+            <div className="space-y-6">
+              <AISettingsCard />
+              <AIIntegrationCard />
+              <AIPackagesCard />
+            </div>
+          </SettingsRightColumn>
+        </TabsContent>
+        
+        <TabsContent value="export" className="col-span-9 mt-0 space-y-6">
+          <SettingsRightColumn
+            title="Esportazione Progetto"
+            description="Esporta configurazioni e dati per il deploy"
+          >
             <div className="space-y-6">
               <ProjectExportCard />
-            </div>
-            <div className="space-y-6">
               <DeploymentInfoCard />
             </div>
-          </div>
+          </SettingsRightColumn>
         </TabsContent>
-      </Tabs>
-    </div>
+      </div>
+    </Tabs>
   );
-};
+}
