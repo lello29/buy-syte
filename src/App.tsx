@@ -12,6 +12,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import AdminLayout from '@/components/layout/AdminLayout';
 import Index from '@/pages/Index';
 import LoginPage from '@/pages/LoginPage';
+import RegisterPage from '@/pages/RegisterPage';
 
 // Dashboard pages
 import DashboardIndex from '@/pages/dashboard/DashboardIndex';
@@ -29,7 +30,6 @@ import AdminSettingsPage from '@/pages/dashboard/admin/SettingsPage';
 const ProfilePage = () => <div>Profile Page</div>;
 const NotificationsPage = () => <div>Notifications Page</div>;
 const SettingsPage = () => <div>Settings Page</div>;
-const RegisterPage = () => <div>Register Page</div>;
 const ShopsPage = () => <div>Shops Page</div>;
 const ShopDetailPage = () => <div>Shop Detail Page</div>;
 const NotFoundPage = () => <div>404 - Not Found</div>;
