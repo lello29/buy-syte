@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 import { GeneralSettingsCard } from "@/components/admin/settings/GeneralSettingsCard";
@@ -8,7 +7,8 @@ import { AIPackagesCard } from "@/components/admin/settings/AIPackagesCard";
 import { DatabaseCard } from "@/components/admin/settings/DatabaseCard";
 import { AISettingsCard } from "@/components/admin/settings/AISettingsCard";
 import { AIIntegrationCard } from "@/components/admin/settings/AIIntegrationCard";
-import { Settings, Map, Bell, CreditCard, Database, Sparkles, Loader2 } from "lucide-react";
+import { ProjectExportCard } from "@/components/admin/settings/ProjectExportCard";
+import { Settings, Map, Bell, CreditCard, Database, Sparkles, Loader2, Package } from "lucide-react";
 
 interface DesktopSettingsViewProps {
   isLoading: boolean;
@@ -77,6 +77,12 @@ export const DesktopSettingsView: React.FC<DesktopSettingsViewProps> = ({
             <h2>Configurazione Intelligenza Artificiale</h2>
           </div>
           <AISettingsCard />
+          
+          <div className="flex items-center gap-2 text-lg font-semibold mt-8">
+            <Package className="h-5 w-5 text-primary" />
+            <h2>Esportazione Progetto</h2>
+          </div>
+          <ProjectExportCard />
         </div>
         
         <div className="space-y-6">

@@ -5,6 +5,7 @@ import { GeneralSettingsCard } from "@/components/admin/settings/GeneralSettings
 import { MapSettingsCard } from "@/components/admin/settings/MapSettingsCard";
 import { NotificationsCard } from "@/components/admin/settings/NotificationsCard";
 import { AISettingsCard } from "@/components/admin/settings/AISettingsCard";
+import { ProjectExportCard } from "@/components/admin/settings/ProjectExportCard";
 import { Loader2 } from "lucide-react";
 
 interface MobileSettingsViewProps {
@@ -60,6 +61,7 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
         />
         <NotificationsCard />
         <AISettingsCard />
+        <ProjectExportCard />
       </div>
     </div>
   );
