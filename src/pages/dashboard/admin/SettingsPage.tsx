@@ -50,6 +50,7 @@ export default function SettingsPage() {
 
   return (
     <DesktopSettingsView 
+      isLoading={isLoading}
       mapSettings={settings}
       handleSaveGeneralSettings={handleSaveGeneralSettings}
       handleSaveMapSettings={handleSaveMapSettings}
