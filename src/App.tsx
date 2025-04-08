@@ -1,5 +1,5 @@
 
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Outlet } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SupabaseWrapper } from '@/components/supabase/SupabaseWrapper';
@@ -142,7 +142,9 @@ function App() {
           {/* Admin Routes */}
           <Route path="/dashboard/admin" element={
             <RoleRoute allowedRoles={['admin']}>
-              <AdminLayout />
+              <AdminLayout>
+                <Outlet />
+              </AdminLayout>
             </RoleRoute>
           }>
             <Route index element={<AdminDashboardPage />} />
