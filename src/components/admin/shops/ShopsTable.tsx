@@ -39,12 +39,6 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   
-  const handleDeleteClick = (shopId: string) => {
-    if (onDeleteShop && window.confirm('Sei sicuro di voler eliminare questo negozio?')) {
-      onDeleteShop(shopId);
-    }
-  };
-  
   const handleViewUser = (userId: string) => {
     if (userId) {
       if (onViewUser) {
@@ -119,6 +113,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                   variant="outline" 
                   size="sm" 
                   onClick={() => onViewShop(shop)}
+                  title="Visualizza"
                 >
                   <Eye className="mr-1 h-4 w-4" /> {!isMobile && "Visualizza"}
                 </Button>
@@ -126,6 +121,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                   variant="outline" 
                   size="sm"
                   onClick={() => onEditShop(shop)}
+                  title="Modifica"
                 >
                   <Pencil className="mr-1 h-4 w-4" /> {!isMobile && "Modifica"}
                 </Button>
@@ -134,6 +130,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                     variant="outline" 
                     size="sm"
                     onClick={() => onToggleStatus(shop.id, !shop.isActive)}
+                    title={shop.isActive ? "Disattiva" : "Attiva"}
                   >
                     <Ban className="mr-1 h-4 w-4" /> {!isMobile && (shop.isActive ? "Disattiva" : "Attiva")}
                   </Button>
@@ -144,6 +141,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                     size="sm"
                     className="text-green-500 hover:text-green-700"
                     onClick={() => onApproveShop(shop.id, true)}
+                    title="Approva"
                   >
                     <CheckCircle className="mr-1 h-4 w-4" /> {!isMobile && "Approva"}
                   </Button>
@@ -153,7 +151,8 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                     variant="outline" 
                     size="sm"
                     className="text-red-500 hover:text-red-700"
-                    onClick={() => handleDeleteClick(shop.id)}
+                    onClick={() => onDeleteShop(shop.id)}
+                    title="Elimina"
                   >
                     <Trash2 className="mr-1 h-4 w-4" /> {!isMobile && "Elimina"}
                   </Button>

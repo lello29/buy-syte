@@ -23,6 +23,9 @@ export default function AdminShopsPage() {
     isLoading,
     isMigrating,
     selectedShop,
+    setSelectedShop,
+    isDeleteShopOpen,
+    setIsDeleteShopOpen,
     handleViewShop,
     handleEditShop,
     handleAddShop,
@@ -106,7 +109,13 @@ export default function AdminShopsPage() {
             onViewShop={handleViewShop}
             onEditShop={handleEditShop}
             onToggleStatus={handleToggleStatus}
-            onDeleteShop={handleDeleteShop}
+            onDeleteShop={(shopId) => {
+              const shop = shopsList.find(s => s.id === shopId);
+              if (shop) {
+                setSelectedShop(shop);
+                setIsDeleteShopOpen(true);
+              }
+            }}
             onAddShop={handleAddShop}
             onApproveShop={handleApproveShop}
           />
@@ -116,7 +125,13 @@ export default function AdminShopsPage() {
             onViewShop={handleViewShop}
             onEditShop={handleEditShop}
             onToggleStatus={handleToggleStatus}
-            onDeleteShop={handleDeleteShop}
+            onDeleteShop={(shopId) => {
+              const shop = shopsList.find(s => s.id === shopId);
+              if (shop) {
+                setSelectedShop(shop);
+                setIsDeleteShopOpen(true);
+              }
+            }}
             onApproveShop={handleApproveShop}
           />
         )}
