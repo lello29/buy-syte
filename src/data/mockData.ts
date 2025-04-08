@@ -1,5 +1,5 @@
 
-import { Shop, Product } from "@/types";
+import { Shop, Product, Task, Order, Collaborator } from "@/types";
 
 // Adding or updating mock data to support our fallback strategy
 export const mockShops: Shop[] = [
@@ -71,10 +71,92 @@ export const mockProducts: Product[] = [
   }
 ];
 
-// Create a simple function to get products by shop ID
-export const getProductsByShopId = (shopId: string): Product[] => {
-  return mockProducts.filter(product => product.shopId === shopId);
-};
+// Mock orders data
+export const mockOrders: Order[] = [
+  {
+    id: "order-1",
+    userId: "user-1",
+    shopId: "shop-1",
+    products: [
+      {
+        productId: "product-1",
+        productName: "Prodotto Demo 1",
+        quantity: 2,
+        price: 29.99
+      }
+    ],
+    status: "delivered",
+    totalPrice: 59.98,
+    shippingAddress: "Via Roma 123, Milano",
+    paymentMethod: "Credit Card",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: "order-2",
+    userId: "user-1",
+    shopId: "shop-2",
+    products: [
+      {
+        productId: "product-2",
+        productName: "Prodotto Demo 2",
+        quantity: 1,
+        price: 39.99
+      }
+    ],
+    status: "processing",
+    totalPrice: 39.99,
+    shippingAddress: "Via Roma 123, Milano",
+    paymentMethod: "PayPal",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
+
+// Mock tasks data
+export const mockTasks: Task[] = [
+  {
+    id: "task-1",
+    shopId: "shop-1",
+    collaboratorId: "collab-1",
+    title: "Consegna prodotti",
+    description: "Consegnare i prodotti all'indirizzo del cliente",
+    status: "completed",
+    reward: 15,
+    dueDate: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: "task-2",
+    shopId: "shop-1",
+    collaboratorId: "collab-1",
+    title: "Servizio fotografico",
+    description: "Realizzare foto dei nuovi prodotti",
+    status: "assigned",
+    reward: 30,
+    dueDate: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
+
+// Mock collaborators data
+export const mockCollaborators: Collaborator[] = [
+  {
+    id: "collab-1",
+    userId: "user-3",
+    name: "Collaboratore Demo",
+    email: "collab@example.com",
+    phone: "+39 333 1234567",
+    coverageArea: "Milano",
+    availability: "Lun-Ven",
+    rating: 4.5,
+    completedTasks: 10,
+    isActive: true,
+    createdAt: new Date().toISOString()
+  }
+];
 
 // Exporting also mock data for users, orders, etc.
 export const users = [
@@ -104,7 +186,27 @@ export const users = [
   }
 ];
 
-// Mock data for products, shops, and other entities
+// Create a simple function to get products by shop ID
+export const getProductsByShopId = (shopId: string): Product[] => {
+  return mockProducts.filter(product => product.shopId === shopId);
+};
+
+// Function to get shop by ID
+export const getShopById = (shopId: string): Shop | undefined => {
+  return mockShops.find(shop => shop.id === shopId);
+};
+
+// Function to get orders by user ID
+export const getOrdersByUserId = (userId: string): Order[] => {
+  return mockOrders.filter(order => order.userId === userId);
+};
+
+// Function to get tasks by collaborator ID
+export const getTasksByCollaboratorId = (collaboratorId: string): Task[] => {
+  return mockTasks.filter(task => task.collaboratorId === collaboratorId);
+};
+
+// Mock data for all entities
 export const shops = mockShops;
 export const products = mockProducts;
 export const categories = [
@@ -112,20 +214,6 @@ export const categories = [
   { id: "cat-2", name: "Elettronica", description: "Prodotti elettronici", slug: "elettronica" }
 ];
 export const offers = [];
-export const collaborators = [
-  {
-    id: "collab-1",
-    userId: "user-3",
-    name: "Collaboratore Demo",
-    email: "collab@example.com",
-    phone: "+39 333 1234567",
-    coverageArea: "Milano",
-    availability: "Lun-Ven",
-    rating: 4.5,
-    completedTasks: 10,
-    isActive: true,
-    createdAt: new Date().toISOString()
-  }
-];
-export const tasks = [];
-export const orders = [];
+export const collaborators = mockCollaborators;
+export const tasks = mockTasks;
+export const orders = mockOrders;

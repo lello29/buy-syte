@@ -1,108 +1,79 @@
 
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { getOrdersByUserId, shops } from "@/data/mockData";
-import { format } from "date-fns";
-import { it } from "date-fns/locale";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth";
+import { getOrdersByUserId } from "@/data/mockData";
+import { Order } from "@/types";
 
-const OrdersPage = () => {
+const OrdersPage: React.FC = () => {
   const { currentUser } = useAuth();
-  
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    if (currentUser) {
+      // Get orders for this user
+      const userOrders = getOrdersByUserId(currentUser.id);
+      setOrders(userOrders);
+    }
+  }, [currentUser]);
+
   if (!currentUser) {
-    return <div>Caricamento...</div>;
+    return <div>Caricamento ordini...</div>;
   }
-  
-  const orders = getOrdersByUserId(currentUser.id);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">I Miei Ordini</h1>
-      <p className="text-gray-600">
-        Visualizza e gestisci i tuoi ordini.
-      </p>
+    <div>
+      <h1 className="text-2xl font-bold mb-6">I miei ordini</h1>
       
-      <div className="mt-6">
-        {orders.length > 0 ? (
-          <div className="space-y-6">
-            {orders.map((order) => {
-              const shop = shops.find(s => s.id === order.shopId);
-              
-              return (
-                <Card key={order.id} className="overflow-hidden">
-                  <div className="bg-gray-50 p-4 border-b flex justify-between items-center">
-                    <div>
-                      <h3 className="font-medium">Ordine #{order.id}</h3>
-                      <p className="text-sm text-gray-500">
-                        Effettuato il {format(new Date(order.createdAt), "d MMMM yyyy", { locale: it })}
-                      </p>
-                    </div>
-                    <div>
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs ${
-                        order.status === 'delivered' 
-                          ? 'bg-green-100 text-green-800' 
-                          : order.status === 'processing' 
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {order.status === 'delivered' 
-                          ? 'Consegnato' 
-                          : order.status === 'processing' 
-                          ? 'In Lavorazione'
-                          : order.status === 'shipped'
-                          ? 'Spedito'
-                          : 'In Attesa'}
-                      </span>
-                    </div>
+      <div className="space-y-4">
+        {orders.map(order => (
+          <div key={order.id} className="border rounded-lg p-4 shadow-sm">
+            <div className="flex justify-between items-start">
+              <h2 className="text-lg font-semibold">Ordine #{order.id.substring(0, 8)}</h2>
+              <span 
+                className={`px-2 py-1 text-xs rounded-full ${
+                  order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                  order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
+                  order.status === 'processing' ? 'bg-amber-100 text-amber-800' :
+                  order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}
+              >
+                {order.status === 'delivered' ? 'Consegnato' : 
+                 order.status === 'shipped' ? 'Spedito' : 
+                 order.status === 'processing' ? 'In elaborazione' :
+                 order.status === 'cancelled' ? 'Annullato' : 'In attesa'}
+              </span>
+            </div>
+            
+            <div className="mt-3 space-y-2">
+              {order.products.map((item, index) => (
+                <div key={index} className="flex justify-between items-center text-sm">
+                  <div>
+                    <span className="font-medium">{item.productName}</span> 
+                    <span className="text-gray-500"> × {item.quantity}</span>
                   </div>
-                  <CardContent className="p-4">
-                    <div className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-500">Negozio:</h4>
-                      <p>{shop?.name || 'N/A'}</p>
-                    </div>
-                    
-                    <div className="mb-6">
-                      <h4 className="text-sm font-medium text-gray-500 mb-2">Prodotti:</h4>
-                      <div className="space-y-2">
-                        {order.products.map((product, idx) => (
-                          <div key={idx} className="flex justify-between text-sm py-1 border-b">
-                            <span>
-                              {product.quantity}x {product.productName}
-                            </span>
-                            <span className="font-medium">
-                              €{product.price.toFixed(2)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <span className="text-gray-500">Totale:</span>
-                        <span className="font-bold text-lg ml-2">
-                          €{order.totalPrice.toFixed(2)}
-                        </span>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        Dettagli Ordine
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  <div className="font-medium">
+                    €{(item.price * item.quantity).toFixed(2)}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-4 pt-3 border-t flex justify-between items-center">
+              <span className="text-sm text-gray-500">
+                {new Date(order.createdAt).toLocaleDateString()}
+              </span>
+              <span className="text-base font-bold">
+                Totale: €{order.totalPrice.toFixed(2)}
+              </span>
+            </div>
           </div>
-        ) : (
-          <Card>
-            <CardContent className="py-10 text-center">
-              <p className="text-gray-500 mb-4">Non hai ancora effettuato ordini.</p>
-              <Button onClick={() => window.location.href = "/shops"}>
-                Visita i negozi
-              </Button>
-            </CardContent>
-          </Card>
+        ))}
+        
+        {orders.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">Nessun ordine trovato</p>
+          </div>
         )}
       </div>
     </div>

@@ -1,6 +1,6 @@
 
 import { Dispatch, SetStateAction } from "react";
-import { User } from "../../../types";
+import { User, UserRole } from "../../../types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { users as mockUsers } from "@/data/mockData";
 
@@ -36,11 +36,14 @@ export const useSessionManager = (
               const mockUser = mockUsers.find(user => user.email === userEmail);
               
               if (mockUser) {
+                // Make sure we use valid UserRole type
+                const userRole = (mockUser.role as UserRole) || 'user';
+                
                 const userProfile: User = {
                   id: userData.user.id,
                   name: mockUser.name,
                   email: userEmail,
-                  role: mockUser.role,
+                  role: userRole,
                   favorites: mockUser.favorites || [],
                   loyaltyPoints: mockUser.loyaltyPoints || 0,
                   isActive: true,

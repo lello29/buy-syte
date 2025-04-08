@@ -24,6 +24,7 @@ export const supabaseConfig = {
 export const checkDatabaseConnection = async (): Promise<boolean> => {
   try {
     // Creiamo una query semplice che funzioni anche senza tabelle specifiche
+    // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
     const { data, error } = await supabase.rpc('version');
     
     if (error) {

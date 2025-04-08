@@ -1,99 +1,139 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { shops, getShopById } from "@/data/mockData";
-import { Store, Search, Heart, MapPin } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
-const ShopsPage = ({ isAdmin = false }: { isAdmin?: boolean }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredShops, setFilteredShops] = useState(shops);
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { shops, mockShops, getShopById } from '@/data/mockData';
+import { Shop } from '@/types';
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value;
-    setSearchTerm(term);
-    const filtered = shops.filter(shop =>
-      shop.name.toLowerCase().includes(term.toLowerCase()) ||
-      shop.description.toLowerCase().includes(term.toLowerCase()) ||
-      shop.categories?.some(category => category.toLowerCase().includes(term.toLowerCase()))
-    );
-    setFilteredShops(filtered);
-  };
+const ShopsPage: React.FC = () => {
+  const [allShops, setAllShops] = useState<Shop[]>([]);
+  const [filteredShops, setFilteredShops] = useState<Shop[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  
+  // Extract unique categories from shops
+  const categories = Array.from(
+    new Set(allShops.map(shop => shop.category).filter(Boolean) as string[])
+  );
+
+  useEffect(() => {
+    // In a real app, fetch shops from API
+    setAllShops(shops);
+    setFilteredShops(shops);
+    setLoading(false);
+  }, []);
+  
+  useEffect(() => {
+    // Filter shops based on search term and category
+    let result = [...allShops];
+    
+    if (searchTerm) {
+      result = result.filter(shop => 
+        shop.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        shop.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (selectedCategory) {
+      result = result.filter(shop => shop.category === selectedCategory);
+    }
+    
+    setFilteredShops(result);
+  }, [searchTerm, selectedCategory, allShops]);
+
+  if (loading) {
+    return <div>Caricamento...</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold tracking-tight">Negozi</h1>
-      <p className="text-muted-foreground">
-        Esplora i negozi disponibili e scopri i loro prodotti.
-      </p>
-
-      <div className="mt-4">
-        <Input
-          type="search"
-          placeholder="Cerca negozi..."
-          value={searchTerm}
-          onChange={handleSearch}
-        />
+      <h1 className="text-3xl font-bold mb-6">Esplora i negozi</h1>
+      
+      <div className="mb-8 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+        <div className="flex-grow">
+          <input
+            type="text"
+            placeholder="Cerca negozi..."
+            className="w-full px-4 py-2 border border-gray-300 rounded-md"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div>
+          <select 
+            className="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-md"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">Tutte le categorie</option>
+            {categories.map((category, index) => (
+              <option key={index} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        {filteredShops.map((shop) => (
-          <Card key={shop.id} className="overflow-hidden h-full flex flex-col">
-            <div className="h-40 bg-gray-100 relative">
-              {shop.bannerImage ? (
-                <img
-                  src={shop.bannerImage}
-                  alt={shop.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-primary/5">
-                  <Store className="h-12 w-12 text-primary/40" />
-                </div>
-              )}
-              
-              {shop.logoImage && (
-                <div className="absolute -bottom-6 left-4 w-12 h-12 rounded-md bg-white shadow-md overflow-hidden border-2 border-white">
-                  <img
-                    src={shop.logoImage}
-                    alt={`${shop.name} logo`}
+      
+      {filteredShops.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredShops.map(shop => (
+            <Link 
+              key={shop.id}
+              to={`/shops/${shop.id}`}
+              className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="h-40 bg-gray-200 relative">
+                {shop.bannerImage ? (
+                  <img 
+                    src={shop.bannerImage} 
+                    alt={`${shop.name} banner`} 
                     className="w-full h-full object-cover"
                   />
-                </div>
-              )}
-            </div>
-            
-            <CardContent className="flex-grow flex flex-col p-4 pt-8">
-              <h3 className="text-xl font-semibold">{shop.name}</h3>
-              <p className="text-muted-foreground mt-1 line-clamp-2 text-sm flex-grow">
-                {shop.description}
-              </p>
-              
-              <div className="flex items-center mt-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4 mr-1" />
-                <span className="truncate">{shop.address}</span>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between">
-                <Button asChild size="sm">
-                  <Link to={`/shops/${shop.id}`}>Visita Negozio</Link>
-                </Button>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                    <span className="text-gray-500">Banner non disponibile</span>
+                  </div>
+                )}
                 
-                {/* Favorite Button (Placeholder) */}
-                {/* <Button variant="ghost" size="sm">
-                  <Heart className="h-4 w-4 mr-1" />
-                  Preferiti
-                </Button> */}
+                {shop.category && (
+                  <span className="absolute top-2 right-2 bg-white/80 px-2 py-1 text-xs font-medium rounded">
+                    {shop.category}
+                  </span>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredShops.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Nessun negozio trovato.</p>
+              
+              <div className="p-4">
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full overflow-hidden">
+                    {shop.logoImage ? (
+                      <img 
+                        src={shop.logoImage} 
+                        alt={`${shop.name} logo`} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                        <span className="text-xs text-gray-400">Logo</span>
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="font-bold">{shop.name}</h3>
+                </div>
+                
+                <p className="text-sm text-gray-600 line-clamp-2 mb-3">{shop.description}</p>
+                
+                <div className="text-sm text-gray-500">
+                  <p>{shop.address}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <p className="text-xl text-gray-500">Nessun negozio trovato</p>
+          <p className="text-gray-400 mt-2">Prova con un'altra ricerca</p>
         </div>
       )}
     </div>

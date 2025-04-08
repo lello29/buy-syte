@@ -31,6 +31,7 @@ export const verifyRequiredTables = async (): Promise<{
     // Query per ottenere la lista delle tabelle esistenti
     // Utilizziamo una query SQL diretta invece di accedere a pg_tables
     // che potrebbe non essere accessibile con le restrizioni di Supabase
+    // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
     const { data: tablesData, error } = await supabase
       .rpc('get_tables')
       .select('*');
@@ -44,6 +45,7 @@ export const verifyRequiredTables = async (): Promise<{
     }
 
     // Estrai i nomi delle tabelle dal risultato personalizzato
+    // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
     const tableNames = tablesData?.map(table => table.table_name) || [];
     
     // Verifica quali tabelle sono mancanti
