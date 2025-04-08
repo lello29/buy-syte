@@ -2,9 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { fetchShops, addShop, updateShop, deleteShop, toggleShopStatus, approveShop } from '@/services/shopService';
+import { fetchShops } from '@/services/shopService';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopForm } from './useShopForm';
 import { useShopActions } from './useShopActions';
@@ -12,7 +10,6 @@ import { useShopActions } from './useShopActions';
 export const useShopState = () => {
   const [shopsList, setShopsList] = useState<Shop[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   
   // Get dialog state management
   const dialogState = useShopDialogState();
