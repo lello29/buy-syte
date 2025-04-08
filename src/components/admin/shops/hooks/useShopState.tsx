@@ -42,18 +42,27 @@ export const useShopState = () => {
     try {
       console.log("Starting migration process...");
       const migratedShops = await migrateShops();
-      console.log("Migration complete, returned shops:", migratedShops.length);
+      console.log("Migration complete, returned shops:", migratedShops?.length);
       
       if (migratedShops && migratedShops.length > 0) {
         setShopsList(migratedShops);
         toast.success("Negozi migrati con successo!");
         
         // Reload shops from database to verify migration worked
-        const freshShops = await fetchShops();
-        if (freshShops.length > 0) {
-          setShopsList(freshShops);
+        try {
+          console.log("Reloading shops after migration");
+          const freshShops = await fetchShops();
+          if (freshShops.length > 0) {
+            console.log("Successfully loaded shops after migration:", freshShops.length);
+            setShopsList(freshShops);
+          } else {
+            console.warn("No shops returned after migration");
+          }
+        } catch (reloadError) {
+          console.error("Error reloading shops after migration:", reloadError);
         }
       } else {
+        console.error("No shops returned from migration");
         toast.error("Errore durante la migrazione dei negozi");
       }
     } catch (error) {
@@ -71,11 +80,12 @@ export const useShopState = () => {
       try {
         console.log("Loading shops data...");
         const shopsData = await fetchShops();
-        console.log("Shops loaded:", shopsData.length);
-        setShopsList(shopsData);
+        console.log("Shops loaded:", shopsData?.length);
+        setShopsList(shopsData || []);
       } catch (error) {
         console.error("Error loading shops:", error);
         toast.error("Si è verificato un errore durante il caricamento dei negozi");
+        setShopsList([]);
       } finally {
         setIsLoading(false);
       }

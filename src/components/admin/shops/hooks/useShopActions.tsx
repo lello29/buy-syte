@@ -23,11 +23,13 @@ export const useShopActions = (
   setIsDeleting?: React.Dispatch<React.SetStateAction<boolean>>
 ): UseShopActionsReturn => {
   const handleAddShop = useCallback(() => {
+    console.log("Opening add shop dialog");
     setIsAddShopOpen(true);
   }, [setIsAddShopOpen]);
   
   const handleViewShop = useCallback((shop: Shop) => {
     if (shop) {
+      console.log("Opening view shop dialog for shop:", shop.id);
       setSelectedShop(shop);
       setIsViewShopOpen(true);
     } else {
@@ -38,6 +40,7 @@ export const useShopActions = (
   
   const handleEditShop = useCallback((shop: Shop) => {
     if (shop) {
+      console.log("Opening edit shop dialog for shop:", shop.id);
       setSelectedShop(shop);
       setIsEditShopOpen(true);
     } else {
@@ -60,12 +63,14 @@ export const useShopActions = (
       const success = await deleteShopService(shopId);
       
       if (success) {
+        console.log("Shop deleted successfully");
         setShopsList(prev => prev.filter(shop => shop.id !== shopId));
         setSelectedShop(null);
         setIsDeleteShopOpen(false);
         toast.success("Negozio eliminato con successo");
         return true;
       } else {
+        console.error("Failed to delete shop");
         toast.error("Errore nell'eliminazione del negozio");
         return false;
       }
@@ -90,6 +95,7 @@ export const useShopActions = (
       const success = await toggleShopStatus(shopId, isActive);
       
       if (success) {
+        console.log("Shop status toggled successfully");
         setShopsList(prev => 
           prev.map(shop => 
             shop.id === shopId ? { ...shop, isActive, lastUpdated: new Date().toISOString() } : shop
@@ -98,6 +104,7 @@ export const useShopActions = (
         toast.success(`Negozio ${isActive ? 'attivato' : 'disattivato'} con successo`);
         return true;
       } else {
+        console.error("Failed to toggle shop status");
         toast.error("Errore nell'aggiornamento dello stato del negozio");
         return false;
       }
@@ -120,6 +127,7 @@ export const useShopActions = (
       const success = await approveShopService(shopId, isApproved);
       
       if (success) {
+        console.log("Shop approved successfully");
         setShopsList(prev => 
           prev.map(shop => 
             shop.id === shopId ? { ...shop, isApproved, lastUpdated: new Date().toISOString() } : shop
@@ -128,6 +136,7 @@ export const useShopActions = (
         toast.success(`Negozio ${isApproved ? 'approvato' : 'messo in attesa'} con successo`);
         return true;
       } else {
+        console.error("Failed to approve shop");
         toast.error("Errore nell'approvazione del negozio");
         return false;
       }

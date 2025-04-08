@@ -16,13 +16,15 @@ interface DeleteShopDialogProps {
   onOpenChange: (open: boolean) => void;
   onDelete: () => void;
   isDeleting?: boolean;
+  shopName?: string;
 }
 
 const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
   open,
   onOpenChange,
   onDelete,
-  isDeleting = false
+  isDeleting = false,
+  shopName = "questo negozio"
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -30,7 +32,7 @@ const DeleteShopDialog: React.FC<DeleteShopDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Conferma eliminazione</DialogTitle>
           <DialogDescription>
-            Sei sicuro di voler eliminare questo negozio? Questa azione non può essere annullata.
+            Sei sicuro di voler eliminare il negozio <strong>{shopName}</strong>? Questa azione non può essere annullata.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

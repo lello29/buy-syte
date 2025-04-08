@@ -31,7 +31,10 @@ const ShopDialogs: React.FC = () => {
   // Ensure we have a valid shop before performing actions
   const onDeleteShop = () => {
     if (selectedShop && selectedShop.id) {
+      console.log("Deleting shop with ID:", selectedShop.id);
       handleDeleteShop(selectedShop.id);
+    } else {
+      console.error("Can't delete shop: No selected shop or missing ID");
     }
   };
 
@@ -67,6 +70,7 @@ const ShopDialogs: React.FC = () => {
         onOpenChange={setIsDeleteShopOpen}
         onDelete={onDeleteShop}
         isDeleting={isDeleting}
+        shopName={selectedShop?.name}
       />
     </>
   );

@@ -28,6 +28,7 @@ const MobileShopsList: React.FC<MobileShopsListProps> = ({
   // Helper function to safely execute actions with proper error handling
   const safeAction = (action: Function, ...args: any[]) => {
     try {
+      console.log("Executing mobile action with args:", args);
       if (typeof action === 'function') {
         action(...args);
       } else {

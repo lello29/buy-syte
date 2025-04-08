@@ -51,12 +51,12 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
     }
   };
 
-  // Function to safely handle shop actions
-  const safelyCallAction = (shop: Shop, action: (shop: Shop) => void) => {
-    if (shop) {
-      action(shop);
+  const handleAction = (action: Function, ...args: any[]) => {
+    console.log("Executing action with args:", args);
+    if (typeof action === 'function') {
+      action(...args);
     } else {
-      console.error("Cannot perform action on undefined shop");
+      console.error("Invalid action handler:", action);
       toast.error("Errore nell'esecuzione dell'azione");
     }
   };
@@ -121,7 +121,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => safelyCallAction(shop, onViewShop)}
+                  onClick={() => handleAction(onViewShop, shop)}
                   title="Visualizza"
                 >
                   <Eye className="mr-1 h-4 w-4" /> {!isMobile && "Visualizza"}
@@ -129,7 +129,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => safelyCallAction(shop, onEditShop)}
+                  onClick={() => handleAction(onEditShop, shop)}
                   title="Modifica"
                 >
                   <Pencil className="mr-1 h-4 w-4" /> {!isMobile && "Modifica"}
@@ -138,7 +138,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => shop && shop.id && onToggleStatus(shop.id, !shop.isActive)}
+                    onClick={() => shop && shop.id && handleAction(onToggleStatus, shop.id, !shop.isActive)}
                     title={shop.isActive ? "Disattiva" : "Attiva"}
                   >
                     <Ban className="mr-1 h-4 w-4" /> {!isMobile && (shop.isActive ? "Disattiva" : "Attiva")}
@@ -149,7 +149,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                     variant="outline" 
                     size="sm"
                     className="text-green-500 hover:text-green-700"
-                    onClick={() => shop && shop.id && onApproveShop(shop.id, true)}
+                    onClick={() => shop && shop.id && handleAction(onApproveShop, shop.id, true)}
                     title="Approva"
                   >
                     <CheckCircle className="mr-1 h-4 w-4" /> {!isMobile && "Approva"}
@@ -160,7 +160,7 @@ const ShopsTable: React.FC<ShopsTableProps> = ({
                     variant="outline" 
                     size="sm"
                     className="text-red-500 hover:text-red-700"
-                    onClick={() => shop && shop.id && onDeleteShop(shop.id)}
+                    onClick={() => shop && shop.id && handleAction(onDeleteShop, shop.id)}
                     title="Elimina"
                   >
                     <Trash2 className="mr-1 h-4 w-4" /> {!isMobile && "Elimina"}

@@ -38,8 +38,10 @@ export default function AdminShopsPage() {
   useEffect(() => {
     const checkDatabase = async () => {
       try {
+        console.log("Checking database tables...");
         const { allTablesExist, missingTables } = await verifyRequiredTables();
         if (!allTablesExist) {
+          console.log("Missing tables:", missingTables);
           toast.warning(`Alcune tabelle del database sono mancanti: ${missingTables.join(', ')}. Vai nelle impostazioni per migrare i dati.`);
         }
       } catch (error) {
@@ -56,11 +58,13 @@ export default function AdminShopsPage() {
 
   // Handler for delete button actions
   const handleDeleteButtonClick = (shopId: string) => {
+    console.log("Delete button clicked for shop:", shopId);
     const shop = shopsList.find(s => s.id === shopId);
     if (shop) {
       setSelectedShop(shop);
       setIsDeleteShopOpen(true);
     } else {
+      console.error("Shop not found with ID:", shopId);
       toast.error("Negozio non trovato");
     }
   };
@@ -98,6 +102,8 @@ export default function AdminShopsPage() {
       </div>
     </div>
   );
+  
+  console.log("Rendering AdminShopsPage, shops count:", shopsList.length);
   
   return (
     <div className="flex flex-col min-h-screen bg-background">
