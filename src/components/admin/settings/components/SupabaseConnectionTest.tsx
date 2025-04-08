@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { supabase } from '@/integrations/supabase/client';
-import { mockVerifyRequiredTables } from "@/lib/supabase";
+import { verifyRequiredTables } from "@/lib/supabase";
 import { simpleDatabaseCheck } from "@/config/databaseConfig";
 
 export function SupabaseConnectionTest() {
@@ -30,7 +30,7 @@ export function SupabaseConnectionTest() {
 
   const checkTablesStatus = async () => {
     try {
-      const { allTablesExist, missingTables } = await mockVerifyRequiredTables();
+      const { allTablesExist, missingTables } = await verifyRequiredTables();
       setTablesStatus({
         checked: true,
         allExist: allTablesExist,
