@@ -8,6 +8,8 @@ import { SupabaseWrapper } from '@/components/supabase/SupabaseWrapper';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/routes/ProtectedRoutes';
 import RoleRoute from '@/components/routes/RoleRoute';
+import AppLayout from '@/components/layout/AppLayout';
+import AdminLayout from '@/components/layout/AdminLayout';
 
 // Dashboard pages
 import DashboardIndex from '@/pages/dashboard/DashboardIndex';
@@ -17,8 +19,6 @@ import LoyaltyPage from '@/pages/dashboard/user/LoyaltyPage';
 import TasksPage from '@/pages/dashboard/collaborator/TasksPage';
 
 // Create placeholder components for missing pages
-const AppLayout = ({ children }) => <>{children}</>;
-const AdminLayout = ({ children }) => <>{children}</>;
 const ProfilePage = () => <div>Profile Page</div>;
 const NotificationsPage = () => <div>Notifications Page</div>;
 const SettingsPage = () => <div>Settings Page</div>;
@@ -54,18 +54,16 @@ function App() {
       <SupabaseWrapper>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<AppLayout>Content goes here</AppLayout>}>
-            <Route index element={<HomePage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
-            <Route path="shops" element={<ShopsPage />} />
-            <Route path="shops/:id" element={<ShopDetailPage />} />
-          </Route>
+          <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
+          <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
+          <Route path="/register" element={<AppLayout><RegisterPage /></AppLayout>} />
+          <Route path="/shops" element={<AppLayout><ShopsPage /></AppLayout>} />
+          <Route path="/shops/:id" element={<AppLayout><ShopDetailPage /></AppLayout>} />
           
           {/* Dashboard Routes (Protected) */}
           <Route path="/dashboard" element={
             <ProtectedRoute>
-              <DashboardLayout>Content goes here</DashboardLayout>
+              <DashboardLayout />
             </ProtectedRoute>
           }>
             <Route index element={<DashboardIndex />} />
@@ -144,7 +142,7 @@ function App() {
           {/* Admin Routes */}
           <Route path="/dashboard/admin" element={
             <RoleRoute allowedRoles={['admin']}>
-              <AdminLayout>Content goes here</AdminLayout>
+              <AdminLayout />
             </RoleRoute>
           }>
             <Route index element={<AdminDashboardPage />} />
