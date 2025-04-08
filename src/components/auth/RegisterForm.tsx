@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
@@ -77,7 +76,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-5 rounded-lg shadow-sm">
+    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full">
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Nome completo</Label>
@@ -87,6 +86,7 @@ const RegisterForm = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            className="w-full"
           />
         </div>
         <div className="space-y-2">
@@ -98,6 +98,7 @@ const RegisterForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="w-full"
           />
         </div>
         <div className="space-y-2">
@@ -112,6 +113,7 @@ const RegisterForm = () => {
               setPasswordError("");
             }}
             required
+            className="w-full"
           />
         </div>
         <div className="space-y-2">
@@ -126,6 +128,7 @@ const RegisterForm = () => {
               setPasswordError("");
             }}
             required
+            className="w-full"
           />
           {passwordError && (
             <p className="text-sm text-red-500 mt-1">{passwordError}</p>
@@ -135,7 +138,7 @@ const RegisterForm = () => {
         <Collapsible
           open={showBusinessFields}
           onOpenChange={setShowBusinessFields}
-          className="border rounded-md p-2"
+          className="border rounded-md p-2 mt-4"
         >
           <CollapsibleTrigger asChild>
             <div className="flex items-center justify-between cursor-pointer p-2">
@@ -153,6 +156,7 @@ const RegisterForm = () => {
                 placeholder="Inserisci il codice fiscale"
                 value={fiscalCode}
                 onChange={(e) => setFiscalCode(e.target.value)}
+                className="w-full"
               />
               <p className="text-xs text-gray-500">
                 Obbligatorio solo per i negozianti
@@ -165,6 +169,7 @@ const RegisterForm = () => {
                 placeholder="Inserisci la partita IVA"
                 value={vatNumber}
                 onChange={(e) => setVatNumber(e.target.value)}
+                className="w-full"
               />
               <p className="text-xs text-gray-500">
                 Obbligatorio solo per i negozianti
