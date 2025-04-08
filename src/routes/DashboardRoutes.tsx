@@ -5,6 +5,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { ProtectedRoute } from '@/components/routes/ProtectedRoutes';
 import DashboardIndex from '@/pages/dashboard/DashboardIndex';
 import AdminDashboardPage from '@/pages/dashboard/admin/AdminDashboardPage';
+import SettingsPage from '@/pages/dashboard/admin/SettingsPage';
 import { 
   commonDashboardRoutes, 
   userDashboardRoutes, 
@@ -30,6 +31,9 @@ const DashboardRoutes = () => {
         
         {/* Admin dashboard index route - explicitly defined */}
         <Route path="admin" element={<AdminDashboardPage />} />
+        
+        {/* Admin settings page - explicitly defined */}
+        <Route path="admin/settings" element={<SettingsPage />} />
         
         {/* Common dashboard routes */}
         {commonDashboardRoutes.map((route, index) => (

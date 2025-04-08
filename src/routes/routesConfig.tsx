@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { User } from "@/types";
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -99,7 +100,8 @@ export const adminDashboardRoutes = [
   { path: "admin/products", element: <AdminProductsPage />, roles: ['admin'] },
   { path: "admin/orders", element: <AdminOrdersPage />, roles: ['admin'] },
   { path: "admin/categories", element: <AdminCategoriesPage />, roles: ['admin'] },
-  { path: "admin/settings", element: <AdminSettingsPage />, roles: ['admin'] }
+  // Nota: abbiamo rimosso questo percorso dall'array perché lo abbiamo già definito esplicitamente nel DashboardRoutes.tsx
+  // { path: "admin/settings", element: <AdminSettingsPage />, roles: ['admin'] }
 ];
 
 // Helper to wrap route elements with role protection if needed
