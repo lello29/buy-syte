@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { Shop } from '@/types';
 import { shops as initialShops } from '@/data/mock-data/shops-data';
@@ -75,13 +74,11 @@ export const useShopState = (): UseShopStateReturnType => {
     category: '',
   });
   
-  // Gestione inserimento nuovi dati nel form
   const handleNewShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewShop(prev => ({ ...prev, [name]: value }));
   }, []);
   
-  // Gestione select nei form
   const handleSelectChange = useCallback((field: string, value: string) => {
     if (selectedShop) {
       setSelectedShop(prev => prev ? { ...prev, [field]: value } : null);
@@ -90,14 +87,11 @@ export const useShopState = (): UseShopStateReturnType => {
     }
   }, [selectedShop]);
   
-  // Apre il dialog per aggiungere un negozio
   const handleAddShop = useCallback(() => {
     setIsAddShopOpen(true);
   }, []);
   
-  // Crea un nuovo negozio
   const handleCreateShop = useCallback(() => {
-    // Validazione campi obbligatori
     if (!newShop.name || !newShop.email || !newShop.address) {
       toast.error('Compila tutti i campi obbligatori');
       return;
@@ -106,6 +100,7 @@ export const useShopState = (): UseShopStateReturnType => {
     const shopId = `shop-${Date.now()}`;
     const newShopItem: Shop = {
       id: shopId,
+      userId: '',
       name: newShop.name,
       description: newShop.description,
       address: newShop.address,
@@ -119,7 +114,9 @@ export const useShopState = (): UseShopStateReturnType => {
       aiCredits: 100,
       createdAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
-      location: null
+      location: null,
+      products: [],
+      offers: []
     };
     
     setShopsList(prev => [newShopItem, ...prev]);
@@ -138,19 +135,16 @@ export const useShopState = (): UseShopStateReturnType => {
     toast.success('Negozio aggiunto con successo');
   }, [newShop]);
   
-  // Apre il dialog per visualizzare un negozio
   const handleViewShop = useCallback((shop: Shop) => {
     setSelectedShop(shop);
     setIsViewShopOpen(true);
   }, []);
   
-  // Apre il dialog per modificare un negozio
   const handleEditShop = useCallback((shop: Shop) => {
     setSelectedShop(shop);
     setIsEditShopOpen(true);
   }, []);
   
-  // Modifica un campo del negozio selezionato
   const handleShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (!selectedShop) return;
     
@@ -158,18 +152,15 @@ export const useShopState = (): UseShopStateReturnType => {
     setSelectedShop(prev => prev ? { ...prev, [name]: value } : null);
   }, [selectedShop]);
   
-  // Gestisce la modifica dei checkbox
   const handleCheckboxChange = useCallback((field: string, checked: boolean) => {
     if (!selectedShop) return;
     
     setSelectedShop(prev => prev ? { ...prev, [field]: checked } : null);
   }, [selectedShop]);
   
-  // Salva le modifiche al negozio
   const handleSaveChanges = useCallback(() => {
     if (!selectedShop) return;
     
-    // Validazione campi obbligatori
     if (!selectedShop.name || !selectedShop.email || !selectedShop.address) {
       toast.error('Compila tutti i campi obbligatori');
       return;
@@ -187,14 +178,12 @@ export const useShopState = (): UseShopStateReturnType => {
     toast.success('Modifiche salvate con successo');
   }, [selectedShop]);
   
-  // Elimina un negozio
   const handleDeleteShop = useCallback((shopId: string) => {
     setShopsList(prev => prev.filter(shop => shop.id !== shopId));
     setIsDeleteShopOpen(false);
     toast.success('Negozio eliminato con successo');
   }, []);
   
-  // Attiva/disattiva un negozio
   const handleToggleStatus = useCallback((shopId: string, isActive: boolean) => {
     setShopsList(prev => 
       prev.map(shop => 
@@ -204,7 +193,6 @@ export const useShopState = (): UseShopStateReturnType => {
     toast.success(`Negozio ${isActive ? 'attivato' : 'disattivato'} con successo`);
   }, []);
   
-  // Approva/disapprova un negozio
   const handleApproveShop = useCallback((shopId: string, isApproved: boolean) => {
     setShopsList(prev => 
       prev.map(shop => 

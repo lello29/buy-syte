@@ -29,6 +29,7 @@ export const fetchShops = async (): Promise<Shop[]> => {
         if (data && data.length > 0) {
           return data.map(shop => ({
             id: shop.id,
+            userId: shop.user_id || '', // Convert from user_id and provide default
             name: shop.name,
             description: shop.description,
             address: shop.address,
@@ -45,7 +46,9 @@ export const fetchShops = async (): Promise<Shop[]> => {
             lastUpdated: shop.last_updated,
             location: shop.latitude && shop.longitude 
               ? { latitude: shop.latitude, longitude: shop.longitude } 
-              : null
+              : null,
+            products: [], // Add missing required property with default empty array
+            offers: [] // Add missing required property with default empty array
           }));
         } else {
           // Se non ci sono negozi nel database, usa i dati mock
@@ -150,6 +153,7 @@ export const addShop = async (shopData: Partial<Shop>): Promise<Shop | null> => 
     const newShopId = `shop-${Date.now()}`;
     const newShop: Shop = {
       id: newShopId,
+      userId: shopData.userId || '', // Include the userId property with default
       name: shopData.name || '',
       description: shopData.description || '',
       address: shopData.address || '',
@@ -163,7 +167,9 @@ export const addShop = async (shopData: Partial<Shop>): Promise<Shop | null> => 
       aiCredits: 100,
       createdAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
-      location: shopData.location || null
+      location: shopData.location || null,
+      products: [], // Add missing required property with default empty array
+      offers: [] // Add missing required property with default empty array
     };
     
     if (isSupabaseConfigured) {
