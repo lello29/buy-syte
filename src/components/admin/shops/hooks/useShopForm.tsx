@@ -55,7 +55,26 @@ export const useShopForm = (
     }
     
     try {
-      const createdShop = await addShop(newShop);
+      const shopData: Omit<Shop, 'id' | 'lastUpdated'> = {
+        userId: '',
+        name: newShop.name,
+        description: newShop.description,
+        address: newShop.address,
+        phone: newShop.phone,
+        email: newShop.email,
+        fiscalCode: newShop.fiscalCode,
+        vatNumber: newShop.vatNumber,
+        category: newShop.category,
+        isActive: true,
+        isApproved: false,
+        aiCredits: 100,
+        createdAt: new Date().toISOString(),
+        location: null,
+        products: [],
+        offers: []
+      };
+      
+      const createdShop = await addShop(shopData);
       if (createdShop) {
         setShopsList(prev => [createdShop, ...prev]);
         setNewShop({
