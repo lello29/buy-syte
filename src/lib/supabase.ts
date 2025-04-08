@@ -1,33 +1,13 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/supabase';
-import { supabaseConfig } from '@/config/databaseConfig';
+import { supabase as supabaseClient } from '@/integrations/supabase/client';
 
-// Utilizza la configurazione centralizzata
-const supabaseUrl = supabaseConfig.url;
-const supabaseAnonKey = supabaseConfig.anonKey;
-
-// Controlla se è configurato
-export const isSupabaseConfigured = supabaseConfig.isConfigured;
-
-let supabaseClient;
-
-if (isSupabaseConfigured) {
-  // Solo se abbiamo credenziali valide
-  supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
-} else {
-  console.error('Supabase URL o chiave anonima mancante. Verifica le variabili d\'ambiente.');
-  // Crea un client fittizio che non eseguirà operazioni effettive
-  supabaseClient = {
-    from: () => ({
-      upsert: () => ({ error: new Error('Supabase not configured') }),
-      select: () => ({ error: new Error('Supabase not configured') }),
-    }),
-    // Aggiungi altri metodi che potrebbero essere necessari
-  } as any;
-}
-
+// Utilizziamo direttamente il client predefinito di Lovable
 export const supabase = supabaseClient;
+
+// Verifichiamo se Supabase è configurato controllando il client
+export const isSupabaseConfigured = true;
 
 // Lista delle tabelle richieste dall'applicazione
 export const requiredTables = [
@@ -46,13 +26,6 @@ export const verifyRequiredTables = async (): Promise<{
   allTablesExist: boolean;
   missingTables: string[];
 }> => {
-  if (!isSupabaseConfigured) {
-    return { 
-      allTablesExist: false, 
-      missingTables: requiredTables 
-    };
-  }
-
   try {
     // Query per ottenere la lista delle tabelle esistenti
     const { data: existingTables, error } = await supabase

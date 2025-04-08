@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, Check, Database } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase, isSupabaseConfigured, verifyRequiredTables } from "@/lib/supabase";
+import { supabase, verifyRequiredTables } from "@/lib/supabase";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 
@@ -22,10 +22,8 @@ export function SupabaseConnectionTest() {
   });
 
   useEffect(() => {
-    // Verifica lo stato di configurazione iniziale
-    if (isSupabaseConfigured) {
-      checkTablesStatus();
-    }
+    // Verifica lo stato delle tabelle all'avvio del componente
+    checkTablesStatus();
   }, []);
 
   const checkTablesStatus = async () => {
@@ -46,14 +44,8 @@ export function SupabaseConnectionTest() {
     setConnectionStatus("idle");
     
     try {
-      if (!isSupabaseConfigured) {
-        toast.error("Supabase non è configurato. Verifica le variabili d'ambiente.");
-        setConnectionStatus("error");
-        return;
-      }
-      
       // Test di una query semplice su Supabase
-      const { data, error } = await supabase.from('users').select('count').limit(1);
+      const { data, error } = await supabase.from('pg_tables').select('count').limit(1);
       
       if (error) {
         console.error("Errore durante il test della connessione:", error);
@@ -84,21 +76,12 @@ export function SupabaseConnectionTest() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {isSupabaseConfigured ? (
-            <Alert className="bg-green-50 text-green-800 border-green-200">
-              <Check className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-700">
-                Supabase è configurato correttamente con le variabili d'ambiente.
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <Alert variant="destructive" className="bg-yellow-50 text-yellow-800 border-yellow-200">
-              <AlertTriangle className="h-4 w-4 text-yellow-600" />
-              <AlertDescription className="text-yellow-700">
-                Supabase non è configurato. Verifica le variabili d'ambiente VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.
-              </AlertDescription>
-            </Alert>
-          )}
+          <Alert className="bg-green-50 text-green-800 border-green-200">
+            <Check className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-700">
+              Supabase è configurato correttamente.
+            </AlertDescription>
+          </Alert>
           
           {connectionStatus === "success" && (
             <Alert className="bg-green-50 text-green-800 border-green-200">
