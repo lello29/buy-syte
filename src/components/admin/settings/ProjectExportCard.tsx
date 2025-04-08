@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Package, Download, Archive, Server, FileJson, FileText, Loader2 } from "lucide-react";
+import { Package, Download, Archive, Server, FileJson, FileText, Loader2, FileCode } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -54,6 +54,25 @@ export function ProjectExportCard() {
       }
     } finally {
       setIsDatabaseExporting(false);
+    }
+  };
+
+  const handleExportEnvExample = async () => {
+    try {
+      const config = await ProjectExporter.generateProjectConfig();
+      const envExample = ProjectExporter.generateEnvExample(config);
+      saveExportedDataToFile(envExample, ".env.example");
+    } catch (error) {
+      console.error("Errore durante l'esportazione del file .env.example:", error);
+    }
+  };
+
+  const handleExportImportScript = () => {
+    try {
+      const importScript = ProjectExporter.generateDatabaseImportScript();
+      saveExportedDataToFile(importScript, "import-database.js");
+    } catch (error) {
+      console.error("Errore durante l'esportazione dello script di importazione:", error);
     }
   };
 
@@ -165,6 +184,44 @@ export function ProjectExportCard() {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Scarica configurazione Docker per il deployment</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          <div className="grid gap-3 grid-cols-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full h-24 flex flex-col items-center justify-center gap-2"
+                    onClick={handleExportEnvExample}
+                  >
+                    <FileText className="h-6 w-6 text-primary" />
+                    <span>Esporta .env.example</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Esporta un template di .env.example con tutte le variabili necessarie</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full h-24 flex flex-col items-center justify-center gap-2"
+                    onClick={handleExportImportScript}
+                  >
+                    <FileCode className="h-6 w-6 text-primary" />
+                    <span>Script Import DB</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Esporta lo script per importare il database</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

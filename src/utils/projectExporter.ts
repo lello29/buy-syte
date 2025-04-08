@@ -5,7 +5,8 @@ import {
   generateReadme, 
   generateNginxConfig, 
   generateSetupScript, 
-  generateDatabaseImportScript 
+  generateDatabaseImportScript,
+  generateEnvExample
 } from './project-export/document-generators';
 
 /**
@@ -54,6 +55,13 @@ export class ProjectExporter {
    * @returns Script di importazione come stringa
    */
   static generateDatabaseImportScript = generateDatabaseImportScript;
+
+  /**
+   * Genera un file .env.example con le variabili d'ambiente necessarie
+   * @param config Configurazione del progetto
+   * @returns Contenuto del file .env.example
+   */
+  static generateEnvExample = generateEnvExample;
 }
 
 // Re-export types

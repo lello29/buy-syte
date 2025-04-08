@@ -117,8 +117,6 @@ export function generateNginxConfig(): string {
  * @returns Script di setup
  */
 export function generateSetupScript(): string {
-  // Utilizzo una versione dello script che non fa riferimento a variabili di bash che TypeScript non riconosce
-  // Utilizzeremo le sequenze di escape come stringa semplice
   return `#!/bin/bash
 
 echo -e "\\x1b[0;32mScript di setup per Buy-Syte\\x1b[0m"
@@ -201,7 +199,7 @@ async function importDatabase() {
   
   // Verifica la presenza delle variabili d'ambiente
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
-    console.log('Variabili d\'ambiente mancanti. Per favore imposta:');
+    console.log('Variabili d\\'ambiente mancanti. Per favore imposta:');
     console.log('- SUPABASE_URL: URL del tuo progetto Supabase');
     console.log('- SUPABASE_KEY: Chiave di servizio (service_role key) del tuo progetto Supabase');
     console.log('\\nEsempio: SUPABASE_URL=xyz SUPABASE_KEY=abc node import-database.js');
@@ -254,7 +252,7 @@ async function importDatabase() {
     console.log('\\nImportazione completata!');
     
   } catch (error) {
-    console.error('Errore durante l\'importazione:', error.message);
+    console.error('Errore durante l\\'importazione:', error.message);
     process.exit(1);
   }
 }
@@ -262,4 +260,43 @@ async function importDatabase() {
 // Esecuzione
 importDatabase();
 `;
+}
+
+/**
+ * Genera un file .env.example con le variabili d'ambiente necessarie
+ * @param config Configurazione del progetto
+ * @returns Contenuto del file .env.example
+ */
+export function generateEnvExample(config: ProjectConfig): string {
+  const envVars = [
+    '# Configurazione Supabase',
+    'VITE_SUPABASE_URL=https://your-project.supabase.co',
+    'VITE_SUPABASE_ANON_KEY=your-anon-key',
+    '',
+    '# Variabili per lo script di importazione del database',
+    'SUPABASE_URL=https://your-project.supabase.co',
+    'SUPABASE_KEY=your-service-role-key', 
+    '',
+    '# Configurazione del server',
+    'PORT=3000',
+    '',
+    '# Configurazione dell\'applicazione',
+    'VITE_APP_NAME=Buy-Syte',
+    'VITE_API_TIMEOUT=30000',
+    '',
+    '# Opzioni di deployment',
+    'NODE_ENV=development # Cambia in "production" per il deployment'
+  ];
+
+  // Aggiungi eventuali variabili d'ambiente specifiche del progetto
+  if (config.environments && config.environments.development) {
+    const devEnv = config.environments.development;
+    Object.keys(devEnv).forEach(key => {
+      if (!envVars.some(line => line.startsWith(key + '='))) {
+        envVars.push(`${key}=${devEnv[key] || 'your-value-here'}`);
+      }
+    });
+  }
+
+  return envVars.join('\n');
 }

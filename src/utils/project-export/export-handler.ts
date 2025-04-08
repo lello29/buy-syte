@@ -7,7 +7,8 @@ import {
   generateDockerConfig, 
   generateNginxConfig, 
   generateSetupScript,
-  generateDatabaseImportScript
+  generateDatabaseImportScript,
+  generateEnvExample
 } from "./document-generators";
 import { ExportOptions, defaultExportOptions } from "./types";
 
@@ -60,6 +61,10 @@ export async function exportProject(
       const setupScript = generateSetupScript();
       saveExportedDataToFile(setupScript, "setup.sh");
     }
+
+    // 7. Generazione file .env.example
+    const envExample = generateEnvExample(projectConfig);
+    saveExportedDataToFile(envExample, ".env.example");
 
     toast.success("Esportazione del progetto completata con successo!");
   } catch (error) {
