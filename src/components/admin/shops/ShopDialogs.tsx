@@ -1,11 +1,10 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { useShopState } from './hooks/useShopState';
 import DeleteShopDialog from './DeleteShopDialog';
-
-// Placeholder for other dialog components that will be implemented later
-// import ViewShopDialog from './ViewShopDialog';
-// import EditShopDialog from './EditShopDialog';
-// import AddShopDialog from './AddShopDialog';
+import DeleteAllShopsDialog from './DeleteAllShopsDialog';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 const ShopDialogs = () => {
   // Get all state and handlers from our hook
@@ -20,8 +19,12 @@ const ShopDialogs = () => {
     isDeleteShopOpen,
     setIsDeleteShopOpen,
     isDeleting,
-    handleConfirmDeleteShop
+    handleConfirmDeleteShop,
+    handleDeleteAllShops,
+    shopsList
   } = useShopState();
+
+  const [isDeleteAllDialogOpen, setIsDeleteAllDialogOpen] = useState(false);
 
   return (
     <>
@@ -34,6 +37,15 @@ const ShopDialogs = () => {
         onDelete={handleConfirmDeleteShop}
         isDeleting={isDeleting}
         shopName={selectedShop?.name}
+      />
+
+      {/* Delete All Shops Dialog */}
+      <DeleteAllShopsDialog
+        open={isDeleteAllDialogOpen}
+        onOpenChange={setIsDeleteAllDialogOpen}
+        onDeleteAll={handleDeleteAllShops}
+        isDeleting={isDeleting}
+        shopsCount={shopsList.length}
       />
     </>
   );

@@ -10,7 +10,6 @@ import { useShopActions } from './useShopActions';
 export const useShopState = () => {
   const [shopsList, setShopsList] = useState<Shop[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isMigrating, setIsMigrating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
   // Get dialog state management
@@ -54,26 +53,26 @@ export const useShopState = () => {
     }
   }, [dialogState.selectedShop, actions]);
   
-  // Function to migrate shops
-  const handleMigrateShops = useCallback(async () => {
-    setIsMigrating(true);
+  // Function to delete all shops
+  const handleDeleteAllShops = useCallback(async () => {
+    setIsDeleting(true);
     try {
-      console.log("Starting migration process...");
-      const migratedShops = await migrateShops();
+      console.log("Deleting all shops...");
       
-      if (migratedShops && migratedShops.length > 0) {
-        setShopsList(migratedShops);
-        toast.success("Negozi migrati con successo!");
-      } else {
-        toast.error("Errore durante la migrazione dei negozi");
+      // Sequentially delete each shop to avoid overwhelming the database
+      for (const shop of shopsList) {
+        await deleteShop(shop.id);
       }
+      
+      setShopsList([]);
+      toast.success("Tutti i negozi sono stati eliminati con successo");
     } catch (error) {
-      console.error("Error migrating shops:", error);
-      toast.error("Si è verificato un errore durante la migrazione dei negozi");
+      console.error("Error deleting all shops:", error);
+      toast.error("Si è verificato un errore durante l'eliminazione dei negozi");
     } finally {
-      setIsMigrating(false);
+      setIsDeleting(false);
     }
-  }, []);
+  }, [shopsList]);
   
   // Load shops data
   useEffect(() => {
@@ -100,15 +99,12 @@ export const useShopState = () => {
     shopsList,
     setShopsList,
     isLoading,
-    isMigrating,
     isDeleting,
-    
-    // Migration function
-    handleMigrateShops,
     
     // Delete functions
     handleDeleteButtonClick,
     handleConfirmDeleteShop,
+    handleDeleteAllShops,
     
     // Dialog state
     ...dialogState,

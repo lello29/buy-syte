@@ -8,6 +8,8 @@ import UserDialogs from "@/components/admin/users/UserDialogs";
 import UserLoadingState from "@/components/admin/users/UserLoadingState";
 import { useUsers } from "@/components/admin/users/hooks/useUsers";
 import { Navigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Trash2, Loader2 } from "lucide-react";
 
 const UsersPage = () => {
   const { currentUser } = useAuth();
@@ -15,6 +17,7 @@ const UsersPage = () => {
   const {
     users,
     loading,
+    isDeleting,
     selectedUser,
     isViewDialogOpen,
     isDeleteDialogOpen,
@@ -26,6 +29,7 @@ const UsersPage = () => {
     setIsEditDialogOpen,
     handleToggleUserStatus,
     handleDeleteUser,
+    handleDeleteAllUsers,
     handleUserUpdate,
     handleAddUser,
     openAddDialog,
@@ -42,6 +46,9 @@ const UsersPage = () => {
     return <UserLoadingState />;
   }
 
+  // Count non-admin users
+  const nonAdminUsersCount = users.filter(user => user.role !== "admin").length;
+
   // Mobile view header
   const mobileHeader = (
     <div className="md:hidden">
@@ -52,11 +59,33 @@ const UsersPage = () => {
     </div>
   );
 
+  const DeleteAllUsersButton = () => (
+    <Button 
+      variant="destructive"
+      onClick={handleDeleteAllUsers}
+      disabled={isDeleting || nonAdminUsersCount === 0}
+      className="mb-4"
+    >
+      {isDeleting ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Eliminazione in corso...
+        </>
+      ) : (
+        <>
+          <Trash2 className="mr-2 h-4 w-4" />
+          Elimina Tutti gli Utenti Non Admin ({nonAdminUsersCount})
+        </>
+      )}
+    </Button>
+  );
+
   return (
     <div className="space-y-6">
       {isMobile ? (
         <>
           {mobileHeader}
+          <DeleteAllUsersButton />
           <MobileUsersList 
             users={users}
             onToggleStatus={handleToggleUserStatus}
@@ -66,14 +95,20 @@ const UsersPage = () => {
           />
         </>
       ) : (
-        <DesktopUsersView
-          users={users}
-          onToggleStatus={handleToggleUserStatus}
-          onEditUser={openEditDialog}
-          onViewUser={openViewDialog}
-          onDeleteUser={openDeleteDialog}
-          onAddUser={openAddDialog}
-        />
+        <>
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold">Gestione Utenti</h1>
+            <DeleteAllUsersButton />
+          </div>
+          <DesktopUsersView
+            users={users}
+            onToggleStatus={handleToggleUserStatus}
+            onEditUser={openEditDialog}
+            onViewUser={openViewDialog}
+            onDeleteUser={openDeleteDialog}
+            onAddUser={openAddDialog}
+          />
+        </>
       )}
 
       {/* Dialog Components */}

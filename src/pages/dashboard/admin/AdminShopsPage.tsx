@@ -9,7 +9,7 @@ import { useShopState } from "@/components/admin/shops/hooks/useShopState";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Database, AlertTriangle, Loader2 } from "lucide-react";
+import { Trash2, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { verifyRequiredTables } from "@/lib/supabase";
 
@@ -21,7 +21,6 @@ export default function AdminShopsPage() {
   const {
     shopsList,
     isLoading,
-    isMigrating,
     isDeleting,
     handleViewShop,
     handleEditShop,
@@ -29,7 +28,7 @@ export default function AdminShopsPage() {
     handleDeleteButtonClick,
     handleToggleStatus,
     handleApproveShop,
-    handleMigrateShops
+    handleDeleteAllShops
   } = useShopState();
   
   useEffect(() => {
@@ -53,7 +52,7 @@ export default function AdminShopsPage() {
     return <Navigate to="/dashboard" />;
   }
   
-  // Empty state with migration option
+  // Empty state with removal option
   const EmptyShopsState = () => (
     <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg space-y-4 border border-dashed border-gray-300">
       <AlertTriangle className="h-12 w-12 text-yellow-500 mb-2" />
@@ -74,15 +73,37 @@ export default function AdminShopsPage() {
     </div>
   );
   
-  console.log("Rendering AdminShopsPage, shops count:", shopsList.length);
+  const DeleteAllButton = () => (
+    <Button 
+      variant="destructive"
+      onClick={handleDeleteAllShops}
+      disabled={isDeleting || shopsList.length === 0}
+      className="ml-2"
+    >
+      {isDeleting ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Eliminazione in corso...
+        </>
+      ) : (
+        <>
+          <Trash2 className="mr-2 h-4 w-4" />
+          Elimina Tutti i Negozi
+        </>
+      )}
+    </Button>
+  );
   
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-        <ShopsPageHeader 
-          handleAddShop={handleAddShop} 
-          isMobile={isMobile !== null ? isMobile : false}
-        />
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <ShopsPageHeader 
+            handleAddShop={handleAddShop} 
+            isMobile={isMobile !== null ? isMobile : false}
+          />
+          <DeleteAllButton />
+        </div>
         
         {isLoading ? (
           <div className="flex justify-center items-center h-40">

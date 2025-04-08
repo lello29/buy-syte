@@ -1,8 +1,8 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { User } from "@/types";
-import { fetchUsers, toggleUserStatus, deleteUser, addUser } from "@/services/userService";
 import { toast } from "sonner";
+import { fetchUsers, deleteUser, toggleUserStatus, updateUser, addUser } from "@/services/user";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -12,81 +12,141 @@ export const useUsers = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
-  // Load users on component mount
-  const loadUsers = async () => {
-    setLoading(true);
-    const loadedUsers = await fetchUsers();
-    setUsers(loadedUsers);
-    setLoading(false);
-  };
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    const loadUsers = async () => {
+      setLoading(true);
+      try {
+        const userData = await fetchUsers();
+        if (userData) {
+          setUsers(userData);
+        }
+      } catch (error) {
+        console.error("Error loading users:", error);
+        toast.error("Errore nel caricamento degli utenti");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadUsers();
   }, []);
 
-  // User action handlers
-  const handleToggleUserStatus = async (userId: string, isActive: boolean) => {
-    const success = await toggleUserStatus(userId, isActive);
-    if (success) {
-      const updatedUsers = users.map(user => 
-        user.id === userId ? { ...user, isActive: isActive } : user
-      );
-      setUsers(updatedUsers);
-      toast.success(`Stato dell'utente aggiornato con successo`);
+  const handleToggleUserStatus = useCallback(async (userId: string, currentStatus: boolean) => {
+    try {
+      const success = await toggleUserStatus(userId, !currentStatus);
+      
+      if (success) {
+        setUsers(prev => 
+          prev.map(user => 
+            user.id === userId ? { ...user, isActive: !currentStatus } : user
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error toggling user status:", error);
+      toast.error("Errore durante la modifica dello stato dell'utente");
     }
-  };
+  }, []);
 
-  const handleDeleteUser = async (userId: string) => {
-    const success = await deleteUser(userId);
-    if (success) {
-      const updatedUsers = users.filter(user => user.id !== userId);
-      setUsers(updatedUsers);
-      setIsDeleteDialogOpen(false);
-      setSelectedUser(null);
-      toast.success("Utente eliminato con successo");
+  const handleDeleteUser = useCallback(async (userId: string) => {
+    try {
+      setIsDeleting(true);
+      const success = await deleteUser(userId);
+      
+      if (success) {
+        setUsers(prev => prev.filter(user => user.id !== userId));
+        setIsDeleteDialogOpen(false);
+        toast.success("Utente eliminato con successo");
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Errore durante l'eliminazione dell'utente");
+    } finally {
+      setIsDeleting(false);
     }
-  };
+  }, []);
 
-  const handleUserUpdate = (updatedUser: User) => {
-    const updatedUsers = users.map(user => 
-      user.id === updatedUser.id ? updatedUser : user
-    );
-    setUsers(updatedUsers);
-    toast.success("Utente aggiornato con successo");
-  };
-
-  const handleAddUser = async (userData: { name: string; email: string }) => {
-    if (!userData.name || !userData.email) {
-      toast.error("Nome e email sono richiesti");
-      return;
+  const handleDeleteAllUsers = useCallback(async () => {
+    try {
+      setIsDeleting(true);
+      
+      const adminUsers = users.filter(user => user.role === "admin");
+      const nonAdminUsers = users.filter(user => user.role !== "admin");
+      
+      if (nonAdminUsers.length === 0) {
+        toast.info("Non ci sono utenti non amministratori da eliminare");
+        setIsDeleting(false);
+        return;
+      }
+      
+      for (const user of nonAdminUsers) {
+        await deleteUser(user.id);
+      }
+      
+      setUsers(adminUsers);
+      toast.success("Tutti gli utenti non amministratori sono stati eliminati con successo");
+    } catch (error) {
+      console.error("Error deleting all users:", error);
+      toast.error("Errore durante l'eliminazione degli utenti");
+    } finally {
+      setIsDeleting(false);
     }
+  }, [users]);
 
-    const newUser = await addUser(userData);
-    if (newUser) {
-      setUsers(prev => [newUser, ...prev]);
-      setIsAddDialogOpen(false);
-      toast.success("Utente aggiunto con successo");
+  const handleUserUpdate = useCallback(async (userId: string, userData: Partial<User>) => {
+    try {
+      const updatedUser = await updateUser(userId, userData);
+      
+      if (updatedUser) {
+        setUsers(prev => 
+          prev.map(user => 
+            user.id === userId ? { ...user, ...updatedUser } : user
+          )
+        );
+        setIsEditDialogOpen(false);
+        toast.success("Utente aggiornato con successo");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Errore durante l'aggiornamento dell'utente");
     }
-  };
+  }, []);
 
-  // Dialog control functions
-  const openAddDialog = () => setIsAddDialogOpen(true);
-  
-  const openEditDialog = (user: User) => {
-    setSelectedUser(user);
-    setIsEditDialogOpen(true);
-  };
-  
-  const openViewDialog = (user: User) => {
+  const handleAddUser = useCallback(async (userData: Omit<User, "id" | "createdAt" | "updatedAt">) => {
+    try {
+      const newUser = await addUser(userData);
+      
+      if (newUser) {
+        setUsers(prev => [...prev, newUser]);
+        setIsAddDialogOpen(false);
+        toast.success("Utente aggiunto con successo");
+      }
+    } catch (error) {
+      console.error("Error adding user:", error);
+      toast.error("Errore durante l'aggiunta dell'utente");
+    }
+  }, []);
+
+  const openViewDialog = useCallback((user: User) => {
     setSelectedUser(user);
     setIsViewDialogOpen(true);
-  };
-  
-  const openDeleteDialog = (user: User) => {
+  }, []);
+
+  const openEditDialog = useCallback((user: User) => {
+    setSelectedUser(user);
+    setIsEditDialogOpen(true);
+  }, []);
+
+  const openDeleteDialog = useCallback((user: User) => {
     setSelectedUser(user);
     setIsDeleteDialogOpen(true);
-  };
+  }, []);
+
+  const openAddDialog = useCallback(() => {
+    setIsAddDialogOpen(true);
+  }, []);
 
   return {
     users,
@@ -96,12 +156,14 @@ export const useUsers = () => {
     isDeleteDialogOpen,
     isAddDialogOpen,
     isEditDialogOpen,
+    isDeleting,
     setIsViewDialogOpen,
     setIsDeleteDialogOpen,
     setIsAddDialogOpen,
     setIsEditDialogOpen,
     handleToggleUserStatus,
     handleDeleteUser,
+    handleDeleteAllUsers,
     handleUserUpdate,
     handleAddUser,
     openAddDialog,

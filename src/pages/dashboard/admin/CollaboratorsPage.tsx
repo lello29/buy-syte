@@ -8,9 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
-import { User } from "lucide-react";
+import { User, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { collaborators } from "@/data/mockData";
+import { collaborators } from "@/data/collaborators";
 import { Collaborator } from "@/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileCollaboratorsList from "@/components/admin/collaborators/MobileCollaboratorsList";
@@ -18,6 +18,7 @@ import CollaboratorsFilter, { CollaboratorStatusFilter } from "@/components/admi
 import CollaboratorsTable from "@/components/admin/collaborators/CollaboratorsTable";
 import ViewCollaboratorDialog from "@/components/admin/collaborators/ViewCollaboratorDialog";
 import DeleteCollaboratorDialog from "@/components/admin/collaborators/DeleteCollaboratorDialog";
+import { Button } from "@/components/ui/button";
 
 interface CollaboratorsPageState {
   collaboratorsList: Collaborator[];
@@ -25,6 +26,7 @@ interface CollaboratorsPageState {
   selectedCollaborator: Collaborator | null;
   isViewDialogOpen: boolean;
   isDeleteDialogOpen: boolean;
+  isDeletingAll: boolean;
 }
 
 const CollaboratorsPage: React.FC = () => {
@@ -34,7 +36,8 @@ const CollaboratorsPage: React.FC = () => {
     statusFilter: "all",
     selectedCollaborator: null,
     isViewDialogOpen: false,
-    isDeleteDialogOpen: false
+    isDeleteDialogOpen: false,
+    isDeletingAll: false
   });
   
   const { 
@@ -42,7 +45,8 @@ const CollaboratorsPage: React.FC = () => {
     statusFilter, 
     selectedCollaborator, 
     isViewDialogOpen, 
-    isDeleteDialogOpen 
+    isDeleteDialogOpen,
+    isDeletingAll
   } = state;
   
   const isMobile = useIsMobile();
@@ -72,6 +76,20 @@ const CollaboratorsPage: React.FC = () => {
       selectedCollaborator: null
     }));
     toast.success(`Collaboratore eliminato con successo`);
+  };
+
+  const handleDeleteAllCollaborators = (): void => {
+    setState(prev => ({ ...prev, isDeletingAll: true }));
+    
+    // Simulate deletion with a short delay
+    setTimeout(() => {
+      setState(prev => ({
+        ...prev,
+        collaboratorsList: [],
+        isDeletingAll: false
+      }));
+      toast.success(`Tutti i collaboratori sono stati eliminati con successo`);
+    }, 1000);
   };
 
   const openViewDialog = (collaborator: Collaborator): void => {
@@ -114,10 +132,32 @@ const CollaboratorsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Gestione Collaboratori</h1>
-      <p className="text-gray-600">
-        Visualizza e gestisci i collaboratori registrati sulla piattaforma.
-      </p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">Gestione Collaboratori</h1>
+          <p className="text-gray-600">
+            Visualizza e gestisci i collaboratori registrati sulla piattaforma.
+          </p>
+        </div>
+        
+        <Button 
+          variant="destructive"
+          onClick={handleDeleteAllCollaborators}
+          disabled={isDeletingAll || collaboratorsList.length === 0}
+        >
+          {isDeletingAll ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Eliminazione in corso...
+            </>
+          ) : (
+            <>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Elimina Tutti i Collaboratori
+            </>
+          )}
+        </Button>
+      </div>
 
       <CollaboratorsFilter 
         statusFilter={statusFilter} 
@@ -147,12 +187,18 @@ const CollaboratorsPage: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <CollaboratorsTable 
-              collaborators={filteredCollaborators}
-              onViewCollaborator={openViewDialog}
-              onToggleStatus={handleToggleStatus}
-              onDeleteCollaborator={openDeleteDialog}
-            />
+            {filteredCollaborators.length > 0 ? (
+              <CollaboratorsTable 
+                collaborators={filteredCollaborators}
+                onViewCollaborator={openViewDialog}
+                onToggleStatus={handleToggleStatus}
+                onDeleteCollaborator={openDeleteDialog}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg space-y-4">
+                <p className="text-muted-foreground">Nessun collaboratore trovato.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

@@ -53,6 +53,38 @@ export const deleteShop = async (shopId: string): Promise<boolean> => {
 };
 
 /**
+ * Delete all shops
+ */
+export const deleteAllShops = async (): Promise<boolean> => {
+  try {
+    console.log("Attempting to delete all shops");
+    
+    // Check if Supabase is configured
+    if (shopBaseService.ensureSupabaseConfigured()) {
+      // Try to delete from Supabase
+      const { error } = await supabase
+        .from('shops')
+        .delete()
+        .neq('id', 'placeholder'); // Delete all rows
+        
+      if (error) {
+        console.error("Supabase error deleting all shops:", error.message);
+        return false;
+      }
+      
+      return true;
+    } else {
+      // Clear mock data array
+      shops.length = 0;
+      return true;
+    }
+  } catch (error) {
+    shopBaseService.handleError("l'eliminazione di tutti i negozi", error);
+    return false;
+  }
+};
+
+/**
  * Create a new shop
  */
 export const createShop = async (shop: Omit<Shop, 'id' | 'lastUpdated'>): Promise<Shop | null> => {
