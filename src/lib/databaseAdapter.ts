@@ -1,4 +1,3 @@
-
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -60,6 +59,44 @@ export class DatabaseAdapter {
     } catch (error) {
       console.error(`Error in select operation for ${tableName}:`, error);
       return fallbackData;
+    }
+  }
+
+  /**
+   * Update a record in a table
+   * @param tableName The name of the table
+   * @param data The data to update
+   * @param whereColumn The column to use in the where clause
+   * @param whereValue The value to match in the where clause
+   * @returns Success status
+   */
+  static async update(
+    tableName: string,
+    data: Record<string, any>,
+    whereColumn: string,
+    whereValue: string | number
+  ): Promise<boolean> {
+    try {
+      if (!isSupabaseConfigured) {
+        console.log(`Supabase not configured, cannot update ${tableName}`);
+        toast.warning("Database non configurato, impossibile aggiornare i dati");
+        return false;
+      }
+
+      const { error } = await supabase
+        .from(tableName)
+        .update(data)
+        .eq(whereColumn, whereValue);
+
+      if (error) {
+        console.error(`Error updating ${tableName}:`, error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error(`Error in update operation for ${tableName}:`, error);
+      return false;
     }
   }
 

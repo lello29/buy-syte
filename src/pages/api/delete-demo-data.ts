@@ -1,10 +1,11 @@
 
-import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { DatabaseAdapter } from '@/lib/databaseAdapter';
 
-// Since we're not actually using Next.js, we'll create a mock API function
-// that we'll instead call from the frontend directly
+/**
+ * Function to delete all demo data from the database
+ * @returns Result object with success status and error message if applicable
+ */
 export async function deleteAllDemoData() {
   try {
     if (!isSupabaseConfigured) {
@@ -42,18 +43,7 @@ export async function deleteAllDemoData() {
   }
 }
 
-// Since we're not using Next.js, this is a mock implementation
-// that we don't actually need to export
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const result = await deleteAllDemoData();
-  
-  if (result.success) {
-    return res.status(200).json({ success: true });
-  } else {
-    return res.status(500).json({ error: result.error });
-  }
+// Function to handle direct API calls (for non-Next.js usage)
+export function handleDeleteDemoData() {
+  return deleteAllDemoData();
 }
