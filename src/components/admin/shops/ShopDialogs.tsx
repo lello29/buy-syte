@@ -34,6 +34,8 @@ const ShopDialogs = () => {
     shopsList
   } = useShopState();
 
+  console.log("ShopDialogs - isAddShopOpen:", isAddShopOpen);
+
   return (
     <>
       {/* Visualizza Negozio */}

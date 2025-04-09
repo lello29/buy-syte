@@ -94,6 +94,8 @@ export default function AdminShopsPage() {
     </Button>
   );
   
+  console.log("handleAddShop function exists:", typeof handleAddShop === 'function');
+  
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

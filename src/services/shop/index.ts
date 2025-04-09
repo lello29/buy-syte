@@ -1,7 +1,7 @@
 
-// Export all shop-related services from a single entry point
-export { fetchShops, fetchShopById } from './shopFetchService';
-export { createShop, updateShop, deleteShop, deleteAllShops, addShop } from './shopCrudService';
-export { toggleShopStatus, approveShop } from './shopStatusService';
-export { migrateShops } from './shopMigrationService';
-export { shopBaseService } from './shopBaseService';
+// Re-export all shop services
+export * from './shopFetchService';
+export * from './shopCrudService';
+export * from './shopStatusService';
+export * from './shopMigrationService';
+export * from './shopBaseService';

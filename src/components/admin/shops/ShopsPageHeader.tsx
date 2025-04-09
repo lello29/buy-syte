@@ -16,6 +16,8 @@ const ShopsPageHeader: React.FC<ShopsPageHeaderProps> = ({
   onMigrateShops,
   isMigrating = false 
 }) => {
+  console.log("ShopsPageHeader - handleAddShop is function:", typeof handleAddShop === 'function');
+  
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
       <div>
@@ -40,7 +42,17 @@ const ShopsPageHeader: React.FC<ShopsPageHeaderProps> = ({
             {isMigrating ? "Migrazione..." : "Migra Dati"}
           </Button>
         )}
-        <Button onClick={handleAddShop} className="whitespace-nowrap">
+        <Button 
+          onClick={() => {
+            console.log("Add Shop button clicked");
+            if (typeof handleAddShop === 'function') {
+              handleAddShop();
+            } else {
+              console.error("handleAddShop is not a function");
+            }
+          }} 
+          className="whitespace-nowrap"
+        >
           <PlusCircle className="h-4 w-4 mr-2" />
           {!isMobile && "Aggiungi Negozio"}
           {isMobile && "Nuovo"}

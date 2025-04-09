@@ -1,11 +1,12 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopActions } from './useShopActions';
 import { useShopLocation } from './useShopLocation';
 import { useShopForm } from './useShopForm';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
+import { fetchShops } from '@/services/shop';
 
 // Define ShopFormData type here
 export interface ShopFormData {
@@ -29,7 +30,7 @@ export const useShopState = () => {
   // Get shops list and loading state from database or context
   const [shopsList, setShopsList] = useState<Shop[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Dialog state management
   const {
@@ -61,6 +62,25 @@ export const useShopState = () => {
     setIsDeleting
   );
   
+  // Fetch shops on component mount
+  useEffect(() => {
+    const loadShops = async () => {
+      setIsLoading(true);
+      try {
+        const shops = await fetchShops();
+        setShopsList(shops || []);
+      } catch (error) {
+        console.error("Error loading shops:", error);
+        toast.error("Errore nel caricamento dei negozi");
+        setShopsList([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadShops();
+  }, []);
+  
   // Handle viewing a shop 
   const handleViewShop = useCallback((shop: Shop) => {
     setSelectedShop(shop);
@@ -75,6 +95,7 @@ export const useShopState = () => {
   
   // Handle adding a new shop
   const handleAddShop = useCallback(() => {
+    console.log("handleAddShop called in useShopState");
     setIsAddShopOpen(true);
   }, [setIsAddShopOpen]);
   
@@ -166,11 +187,15 @@ export const useShopState = () => {
   }, []);
   
   const handleDeleteButtonClick = useCallback((shopId: string) => {
-    // For now, just set the selected shop and open delete dialog
-    if (selectedShop && selectedShop.id === shopId) {
+    // Find the shop by ID and set it as the selected shop
+    const shop = shopsList.find(shop => shop.id === shopId);
+    if (shop) {
+      setSelectedShop(shop);
       setIsDeleteShopOpen(true);
+    } else {
+      console.error("Shop not found with ID:", shopId);
     }
-  }, [selectedShop, setIsDeleteShopOpen]);
+  }, [shopsList, setSelectedShop, setIsDeleteShopOpen]);
   
   const handleOpenDeleteAllDialog = useCallback(() => {
     setIsDeleteAllShopsOpen(true);
