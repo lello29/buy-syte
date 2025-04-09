@@ -70,10 +70,11 @@ const ShopDialogs = () => {
       <AddShopDialog 
         open={isAddShopOpen}
         onOpenChange={(open) => {
-          console.log("AddShopDialog onOpenChange called:", open);
+          console.log("AddShopDialog onOpenChange called with value:", open);
           setIsAddShopOpen(open);
         }}
         onCreateShop={(shopData) => {
+          console.log("AddShopDialog onCreateShop called with data:", shopData);
           if (shopData) {
             return handleCreateShop(shopData);
           }

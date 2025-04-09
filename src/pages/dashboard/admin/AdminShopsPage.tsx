@@ -101,7 +101,10 @@ export default function AdminShopsPage() {
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <ShopsPageHeader 
-            handleAddShop={handleAddShop} 
+            handleAddShop={() => {
+              console.log("AdminShopsPage - handleAddShop wrapper called");
+              handleAddShop(); 
+            }}
             isMobile={isMobile !== null ? isMobile : false}
           />
           <DeleteAllButton />

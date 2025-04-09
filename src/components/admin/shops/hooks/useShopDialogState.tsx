@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Shop } from '@/types';
 
 export const useShopDialogState = () => {
@@ -10,18 +10,24 @@ export const useShopDialogState = () => {
   const [isDeleteShopOpen, setIsDeleteShopOpen] = useState(false);
   const [isDeleteAllShopsOpen, setIsDeleteAllShopsOpen] = useState(false);
 
+  // Add debugging to track dialog state changes
+  const setIsAddShopOpenWithLogging = useCallback((value: boolean) => {
+    console.log("setIsAddShopOpen called with value:", value);
+    setIsAddShopOpen(value);
+  }, []);
+
   return {
     selectedShop,
     setSelectedShop,
     isViewShopOpen,
-    setIsViewShopOpen,
     isEditShopOpen,
-    setIsEditShopOpen,
     isAddShopOpen,
-    setIsAddShopOpen,
     isDeleteShopOpen,
-    setIsDeleteShopOpen,
     isDeleteAllShopsOpen,
-    setIsDeleteAllShopsOpen
+    setIsViewShopOpen,
+    setIsEditShopOpen,
+    setIsAddShopOpen: setIsAddShopOpenWithLogging,
+    setIsDeleteShopOpen,
+    setIsDeleteAllShopsOpen,
   };
 };

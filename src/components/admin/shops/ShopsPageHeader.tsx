@@ -18,6 +18,16 @@ const ShopsPageHeader: React.FC<ShopsPageHeaderProps> = ({
 }) => {
   console.log("ShopsPageHeader - handleAddShop is function:", typeof handleAddShop === 'function');
   
+  const handleAddButtonClick = () => {
+    console.log("Add Shop button clicked - Before calling handleAddShop");
+    if (typeof handleAddShop === 'function') {
+      handleAddShop();
+      console.log("Add Shop button clicked - After calling handleAddShop");
+    } else {
+      console.error("handleAddShop is not a function:", handleAddShop);
+    }
+  };
+  
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
       <div>
@@ -43,10 +53,7 @@ const ShopsPageHeader: React.FC<ShopsPageHeaderProps> = ({
           </Button>
         )}
         <Button 
-          onClick={() => {
-            console.log("Add Shop button clicked");
-            handleAddShop();
-          }} 
+          onClick={handleAddButtonClick} 
           className="whitespace-nowrap"
         >
           <PlusCircle className="h-4 w-4 mr-2" />

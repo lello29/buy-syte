@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopActions } from './useShopActions';
@@ -62,6 +63,7 @@ export const useShopState = () => {
       setIsLoading(true);
       try {
         const shops = await fetchShops();
+        console.log("Loaded shops:", shops?.length || 0);
         setShopsList(shops || []);
       } catch (error) {
         console.error("Error loading shops:", error);
@@ -86,8 +88,9 @@ export const useShopState = () => {
   }, [setSelectedShop, setIsEditShopOpen]);
   
   const handleAddShop = useCallback(() => {
-    console.log("handleAddShop called in useShopState");
+    console.log("handleAddShop called in useShopState - current isAddShopOpen:", isAddShopOpen);
     setIsAddShopOpen(true);
+    console.log("handleAddShop called in useShopState - after setting isAddShopOpen to true");
   }, [setIsAddShopOpen]);
   
   const handleSaveChanges = useCallback(async (shopData: ShopFormData) => {
