@@ -56,11 +56,26 @@ export default function UsersPage() {
     }
   };
 
-  // We'll need a handler that finds a user by ID and then calls openDeleteDialog
+  // Find a user by ID and then call openDeleteDialog with the user object
   const handleOpenDeleteDialogById = (userId: string) => {
     const userToDelete = users.find(user => user.id === userId);
     if (userToDelete) {
       openDeleteDialog(userToDelete);
+    }
+  };
+
+  // Create wrapper functions to adapt between User and string parameters
+  const handleEditUserById = (userId: string) => {
+    const userToEdit = users.find(user => user.id === userId);
+    if (userToEdit) {
+      openEditDialog(userToEdit);
+    }
+  };
+
+  const handleViewUserById = (userId: string) => {
+    const userToView = users.find(user => user.id === userId);
+    if (userToView) {
+      openViewDialog(userToView);
     }
   };
 

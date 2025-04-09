@@ -144,7 +144,7 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         // Add location if available
         if (data.latitude && data.longitude && newShop.id) {
           if (newShop.location) {
-            // We need to pass the shop ID as a string here, not the entire shop object
+            // Pass the shop ID as a string, not the entire shop object
             await saveShopLocation(newShop.id, newShop.location);
           }
         }
