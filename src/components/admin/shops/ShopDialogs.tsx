@@ -66,6 +66,7 @@ const ShopDialogs = () => {
           if (shopData) {
             return handleCreateShop(shopData);
           }
+          return Promise.resolve(false);
         }}
         onSelectChange={handleSelectChange}
       />

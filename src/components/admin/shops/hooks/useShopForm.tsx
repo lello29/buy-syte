@@ -86,7 +86,12 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         
         const updated = await updateShop(updatedShop);
         
-        if (updated) {
+        if (updated && updated.id) {
+          // If the shop has a location, save it separately
+          if (updated.location && updated.id) {
+            await saveShopLocation(updated.id, updated.location);
+          }
+          
           toast.success("Negozio aggiornato con successo");
           if (onSuccess) onSuccess();
         }

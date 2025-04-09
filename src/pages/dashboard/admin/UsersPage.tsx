@@ -39,10 +39,10 @@ export default function UsersPage() {
     return <UserLoadingState />;
   }
 
-  const handleUserSubmit = (userData: any) => {
+  const handleUserSubmit = async (userData: any): Promise<boolean> => {
     // Depending on the context, this could be an update or an add
-    if (selectedUser) {
-      return handleUserUpdate(selectedUser.id, userData);
+    if (selectedUser && userData.id) {
+      return handleUserUpdate(userData.id, userData);
     } else {
       return handleAddUser(userData);
     }
