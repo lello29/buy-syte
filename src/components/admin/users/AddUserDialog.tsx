@@ -11,11 +11,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface AddUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddUser: (userData: { name: string; email: string }) => void;
+  onAddUser: (userData: { name: string; email: string; role?: string }) => void;
 }
 
 const AddUserDialog: React.FC<AddUserDialogProps> = ({
@@ -26,16 +27,30 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({
   const [newUser, setNewUser] = useState({
     name: '',
     email: '',
+    role: 'user',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewUser(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleRoleChange = (value: string) => {
+    setNewUser(prev => ({ ...prev, role: value }));
+  };
+
   const handleSubmit = () => {
+    if (!newUser.name || !newUser.email) {
+      return;
+    }
+    
+    setIsSubmitting(true);
     onAddUser(newUser);
-    setNewUser({ name: '', email: '' });
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setNewUser({ name: '', email: '', role: 'user' });
+    }, 500);
   };
 
   return (
@@ -49,7 +64,7 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({
         </DialogHeader>
         <div className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nome</Label>
+            <Label htmlFor="name">Nome <span className="text-red-500">*</span></Label>
             <Input
               id="name"
               name="name"
@@ -59,7 +74,7 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
             <Input
               id="email"
               name="email"
@@ -69,10 +84,32 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({
               placeholder="Email utente"
             />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="role">Ruolo</Label>
+            <Select
+              value={newUser.role}
+              onValueChange={handleRoleChange}
+            >
+              <SelectTrigger id="role">
+                <SelectValue placeholder="Seleziona ruolo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="user">Utente</SelectItem>
+                <SelectItem value="shop">Negozio</SelectItem>
+                <SelectItem value="collaborator">Collaboratore</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <DialogFooter className="mt-6">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Annulla</Button>
-          <Button onClick={handleSubmit}>Aggiungi Utente</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>Annulla</Button>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={!newUser.name || !newUser.email || isSubmitting}
+          >
+            {isSubmitting ? "Aggiunta in corso..." : "Aggiungi Utente"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

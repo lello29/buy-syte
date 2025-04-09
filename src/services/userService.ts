@@ -219,8 +219,8 @@ export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updated
         is_active: newUserObj.isActive,
         created_at: newUserObj.createdAt,
         updated_at: newUserObj.updatedAt,
-        fiscal_code: userData.fiscalCode,
-        vat_number: userData.vatNumber
+        fiscal_code: userData.fiscalCode || null,
+        vat_number: userData.vatNumber || null
       };
       
       // Use admin service to bypass RLS

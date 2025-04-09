@@ -97,7 +97,9 @@ export const useShopForm = (
           role: 'shop',
           isActive: true,
           favorites: [],
-          loyaltyPoints: 0
+          loyaltyPoints: 0,
+          fiscalCode: newShop.fiscalCode,
+          vatNumber: newShop.vatNumber
         });
         
         if (!createdUser) {
