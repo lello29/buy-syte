@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopActions } from './useShopActions';
@@ -10,7 +9,7 @@ import { useShopHandlers } from './useShopHandlers';
 import { Shop } from '@/types';
 import { ShopFormData } from './types/shopTypes';
 
-export type { ShopFormData } from './types/shopTypes';
+export { ShopFormData } from './types/shopTypes';
 
 export const useShopState = () => {
   const {

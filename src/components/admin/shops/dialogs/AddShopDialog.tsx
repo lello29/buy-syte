@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Shop } from '@/types';
+import { ShopFormData } from '@/components/admin/shops/hooks/types/shopTypes';
 
 // Import the smaller components
 import ShopBasicInfoFields from './shop-form/ShopBasicInfoFields';
