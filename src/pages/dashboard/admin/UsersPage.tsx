@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useUsers } from '@/components/admin/users/hooks/useUsers';
 import DesktopUsersView from '@/components/admin/users/DesktopUsersView';
@@ -46,6 +45,11 @@ export default function UsersPage() {
     } else {
       return handleAddUser(userData);
     }
+  };
+
+  const deleteUser = (userId: string) => {
+    console.log("Deleting user with ID:", userId);
+    // Implement delete logic here
   };
 
   return (
