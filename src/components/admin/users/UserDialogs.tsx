@@ -1,79 +1,73 @@
 
-import React from "react";
-import { User } from "@/types";
-import EditUserDialog from "./EditUserDialog";
-import ViewUserDialog from "./ViewUserDialog";
-import DeleteUserDialog from "./DeleteUserDialog";
-import AddUserDialog from "./AddUserDialog";
+import React from 'react';
+import ViewUserDialog from './ViewUserDialog';
+import EditUserDialog from './EditUserDialog';
+import AddUserDialog from './AddUserDialog';
+import DeleteUserDialog from './DeleteUserDialog';
+import { User } from '@/types';
 
-interface UserDialogsProps {
+export interface UserDialogsProps {
   selectedUser: User | null;
   isViewDialogOpen: boolean;
-  isDeleteDialogOpen: boolean;
-  isAddDialogOpen: boolean;
   isEditDialogOpen: boolean;
+  isAddDialogOpen: boolean;
+  isDeleteDialogOpen: boolean;
   setIsViewDialogOpen: (open: boolean) => void;
-  setIsDeleteDialogOpen: (open: boolean) => void;
-  setIsAddDialogOpen: (open: boolean) => void;
   setIsEditDialogOpen: (open: boolean) => void;
-  onDeleteUser: (userId: string) => void;
-  onUserUpdated: (user: User) => void;
-  onAddUser: (userData: { name: string; email: string; role?: string; password?: string }) => void;
-  onEditUser: (user: User) => void;
-  onDeleteUserDialog: (user: User) => void;
+  setIsAddDialogOpen: (open: boolean) => void;
+  setIsDeleteDialogOpen: (open: boolean) => void;
+  onSubmit: (userData: any) => Promise<boolean>;
+  isSubmitting: boolean;
 }
 
 const UserDialogs: React.FC<UserDialogsProps> = ({
   selectedUser,
   isViewDialogOpen,
-  isDeleteDialogOpen,
-  isAddDialogOpen,
   isEditDialogOpen,
+  isAddDialogOpen,
+  isDeleteDialogOpen,
   setIsViewDialogOpen,
-  setIsDeleteDialogOpen,
-  setIsAddDialogOpen,
   setIsEditDialogOpen,
-  onDeleteUser,
-  onUserUpdated,
-  onAddUser,
-  onEditUser,
-  onDeleteUserDialog,
+  setIsAddDialogOpen,
+  setIsDeleteDialogOpen,
+  onSubmit,
+  isSubmitting
 }) => {
   return (
     <>
-      <ViewUserDialog 
-        user={selectedUser}
-        open={isViewDialogOpen}
-        onOpenChange={setIsViewDialogOpen}
-        onEditUser={(user) => {
-          setIsViewDialogOpen(false);
-          onEditUser(user);
-        }}
-        onDeleteUser={(user) => {
-          setIsViewDialogOpen(false);
-          onDeleteUserDialog(user);
-        }}
-      />
-
-      <DeleteUserDialog 
-        user={selectedUser}
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onConfirmDelete={onDeleteUser}
-      />
-
-      <AddUserDialog 
+      {selectedUser && (
+        <ViewUserDialog
+          open={isViewDialogOpen}
+          onOpenChange={setIsViewDialogOpen}
+          user={selectedUser}
+        />
+      )}
+      
+      {selectedUser && (
+        <EditUserDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          user={selectedUser}
+          onSubmit={onSubmit}
+          isSubmitting={isSubmitting}
+        />
+      )}
+      
+      <AddUserDialog
         open={isAddDialogOpen}
         onOpenChange={setIsAddDialogOpen}
-        onAddUser={onAddUser}
+        onSubmit={onSubmit}
+        isSubmitting={isSubmitting}
       />
-
-      <EditUserDialog
-        user={selectedUser}
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        onUserUpdated={onUserUpdated}
-      />
+      
+      {selectedUser && (
+        <DeleteUserDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          user={selectedUser}
+          isDeleting={isSubmitting}
+        />
+      )}
     </>
   );
 };

@@ -62,7 +62,11 @@ const ShopDialogs = () => {
       <AddShopDialog 
         open={isAddShopOpen}
         onOpenChange={setIsAddShopOpen}
-        onCreateShop={handleCreateShop}
+        onCreateShop={(shopData) => {
+          if (shopData) {
+            return handleCreateShop(shopData);
+          }
+        }}
         onSelectChange={handleSelectChange}
       />
       

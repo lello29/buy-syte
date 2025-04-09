@@ -142,8 +142,8 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         // Add location if available
         if (data.latitude && data.longitude && newShop.id) {
           if (newShop.location) {
-            // Fixed: Pass both shop and location to saveShopLocation
-            await saveShopLocation(newShop, newShop.location);
+            // Pass both shop ID and location to saveShopLocation
+            await saveShopLocation(newShop.id, newShop.location);
           }
         }
 

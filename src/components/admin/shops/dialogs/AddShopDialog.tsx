@@ -1,4 +1,5 @@
 
+// Let's modify the interface for the AddShopDialog component to match the implementation
 import React, { useState, useEffect } from 'react';
 import { 
   Dialog,
@@ -15,14 +16,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SHOP_CATEGORIES } from '../constants/shopCategories';
 import { Switch } from '@/components/ui/switch';
 import { fetchUsers } from '@/services/userService';
-import { User } from '@/types';
+import { User, Shop } from '@/types';
 import { PlusCircle, UserPlus, User as UserIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 export interface AddShopDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  newShop: {
+  onCreateShop: (shopData: Partial<Shop>) => Promise<Shop | null>;
+  onSelectChange?: (field: string, value: string) => void;
+  newShop?: {
     name: string;
     description: string;
     address: string;
@@ -32,18 +35,16 @@ export interface AddShopDialogProps {
     vatNumber: string;
     category?: string;
   };
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  onSelectChange?: (field: string, value: string) => void;
-  onCreateShop: () => void;
+  onInputChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
 const AddShopDialog: React.FC<AddShopDialogProps> = ({
   open,
   onOpenChange,
-  newShop,
-  onInputChange,
+  onCreateShop,
   onSelectChange,
-  onCreateShop
+  newShop: initialShop,
+  onInputChange,
 }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
@@ -53,6 +54,17 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
     name: "",
     email: "",
     role: "shop"
+  });
+  
+  const [newShop, setNewShop] = useState({
+    name: initialShop?.name || "",
+    description: initialShop?.description || "",
+    address: initialShop?.address || "",
+    phone: initialShop?.phone || "",
+    email: initialShop?.email || "",
+    fiscalCode: initialShop?.fiscalCode || "",
+    vatNumber: initialShop?.vatNumber || "",
+    category: initialShop?.category || "",
   });
 
   // Carica gli utenti quando il dialogo viene aperto
@@ -92,8 +104,27 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
     const { name, value } = e.target;
     setNewUser(prev => ({ ...prev, [name]: value }));
   };
+  
+  const handleShopChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewShop(prev => ({ ...prev, [name]: value }));
+    
+    // If external handler is provided, also call it
+    if (onInputChange) {
+      onInputChange(e);
+    }
+  };
+  
+  const handleSelectCategoryChange = (value: string) => {
+    setNewShop(prev => ({ ...prev, category: value }));
+    
+    // If external handler is provided, also call it
+    if (onSelectChange) {
+      onSelectChange("category", value);
+    }
+  };
 
-  const handleCreateShop = () => {
+  const handleCreateShopClick = async () => {
     if (createNewUser) {
       // Valida i dati del nuovo utente
       if (!newUser.name || !newUser.email) {
@@ -104,9 +135,27 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
       toast.error("Seleziona un utente per il negozio");
       return;
     }
+    
+    if (!newShop.name) {
+      toast.error("Il nome del negozio è obbligatorio");
+      return;
+    }
 
     // Chiama la funzione per creare il negozio
-    onCreateShop();
+    try {
+      const shopData: Partial<Shop> = {
+        ...newShop,
+        userId: selectedUserId,
+      };
+      
+      const result = await onCreateShop(shopData);
+      if (result) {
+        onOpenChange(false);
+      }
+    } catch (error) {
+      console.error("Errore nella creazione del negozio:", error);
+      toast.error("Si è verificato un errore durante la creazione del negozio");
+    }
   };
 
   return (
@@ -184,7 +233,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               id="name"
               name="name"
               value={newShop.name}
-              onChange={onInputChange}
+              onChange={handleShopChange}
               required
             />
           </div>
@@ -195,7 +244,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               id="description"
               name="description"
               value={newShop.description}
-              onChange={onInputChange}
+              onChange={handleShopChange}
               required
             />
           </div>
@@ -204,7 +253,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
             <Label htmlFor="category">Categoria <span className="text-red-500">*</span></Label>
             <Select 
               value={newShop.category || ""}
-              onValueChange={(value) => onSelectChange && onSelectChange("category", value)}
+              onValueChange={handleSelectCategoryChange}
             >
               <SelectTrigger id="category">
                 <SelectValue placeholder="Seleziona categoria" />
@@ -225,7 +274,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               id="address"
               name="address"
               value={newShop.address}
-              onChange={onInputChange}
+              onChange={handleShopChange}
               required
             />
           </div>
@@ -237,7 +286,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               name="email"
               type="email"
               value={newShop.email}
-              onChange={onInputChange}
+              onChange={handleShopChange}
               required
             />
           </div>
@@ -248,7 +297,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               id="phone"
               name="phone"
               value={newShop.phone}
-              onChange={onInputChange}
+              onChange={handleShopChange}
               required
             />
           </div>
@@ -259,7 +308,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               id="fiscalCode"
               name="fiscalCode"
               value={newShop.fiscalCode}
-              onChange={onInputChange}
+              onChange={handleShopChange}
               required
             />
           </div>
@@ -270,7 +319,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
               id="vatNumber"
               name="vatNumber"
               value={newShop.vatNumber}
-              onChange={onInputChange}
+              onChange={handleShopChange}
               required
             />
           </div>
@@ -279,7 +328,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Annulla
             </Button>
-            <Button onClick={handleCreateShop}>
+            <Button onClick={handleCreateShopClick}>
               {createNewUser ? (
                 <>
                   <UserPlus className="w-4 h-4 mr-2" />
