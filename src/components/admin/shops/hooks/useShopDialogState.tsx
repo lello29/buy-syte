@@ -10,15 +10,30 @@ export const useShopDialogState = () => {
   const [isDeleteShopOpen, setIsDeleteShopOpen] = useState(false);
   const [isDeleteAllShopsOpen, setIsDeleteAllShopsOpen] = useState(false);
 
-  // Add debugging to track dialog state changes
+  // Migliorato il logging per debug
   const setIsAddShopOpenWithLogging = useCallback((value: boolean) => {
-    console.log("setIsAddShopOpen called with value:", value);
+    console.log("setIsAddShopOpen chiamato con valore:", value);
+    console.log("Stato precedente isAddShopOpen:", isAddShopOpen);
     setIsAddShopOpen(value);
-  }, []);
+    
+    // Log asincrono per verificare se il cambiamento è stato applicato
+    setTimeout(() => {
+      console.log("Verifica cambio stato isAddShopOpen dopo setTimeout:", isAddShopOpen);
+    }, 0);
+  }, [isAddShopOpen]);
 
-  // Add effect to log state changes
+  // Migliorato il logging per tutti i cambiamenti di stato
   useEffect(() => {
     console.log("Dialog state changed - isAddShopOpen:", isAddShopOpen);
+    
+    if (isAddShopOpen) {
+      console.log("IMPORTANTE: AddShopDialog dovrebbe essere visibile ora!");
+      // Verifica gli elementi DOM per vedere se il dialogo è stato renderizzato
+      setTimeout(() => {
+        const dialogElement = document.querySelector('[role="dialog"]');
+        console.log("Dialog DOM element trovato:", !!dialogElement);
+      }, 100);
+    }
   }, [isAddShopOpen]);
 
   return {

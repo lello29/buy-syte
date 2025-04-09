@@ -16,16 +16,20 @@ const ShopsPageHeader: React.FC<ShopsPageHeaderProps> = ({
   onMigrateShops,
   isMigrating = false 
 }) => {
-  console.log("ShopsPageHeader - handleAddShop is function:", typeof handleAddShop === 'function');
+  console.log("ShopsPageHeader - handleAddShop è una funzione:", typeof handleAddShop === 'function');
   
   const handleAddButtonClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("Add Shop button clicked - Before calling handleAddShop");
+    console.log("Add Shop button clicked - Prima di chiamare handleAddShop");
     if (typeof handleAddShop === 'function') {
-      handleAddShop();
-      console.log("Add Shop button clicked - After calling handleAddShop");
+      try {
+        handleAddShop();
+        console.log("Add Shop button clicked - Dopo aver chiamato handleAddShop");
+      } catch (error) {
+        console.error("Errore in handleAddShop:", error);
+      }
     } else {
-      console.error("handleAddShop is not a function:", handleAddShop);
+      console.error("handleAddShop non è una funzione:", handleAddShop);
     }
   };
   
@@ -57,6 +61,7 @@ const ShopsPageHeader: React.FC<ShopsPageHeaderProps> = ({
           onClick={handleAddButtonClick} 
           className="whitespace-nowrap"
           id="add-shop-button"
+          data-test-id="add-shop-button" // Aggiunto per facilitare i test
         >
           <PlusCircle className="h-4 w-4 mr-2" />
           {!isMobile && "Aggiungi Negozio"}

@@ -37,7 +37,24 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
 
   useEffect(() => {
     console.log("AddShopDialog useEffect - open state changed to:", open);
-    if (!open) {
+    
+    // Migliorato il debug con timing
+    if (open) {
+      console.log("AddShopDialog è APERTO - timestamp:", new Date().toISOString());
+      document.body.classList.add('dialog-open');
+      
+      // Verifica se il dialogo è realmente visibile nel DOM
+      setTimeout(() => {
+        const dialogElement = document.querySelector('[role="dialog"]');
+        console.log("AddShopDialog - DOM element presente:", !!dialogElement);
+        if (!dialogElement) {
+          console.warn("ERRORE: Dialogo non trovato nel DOM anche se 'open' è true!");
+        }
+      }, 100);
+    } else {
+      console.log("AddShopDialog è CHIUSO - timestamp:", new Date().toISOString());
+      document.body.classList.remove('dialog-open');
+      
       // Reset form when dialog closes
       setFormData({
         name: '',
@@ -94,18 +111,6 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
   };
   
   console.log("AddShopDialog rendered, open:", open);
-
-  // Verifico se il dialog è effettivamente aperto
-  useEffect(() => {
-    if (open) {
-      console.log("AddShopDialog is open");
-      // Aggiunge una classe per rendere visivamente distinguibile
-      document.body.classList.add('dialog-open');
-    } else {
-      console.log("AddShopDialog is closed");
-      document.body.classList.remove('dialog-open');
-    }
-  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={(newValue) => {

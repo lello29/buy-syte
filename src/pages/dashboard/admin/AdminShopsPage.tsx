@@ -31,6 +31,14 @@ export default function AdminShopsPage() {
     handleOpenDeleteAllDialog
   } = useShopState();
   
+  // Monitoriamo quando il componente viene montato per debug
+  useEffect(() => {
+    console.log("AdminShopsPage montato - timestamp:", new Date().toISOString());
+    return () => {
+      console.log("AdminShopsPage smontato - timestamp:", new Date().toISOString());
+    };
+  }, []);
+  
   useEffect(() => {
     const checkDatabase = async () => {
       try {
@@ -94,20 +102,26 @@ export default function AdminShopsPage() {
     </Button>
   );
   
-  console.log("handleAddShop function exists:", typeof handleAddShop === 'function');
+  console.log("handleAddShop esiste:", typeof handleAddShop === 'function');
   
   const wrappedHandleAddShop = () => {
-    console.log("AdminShopsPage - wrappedHandleAddShop called");
+    console.log("AdminShopsPage - wrappedHandleAddShop chiamato");
     if (typeof handleAddShop === 'function') {
       try {
         handleAddShop();
-        console.log("AdminShopsPage - handleAddShop executed successfully");
+        console.log("AdminShopsPage - handleAddShop eseguito con successo");
+        
+        // Verifica lo stato dopo l'esecuzione
+        setTimeout(() => {
+          const dialogElement = document.querySelector('[role="dialog"]');
+          console.log("AdminShopsPage - dialog presente nel DOM dopo handleAddShop:", !!dialogElement);
+        }, 500);
       } catch (error) {
-        console.error("Error in handleAddShop:", error);
+        console.error("Errore in handleAddShop:", error);
         toast.error("Errore nell'apertura del dialog");
       }
     } else {
-      console.error("handleAddShop is not a function");
+      console.error("handleAddShop non è una funzione");
       toast.error("Funzione non disponibile");
     }
   };
