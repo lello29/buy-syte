@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { Shop, User } from '@/types';
 import { toast } from 'sonner';
@@ -105,6 +106,7 @@ export const useShopForm = (
         }
         
         userId = createdUser.id;
+        console.log("Created user with ID:", userId);
         toast.success(`Utente ${newUser.name} creato con successo`);
       } catch (error) {
         console.error("Errore nella creazione dell'utente:", error);
@@ -136,7 +138,9 @@ export const useShopForm = (
         offers: []
       };
       
+      console.log("Creating shop with data:", shopData);
       const createdShop = await addShop(shopData);
+      
       if (createdShop) {
         setShopsList(prev => [createdShop, ...prev]);
         setNewShop({

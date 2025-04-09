@@ -83,6 +83,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
       // Aggiorna alcuni campi del negozio con i dati dell'utente
       if (onSelectChange) {
         onSelectChange("userId", userId);
+        console.log("Selected user with ID:", userId);
       }
     }
   };

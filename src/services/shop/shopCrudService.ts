@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Shop } from "@/types";
 import { shopBaseService } from "./shopBaseService";
 import { shops } from "@/data/mock-data/shops-data";
+import { supabaseAdmin } from "../supabaseAdmin";
 
 /**
  * Delete a shop
@@ -14,20 +15,16 @@ export const deleteShop = async (shopId: string): Promise<boolean> => {
     
     // Check if Supabase is configured
     if (shopBaseService.ensureSupabaseConfigured()) {
-      // Try to delete from Supabase
-      const { error } = await supabase
-        .from('shops')
-        .delete()
-        .eq('id', shopId);
-        
-      if (error) {
-        console.error("Supabase error deleting shop:", error.message);
+      // Use admin service to bypass RLS
+      const success = await supabaseAdmin.delete('shops', 'id', shopId);
+      
+      if (!success) {
         // Fall back to mock data
         console.log("Falling back to mock data for deletion");
         const index = shops.findIndex(s => s.id === shopId);
         if (index !== -1) {
           shops.splice(index, 1);
-          toast.success("Negozio eliminato con successo");
+          toast.success("Negozio eliminato con successo (modalità mock)");
           return true;
         }
         return false;
@@ -61,14 +58,10 @@ export const deleteAllShops = async (): Promise<boolean> => {
     
     // Check if Supabase is configured
     if (shopBaseService.ensureSupabaseConfigured()) {
-      // Utilizziamo DatabaseAdapter per garantire una consistenza nei metodi di eliminazione
-      const result = await supabase
-        .from('shops')
-        .delete()
-        .is('id', 'not.null'); // Questo elimina tutti i record
-        
-      if (result.error) {
-        console.error("Supabase error deleting all shops:", result.error.message);
+      // Use admin service to bypass RLS
+      const success = await supabaseAdmin.delete('shops');
+      
+      if (!success) {
         return false;
       }
       
@@ -99,19 +92,28 @@ export const createShop = async (shop: Omit<Shop, 'id' | 'lastUpdated'>): Promis
     console.log("Creating new shop with data:", shop.name);
     
     if (shopBaseService.ensureSupabaseConfigured()) {
-      const newShop = {
-        ...shop,
+      // Prepare data for Supabase
+      const shopData = {
+        user_id: shop.userId,
+        name: shop.name,
+        description: shop.description,
+        address: shop.address,
+        phone: shop.phone,
+        email: shop.email,
+        category: shop.category,
+        is_active: shop.isActive,
+        is_approved: shop.isApproved,
+        ai_credits: shop.aiCredits,
+        fiscal_code: shop.fiscalCode,
+        vat_number: shop.vatNumber,
+        created_at: shop.createdAt,
         last_updated: new Date().toISOString()
       };
       
-      const { data: createdShop, error } = await supabase
-        .from('shops')
-        .insert(newShop)
-        .select('*')
-        .single();
-        
-      if (error) {
-        console.error("Error creating shop:", error.message);
+      // Use admin service to bypass RLS
+      const createdShop = await supabaseAdmin.insert('shops', shopData);
+      
+      if (!createdShop) {
         // Fallback to mock data creation
         const mockShop: Shop = {
           id: crypto.randomUUID(),

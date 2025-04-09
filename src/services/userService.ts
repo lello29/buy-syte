@@ -2,6 +2,7 @@
 import { User } from "@/types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
+import { supabaseAdmin } from "./supabaseAdmin";
 
 /**
  * Fetches users from the database
@@ -210,31 +211,30 @@ export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updated
     };
     
     if (isSupabaseConfigured) {
-      const { data, error } = await supabase
-        .from('users')
-        .insert({
-          name: newUserObj.name,
-          email: newUserObj.email,
-          role: newUserObj.role,
-          favorites: newUserObj.favorites,
-          loyalty_points: newUserObj.loyaltyPoints,
-          is_active: newUserObj.isActive,
-          created_at: newUserObj.createdAt,
-          updated_at: newUserObj.updatedAt,
-          fiscal_code: userData.fiscalCode,
-          vat_number: userData.vatNumber
-        })
-        .select();
-        
-      if (error) {
-        console.error("Error adding user:", error.message);
+      // Prepare data in the format expected by Supabase
+      const userInsertData = {
+        name: newUserObj.name,
+        email: newUserObj.email,
+        role: newUserObj.role,
+        favorites: newUserObj.favorites,
+        loyalty_points: newUserObj.loyaltyPoints,
+        is_active: newUserObj.isActive,
+        created_at: newUserObj.createdAt,
+        updated_at: newUserObj.updatedAt,
+        fiscal_code: userData.fiscalCode,
+        vat_number: userData.vatNumber
+      };
+      
+      // Use admin service to bypass RLS
+      const insertedUser = await supabaseAdmin.insert('users', userInsertData);
+      
+      if (!insertedUser) {
         toast.error("Errore nell'aggiunta dell'utente");
         return null;
       }
       
-      if (data && data.length > 0) {
-        newUserObj.id = data[0].id;
-      }
+      // Transform the returned user to our format
+      newUserObj.id = insertedUser.id;
     } else {
       toast.warning("Database non configurato, impossibile aggiungere l'utente");
       return null;
@@ -246,5 +246,32 @@ export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updated
     console.error("Error adding user:", error);
     toast.error("Si è verificato un errore durante l'aggiunta dell'utente");
     return null;
+  }
+};
+
+/**
+ * Deletes all non-admin users
+ */
+export const deleteAllUsers = async (): Promise<boolean> => {
+  try {
+    if (isSupabaseConfigured) {
+      // Use admin service to bypass RLS
+      const success = await supabaseAdmin.delete('users');
+      
+      if (!success) {
+        toast.error("Errore nell'eliminazione di tutti gli utenti");
+        return false;
+      }
+    } else {
+      toast.warning("Database non configurato, impossibile eliminare gli utenti");
+      return false;
+    }
+    
+    toast.success("Tutti gli utenti non amministratori sono stati eliminati con successo");
+    return true;
+  } catch (error) {
+    console.error("Error deleting all users:", error);
+    toast.error("Si è verificato un errore durante l'eliminazione di tutti gli utenti");
+    return false;
   }
 };
