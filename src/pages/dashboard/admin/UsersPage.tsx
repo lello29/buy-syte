@@ -56,6 +56,14 @@ export default function UsersPage() {
     }
   };
 
+  // We'll need a handler that finds a user by ID and then calls openDeleteDialog
+  const handleOpenDeleteDialogById = (userId: string) => {
+    const userToDelete = users.find(user => user.id === userId);
+    if (userToDelete) {
+      openDeleteDialog(userToDelete);
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -67,7 +75,7 @@ export default function UsersPage() {
           users={users}
           onViewUser={openViewDialog}
           onEditUser={openEditDialog}
-          onDeleteUser={openDeleteDialog}
+          onDeleteUser={openDeleteDialogById}
           onAddUser={openAddDialog}
           onToggleStatus={handleToggleUserStatus}
         />
@@ -76,7 +84,7 @@ export default function UsersPage() {
           users={users}
           onViewUser={openViewDialog}
           onEditUser={openEditDialog}
-          onDeleteUser={openDeleteDialog}
+          onDeleteUser={openDeleteDialogById}
           onAddUser={openAddDialog}
           onToggleStatus={handleToggleUserStatus}
         />
