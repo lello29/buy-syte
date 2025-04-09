@@ -61,16 +61,14 @@ const UserDialogs: React.FC<UserDialogsProps> = ({
           open={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}
           user={selectedUser}
-          onSave={onSubmit}
-          isLoading={isSubmitting}
+          onUserUpdated={onSubmit}
         />
       )}
       
       <AddUserDialog
         open={isAddDialogOpen}
         onOpenChange={setIsAddDialogOpen}
-        onSave={onSubmit}
-        isLoading={isSubmitting}
+        onAddUser={onSubmit}
       />
       
       {selectedUser && (
