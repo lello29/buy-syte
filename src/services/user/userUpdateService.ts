@@ -1,39 +1,30 @@
 
-import { User, UserRole } from "@/types";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { toast } from "sonner";
+import { User } from "@/types";
+import { handleServiceError, notifySuccess } from "./utils/errorHandler";
+import { mapToUpdateData, mapToInsertData, validateUserData } from "./utils/validation";
+import { updateUser as dbUpdateUser, insertUser } from "./utils/databaseOperations";
 import { supabaseAdmin } from "../supabaseAdmin";
-import { UserInsertData, UserUpdateData } from "./types";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 /**
  * Updates a user's information
  */
 export const updateUser = async (userId: string, userData: Partial<User>): Promise<User | null> => {
   try {
-    const updateData: UserUpdateData = {
-      name: userData.name,
-      email: userData.email,
-      role: userData.role,
-      fiscal_code: userData.fiscalCode,
-      vat_number: userData.vatNumber,
-      updated_at: new Date().toISOString(),
-    };
+    const updateData = mapToUpdateData(userData);
 
     if (isSupabaseConfigured) {
-      const { error } = await supabase
-        .from('users')
-        .update(updateData)
-        .eq('id', userId);
-        
-      if (error) {
-        console.error("Error updating user:", error.message);
-        toast.error("Errore nell'aggiornamento dell'utente");
+      try {
+        await dbUpdateUser(userId, updateData);
+      } catch (error) {
+        handleServiceError(error, "l'aggiornamento dell'utente", "Errore nell'aggiornamento dell'utente");
         return null;
       }
     } else {
-      toast.warning("Database non configurato, impossibile aggiornare l'utente");
       return null;
     }
+    
+    notifySuccess("Utente aggiornato con successo");
     
     return { 
       ...userData,
@@ -41,8 +32,7 @@ export const updateUser = async (userId: string, userData: Partial<User>): Promi
       updatedAt: new Date().toISOString()
     } as User;
   } catch (error) {
-    console.error("Error updating user:", error);
-    toast.error("Si è verificato un errore durante l'aggiornamento dell'utente");
+    handleServiceError(error, "l'aggiornamento dell'utente", "Si è verificato un errore durante l'aggiornamento dell'utente");
     return null;
   }
 };
@@ -52,14 +42,27 @@ export const updateUser = async (userId: string, userData: Partial<User>): Promi
  */
 export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updatedAt"> & { password?: string }): Promise<User | null> => {
   try {
+    // Validate required fields
+    const validationError = validateUserData(userData);
+    if (validationError) {
+      handleServiceError(new Error(validationError), "l'aggiunta dell'utente", validationError);
+      return null;
+    }
+    
+    if (!userData.password) {
+      handleServiceError(new Error("La password è obbligatoria"), "l'aggiunta dell'utente", "La password è obbligatoria");
+      return null;
+    }
+
+    // Create user object
     const newUserObj: User = {
       id: `user-${Date.now()}`,
-      name: userData.name || "",
-      email: userData.email || "",
+      name: userData.name,
+      email: userData.email,
       role: userData.role,
-      favorites: [],
-      loyaltyPoints: 0,
-      isActive: true,
+      favorites: userData.favorites || [],
+      loyaltyPoints: userData.loyaltyPoints || 0,
+      isActive: userData.isActive !== undefined ? userData.isActive : true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       fiscalCode: userData.fiscalCode,
@@ -68,23 +71,7 @@ export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updated
     
     if (isSupabaseConfigured) {
       // Prepare data in the format expected by Supabase
-      const userInsertData: UserInsertData = {
-        name: newUserObj.name,
-        email: newUserObj.email,
-        role: newUserObj.role,
-        favorites: newUserObj.favorites,
-        loyalty_points: newUserObj.loyaltyPoints,
-        is_active: newUserObj.isActive,
-        created_at: newUserObj.createdAt,
-        updated_at: newUserObj.updatedAt,
-        fiscal_code: userData.fiscalCode || null,
-        vat_number: userData.vatNumber || null
-      };
-      
-      // Add password if provided
-      if (userData.password) {
-        userInsertData.password = userData.password;
-      }
+      const userInsertData = mapToInsertData(userData);
       
       console.log("Adding user with data:", userInsertData);
       
@@ -92,22 +79,20 @@ export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updated
       const insertedUser = await supabaseAdmin.insert('users', userInsertData);
       
       if (!insertedUser) {
-        toast.error("Errore nell'aggiunta dell'utente");
+        handleServiceError(new Error("Failed to insert user"), "l'aggiunta dell'utente", "Errore nell'aggiunta dell'utente");
         return null;
       }
       
-      // Transform the returned user to our format
+      // Update the ID with the one from Supabase
       newUserObj.id = insertedUser.id;
     } else {
-      toast.warning("Database non configurato, impossibile aggiungere l'utente");
       return null;
     }
     
-    toast.success("Utente aggiunto con successo");
+    notifySuccess("Utente aggiunto con successo");
     return newUserObj;
   } catch (error) {
-    console.error("Error adding user:", error);
-    toast.error("Si è verificato un errore durante l'aggiunta dell'utente");
+    handleServiceError(error, "l'aggiunta dell'utente", "Si è verificato un errore durante l'aggiunta dell'utente");
     return null;
   }
 };

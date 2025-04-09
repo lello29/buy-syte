@@ -1,6 +1,9 @@
 
 import { User, UserRole } from "@/types";
 
+/**
+ * Data format for inserting a new user into the database
+ */
 export interface UserInsertData {
   name: string;
   email: string;
@@ -15,6 +18,9 @@ export interface UserInsertData {
   password?: string;
 }
 
+/**
+ * Data format for updating an existing user in the database
+ */
 export interface UserUpdateData {
   name?: string;
   email?: string;
@@ -23,4 +29,13 @@ export interface UserUpdateData {
   vat_number?: string | null;
   is_active?: boolean;
   updated_at?: string;
+}
+
+/**
+ * Service response interface
+ */
+export interface ServiceResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
 }
