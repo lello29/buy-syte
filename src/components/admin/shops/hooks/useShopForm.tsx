@@ -88,6 +88,7 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         
         if (updated) {
           // If the shop has a location, save it separately
+          // Pass the shop ID (string) instead of the entire shop object
           if (updatedShop.location && updatedShop.id) {
             await saveShopLocation(updatedShop.id, updatedShop.location);
           }
@@ -120,6 +121,7 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         // Create shop with available data
         const newShop: Shop = {
           id: `shop-${Date.now()}`,
+          userId: userId || `user-${Date.now()}`,
           name: data.name,
           description: data.description || "",
           address: data.address || "",
@@ -145,6 +147,7 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         // Add location if available
         if (data.latitude && data.longitude && newShop.id) {
           if (newShop.location) {
+            // Pass the shop ID (string) instead of the entire shop object
             await saveShopLocation(newShop.id, newShop.location);
           }
         }
