@@ -99,7 +99,8 @@ export const useShopForm = (
           favorites: [],
           loyaltyPoints: 0,
           fiscalCode: newShop.fiscalCode,
-          vatNumber: newShop.vatNumber
+          vatNumber: newShop.vatNumber,
+          password: 'temporaryPassword123' // Add a temporary password for new shop users
         });
         
         if (!createdUser) {

@@ -192,7 +192,7 @@ export const updateUser = async (userId: string, userData: Partial<User>): Promi
 /**
  * Adds a new user
  */
-export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updatedAt">): Promise<User | null> => {
+export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updatedAt"> & { password?: string }): Promise<User | null> => {
   try {
     const newUserObj: User = {
       id: `user-${Date.now()}`,
@@ -210,7 +210,7 @@ export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updated
     
     if (isSupabaseConfigured) {
       // Prepare data in the format expected by Supabase
-      const userInsertData = {
+      const userInsertData: any = {
         name: newUserObj.name,
         email: newUserObj.email,
         role: newUserObj.role,
@@ -222,6 +222,13 @@ export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updated
         fiscal_code: userData.fiscalCode || null,
         vat_number: userData.vatNumber || null
       };
+      
+      // Add password if provided
+      if (userData.password) {
+        userInsertData.password = userData.password;
+      }
+      
+      console.log("Adding user with data:", userInsertData);
       
       // Use admin service to bypass RLS
       const insertedUser = await supabaseAdmin.insert('users', userInsertData);

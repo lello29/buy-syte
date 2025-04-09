@@ -18,7 +18,7 @@ interface UserDialogsProps {
   setIsEditDialogOpen: (open: boolean) => void;
   onDeleteUser: (userId: string) => void;
   onUserUpdated: (user: User) => void;
-  onAddUser: (userData: { name: string; email: string }) => void;
+  onAddUser: (userData: { name: string; email: string; role?: string; password?: string }) => void;
   onEditUser: (user: User) => void;
   onDeleteUserDialog: (user: User) => void;
 }

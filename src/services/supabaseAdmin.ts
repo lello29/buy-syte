@@ -37,7 +37,8 @@ export const supabaseAdmin = {
       return result[0];
     } catch (error: unknown) {
       console.error(`Admin insert exception for ${table}:`, error);
-      toast.error("Si è verificato un errore durante l'inserimento dei dati");
+      const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+      toast.error(`Si è verificato un errore durante l'inserimento dei dati: ${errorMessage}`);
       return null;
     }
   },
@@ -71,7 +72,8 @@ export const supabaseAdmin = {
       return true;
     } catch (error: unknown) {
       console.error(`Admin delete exception for ${table}:`, error);
-      toast.error("Si è verificato un errore durante l'eliminazione dei dati");
+      const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+      toast.error(`Si è verificato un errore durante l'eliminazione dei dati: ${errorMessage}`);
       return false;
     }
   }

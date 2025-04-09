@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface AddUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddUser: (userData: { name: string; email: string; role?: string }) => void;
+  onAddUser: (userData: { name: string; email: string; role?: string; password?: string }) => void;
 }
 
 const AddUserDialog: React.FC<AddUserDialogProps> = ({
@@ -28,6 +28,7 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({
     name: '',
     email: '',
     role: 'user',
+    password: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,7 +42,7 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({
   };
 
   const handleSubmit = () => {
-    if (!newUser.name || !newUser.email) {
+    if (!newUser.name || !newUser.email || !newUser.password) {
       return;
     }
     
@@ -49,7 +50,7 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({
     onAddUser(newUser);
     setTimeout(() => {
       setIsSubmitting(false);
-      setNewUser({ name: '', email: '', role: 'user' });
+      setNewUser({ name: '', email: '', role: 'user', password: '' });
     }, 500);
   };
 
@@ -85,6 +86,17 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({
             />
           </div>
           <div className="space-y-2">
+            <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              value={newUser.password}
+              onChange={handleInputChange}
+              placeholder="Password utente"
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="role">Ruolo</Label>
             <Select
               value={newUser.role}
@@ -106,7 +118,7 @@ const AddUserDialog: React.FC<AddUserDialogProps> = ({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>Annulla</Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={!newUser.name || !newUser.email || isSubmitting}
+            disabled={!newUser.name || !newUser.email || !newUser.password || isSubmitting}
           >
             {isSubmitting ? "Aggiunta in corso..." : "Aggiungi Utente"}
           </Button>

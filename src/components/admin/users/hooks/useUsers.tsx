@@ -124,9 +124,31 @@ export const useUsers = () => {
     }
   }, []);
 
-  const handleAddUser = useCallback(async (userData: Omit<User, "id" | "createdAt" | "updatedAt">) => {
+  const handleAddUser = useCallback(async (userData: { 
+    name: string; 
+    email: string; 
+    role?: string; 
+    password?: string 
+  }) => {
     try {
-      const newUser = await addUser(userData);
+      console.log("Adding user with data:", userData);
+      
+      if (!userData.password) {
+        toast.error("La password è obbligatoria");
+        return;
+      }
+      
+      const newUserData = {
+        name: userData.name,
+        email: userData.email,
+        role: userData.role || 'user',
+        isActive: true,
+        favorites: [],
+        loyaltyPoints: 0,
+        password: userData.password
+      };
+      
+      const newUser = await addUser(newUserData);
       
       if (newUser) {
         setUsers(prev => [...prev, newUser]);
