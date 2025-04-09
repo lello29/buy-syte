@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { PostgrestError } from "@supabase/supabase-js";
 
 // IMPORTANT: This service provides admin-level access to bypass RLS
 // It should only be used for operations that require admin privileges
@@ -28,7 +29,7 @@ export const supabaseAdmin = {
         
       if (error) {
         console.error(`Admin insert error for ${table}:`, error);
-        toast.error(`Errore nell'inserimento dei dati: ${error.toString()}`);
+        toast.error(`Errore nell'inserimento dei dati: ${error.message || 'Errore sconosciuto'}`);
         return null;
       }
       
@@ -62,7 +63,7 @@ export const supabaseAdmin = {
       
       if (error) {
         console.error(`Admin delete error for ${table}:`, error);
-        toast.error(`Errore nell'eliminazione dei dati: ${error.toString()}`);
+        toast.error(`Errore nell'eliminazione dei dati: ${error.message || 'Errore sconosciuto'}`);
         return false;
       }
       
