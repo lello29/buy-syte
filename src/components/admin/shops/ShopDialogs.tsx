@@ -79,7 +79,7 @@ const ShopDialogs = () => {
           open={isDeleteShopOpen}
           onOpenChange={setIsDeleteShopOpen}
           shopName={selectedShop.name}
-          onConfirmDelete={handleConfirmDeleteShop}
+          onDelete={handleConfirmDeleteShop}  // Changed from onConfirmDelete to onDelete
           isDeleting={isDeleting}
         />
       )}
