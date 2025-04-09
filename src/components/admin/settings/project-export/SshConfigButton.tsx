@@ -1,43 +1,31 @@
 
 import React from "react";
-import { Terminal } from "lucide-react";
+import { KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { generateSshConfig } from "@/utils/project-export/document-generators";
 import { saveExportedDataToFile } from "@/utils/exportDatabase";
-import { ProjectExporter } from "@/utils/projectExporter";
+import { toast } from "sonner";
 
 export function SshConfigButton() {
-  const handleExportSshConfig = () => {
+  const exportSshConfig = () => {
     try {
-      const sshConfig = ProjectExporter.generateSshConfig();
-      saveExportedDataToFile(sshConfig, "ssh_config");
+      const sshConfig = generateSshConfig();
+      saveExportedDataToFile(sshConfig, "ssh_config", "text/plain");
+      toast.success("Configurazione SSH esportata con successo!");
     } catch (error) {
       console.error("Errore durante l'esportazione della configurazione SSH:", error);
+      toast.error("Errore durante l'esportazione della configurazione SSH");
     }
   };
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button 
-            variant="outline" 
-            className="w-full h-24 flex flex-col items-center justify-center gap-2"
-            onClick={handleExportSshConfig}
-          >
-            <Terminal className="h-6 w-6 text-primary" />
-            <span>Config SSH</span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Esporta configurazione SSH per il deployment</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Button
+      variant="outline"
+      className="flex flex-col items-center justify-center h-24 gap-2"
+      onClick={exportSshConfig}
+    >
+      <KeyRound className="h-8 w-8 text-primary" />
+      <span className="text-sm">SSH Config</span>
+    </Button>
   );
 }

@@ -33,5 +33,12 @@ Host internal-server
     User admin
     Port 22
     ProxyJump bastion
-    IdentityFile ~/.ssh/internal_key`;
+    IdentityFile ~/.ssh/internal_key
+
+# Configurazione per il CI/CD
+Host github
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/github_deploy_key
+    StrictHostKeyChecking no`;
 }
