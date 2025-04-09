@@ -29,7 +29,9 @@ const ShopDialogs = () => {
     handleSelectChange,
     handleCreateShop,
     handleGetLocation,
-    isLocating
+    isLocating,
+    isDeleting,
+    shopsList
   } = useShopState();
 
   return (
@@ -88,7 +90,7 @@ const ShopDialogs = () => {
         onOpenChange={setIsDeleteAllShopsOpen}
         onDeleteAll={handleDeleteAllShops}
         isDeleting={isDeleting}
-        shopsCount={shopsList.length}
+        shopsCount={shopsList?.length || 0}
       />
     </>
   );

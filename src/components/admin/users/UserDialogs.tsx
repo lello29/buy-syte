@@ -82,7 +82,7 @@ const UserDialogs: React.FC<UserDialogsProps> = ({
             // This adapter function converts the userId parameter to match the expected function signature
             if (selectedUser && selectedUser.id === userId) {
               const result = await onSubmit({ id: userId, action: 'delete' });
-              // Return void to match the Promise<void> return type
+              // We need to make this function return void to match the expected type
               return;
             }
           }}

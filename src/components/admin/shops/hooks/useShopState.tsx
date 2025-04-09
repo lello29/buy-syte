@@ -117,7 +117,7 @@ export const useShopState = () => {
     setIsDeleting(true);
     try {
       // Call the shop delete action
-      await shopActions.handleDeleteShop(selectedShop.id);
+      const result = await shopActions.handleDeleteShop(selectedShop.id);
       setIsDeleteShopOpen(false);
       toast.success(`Negozio "${selectedShop.name}" eliminato con successo`);
       return true;
