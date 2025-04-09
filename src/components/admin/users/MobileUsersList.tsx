@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Ban, Trash2, UserPlus, Edit } from 'lucide-react';
+import { Ban, Trash2, UserPlus, Edit, Eye } from 'lucide-react';
 import { User } from '@/types';
 
 interface MobileUsersListProps {
@@ -10,6 +10,7 @@ interface MobileUsersListProps {
   onDeleteUser: (userId: string) => void;
   onAddUser: () => void;
   onEditUser: (user: User) => void;
+  onViewUser: (user: User) => void;
 }
 
 const MobileUsersList: React.FC<MobileUsersListProps> = ({ 
@@ -17,7 +18,8 @@ const MobileUsersList: React.FC<MobileUsersListProps> = ({
   onToggleStatus, 
   onDeleteUser,
   onAddUser,
-  onEditUser
+  onEditUser,
+  onViewUser
 }) => {
   const handleDelete = (userId: string) => {
     if (window.confirm('Sei sicuro di voler eliminare questo utente?')) {

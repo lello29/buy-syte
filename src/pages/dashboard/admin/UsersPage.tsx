@@ -75,7 +75,7 @@ export default function UsersPage() {
           users={users}
           onViewUser={openViewDialog}
           onEditUser={openEditDialog}
-          onDeleteUser={openDeleteDialogById}
+          onDeleteUser={handleOpenDeleteDialogById}
           onAddUser={openAddDialog}
           onToggleStatus={handleToggleUserStatus}
         />
@@ -84,7 +84,7 @@ export default function UsersPage() {
           users={users}
           onViewUser={openViewDialog}
           onEditUser={openEditDialog}
-          onDeleteUser={openDeleteDialogById}
+          onDeleteUser={handleOpenDeleteDialogById}
           onAddUser={openAddDialog}
           onToggleStatus={handleToggleUserStatus}
         />
