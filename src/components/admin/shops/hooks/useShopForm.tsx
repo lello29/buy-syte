@@ -130,7 +130,6 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
           category: data.category || "",
           fiscalCode: data.fiscalCode || "",
           vatNumber: data.vatNumber || "",
-          userId: userId || `user-${Date.now()}`,
           isActive: data.isActive || true,
           isApproved: data.isApproved || false,
           products: [],
