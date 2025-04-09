@@ -49,6 +49,13 @@ export default function UsersPage() {
     }
   };
 
+  // Create a userId-based delete function adapter
+  const handleDeleteById = (userId: string) => {
+    if (selectedUser && selectedUser.id === userId) {
+      handleDeleteUser(userId);
+    }
+  };
+
   return (
     <>
       <Helmet>
