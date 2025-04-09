@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useShopState } from './hooks/useShopState';
 import ViewShopDialog from './ViewShopDialog';
 import EditShopDialog from './dialogs/EditShopDialog';
@@ -36,6 +36,10 @@ const ShopDialogs = () => {
 
   console.log("ShopDialogs - isAddShopOpen:", isAddShopOpen);
 
+  useEffect(() => {
+    console.log("ShopDialogs useEffect - isAddShopOpen changed:", isAddShopOpen);
+  }, [isAddShopOpen]);
+
   return (
     <>
       {/* Visualizza Negozio */}
@@ -65,7 +69,10 @@ const ShopDialogs = () => {
       {/* Aggiungi Negozio */}
       <AddShopDialog 
         open={isAddShopOpen}
-        onOpenChange={setIsAddShopOpen}
+        onOpenChange={(open) => {
+          console.log("AddShopDialog onOpenChange called:", open);
+          setIsAddShopOpen(open);
+        }}
         onCreateShop={(shopData) => {
           if (shopData) {
             return handleCreateShop(shopData);

@@ -6,7 +6,7 @@ import { useShopLocation } from './useShopLocation';
 import { useShopForm } from './useShopForm';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { fetchShops } from '@/services/shop';
+import { fetchShops, createShop } from '@/services/shop';
 
 // Define ShopFormData type here
 export interface ShopFormData {
@@ -31,6 +31,7 @@ export const useShopState = () => {
   const [shopsList, setShopsList] = useState<Shop[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
   
   // Dialog state management
   const {
@@ -119,17 +120,47 @@ export const useShopState = () => {
   // Handle creating a new shop
   const handleCreateShop = useCallback(async (shopData: Partial<Shop>) => {
     try {
-      // Call the shop create action
-      await shopActions.handleAddShop();
-      setIsAddShopOpen(false);
-      toast.success("Negozio creato con successo");
-      return true;
+      setIsCreating(true);
+      console.log("Creating shop with data:", shopData);
+      
+      // Form basic shop data
+      const newShopData: Omit<Shop, 'id' | 'lastUpdated'> = {
+        name: shopData.name || 'Nuovo negozio',
+        description: shopData.description || '',
+        address: shopData.address || '',
+        phone: shopData.phone || '',
+        email: shopData.email || '',
+        category: shopData.category || 'general',
+        isActive: true,
+        isApproved: false,
+        fiscalCode: shopData.fiscalCode || '',
+        vatNumber: shopData.vatNumber || '',
+        userId: shopData.userId || '',
+        createdAt: new Date().toISOString(),
+        aiCredits: 10
+      };
+      
+      // Create the shop in the database
+      const createdShop = await createShop(newShopData);
+      
+      if (createdShop) {
+        // Update the shops list
+        setShopsList(prev => [...prev, createdShop]);
+        toast.success("Negozio creato con successo");
+        setIsAddShopOpen(false);
+        return createdShop;
+      } else {
+        toast.error("Errore durante la creazione del negozio");
+        return null;
+      }
     } catch (error) {
       console.error("Error creating shop:", error);
       toast.error("Errore durante la creazione del negozio");
-      return false;
+      return null;
+    } finally {
+      setIsCreating(false);
     }
-  }, [shopActions, setIsAddShopOpen]);
+  }, [setIsAddShopOpen, setShopsList]);
   
   // Handle deleting a shop
   const handleConfirmDeleteShop = useCallback(async () => {
@@ -156,9 +187,15 @@ export const useShopState = () => {
     setIsDeleting(true);
     try {
       // Simulate successful deletion for now
+      const result = await shopActions.handleDeleteAllShops();
       setIsDeleteAllShopsOpen(false);
-      toast.success("Tutti i negozi sono stati eliminati con successo");
-      return true;
+      if (result) {
+        toast.success("Tutti i negozi sono stati eliminati con successo");
+        setShopsList([]);
+      } else {
+        toast.error("Errore durante l'eliminazione di tutti i negozi");
+      }
+      return result;
     } catch (error) {
       console.error("Error deleting all shops:", error);
       toast.error("Errore durante l'eliminazione di tutti i negozi");
@@ -166,7 +203,7 @@ export const useShopState = () => {
     } finally {
       setIsDeleting(false);
     }
-  }, [setIsDeleteAllShopsOpen]);
+  }, [setIsDeleteAllShopsOpen, shopActions, setShopsList]);
   
   // Handle shop form changes
   const handleShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -240,6 +277,7 @@ export const useShopState = () => {
     handleEditShop,
     handleAddShop,
     isDeleting,
+    isCreating,
     shopsList,
     isLocating,
     isLoading,

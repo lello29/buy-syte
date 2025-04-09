@@ -45,11 +45,7 @@ const ShopsPageHeader: React.FC<ShopsPageHeaderProps> = ({
         <Button 
           onClick={() => {
             console.log("Add Shop button clicked");
-            if (typeof handleAddShop === 'function') {
-              handleAddShop();
-            } else {
-              console.error("handleAddShop is not a function");
-            }
+            handleAddShop();
           }} 
           className="whitespace-nowrap"
         >
