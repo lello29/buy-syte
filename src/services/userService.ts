@@ -121,17 +121,15 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
 
 /**
  * Deletes all non-admin users
+ * Implementation uses admin service to bypass RLS
  */
 export const deleteAllUsers = async (): Promise<boolean> => {
   try {
     if (isSupabaseConfigured) {
-      const { error } = await supabase
-        .from('users')
-        .delete()
-        .not('role', 'eq', 'admin');
-        
-      if (error) {
-        console.error("Error deleting all users:", error.message);
+      // Use admin service to bypass RLS
+      const success = await supabaseAdmin.delete('users');
+      
+      if (!success) {
         toast.error("Errore nell'eliminazione di tutti gli utenti");
         return false;
       }
@@ -246,32 +244,5 @@ export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updated
     console.error("Error adding user:", error);
     toast.error("Si è verificato un errore durante l'aggiunta dell'utente");
     return null;
-  }
-};
-
-/**
- * Deletes all non-admin users
- */
-export const deleteAllUsers = async (): Promise<boolean> => {
-  try {
-    if (isSupabaseConfigured) {
-      // Use admin service to bypass RLS
-      const success = await supabaseAdmin.delete('users');
-      
-      if (!success) {
-        toast.error("Errore nell'eliminazione di tutti gli utenti");
-        return false;
-      }
-    } else {
-      toast.warning("Database non configurato, impossibile eliminare gli utenti");
-      return false;
-    }
-    
-    toast.success("Tutti gli utenti non amministratori sono stati eliminati con successo");
-    return true;
-  } catch (error) {
-    console.error("Error deleting all users:", error);
-    toast.error("Si è verificato un errore durante l'eliminazione di tutti gli utenti");
-    return false;
   }
 };

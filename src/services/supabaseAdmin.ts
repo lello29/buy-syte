@@ -28,13 +28,13 @@ export const supabaseAdmin = {
         
       if (error) {
         console.error(`Admin insert error for ${table}:`, error);
-        toast.error(`Errore nell'inserimento dei dati: ${error.message}`);
+        toast.error(`Errore nell'inserimento dei dati: ${error.toString()}`);
         return null;
       }
       
       console.log(`Admin insert successful for ${table}:`, result);
       return result[0];
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Admin insert exception for ${table}:`, error);
       toast.error("Si è verificato un errore durante l'inserimento dei dati");
       return null;
@@ -62,13 +62,13 @@ export const supabaseAdmin = {
       
       if (error) {
         console.error(`Admin delete error for ${table}:`, error);
-        toast.error(`Errore nell'eliminazione dei dati: ${error.message}`);
+        toast.error(`Errore nell'eliminazione dei dati: ${error.toString()}`);
         return false;
       }
       
       console.log(`Admin delete successful for ${table}`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Admin delete exception for ${table}:`, error);
       toast.error("Si è verificato un errore durante l'eliminazione dei dati");
       return false;
