@@ -78,14 +78,13 @@ const UserDialogs: React.FC<UserDialogsProps> = ({
           open={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}
           user={selectedUser}
-          onConfirmDelete={(userId: string) => {
+          onConfirmDelete={async (userId: string) => {
             // This adapter function converts the userId parameter to match the expected function signature
             if (selectedUser && selectedUser.id === userId) {
-              return onSubmit({ id: userId, action: 'delete' }).then(() => {
-                // Return void to match the Promise<void> return type
-              });
+              const result = await onSubmit({ id: userId, action: 'delete' });
+              // Return void to match the Promise<void> return type
+              return;
             }
-            return Promise.resolve();
           }}
         />
       )}

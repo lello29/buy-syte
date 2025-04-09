@@ -4,8 +4,26 @@ import { useShopDialogState } from './useShopDialogState';
 import { useShopActions } from './useShopActions';
 import { useShopLocation } from './useShopLocation';
 import { useShopForm } from './useShopForm';
-import { Shop, ShopFormData } from '@/types';
+import { Shop } from '@/types';
 import { toast } from 'sonner';
+
+// Define ShopFormData type here
+export interface ShopFormData {
+  id?: string;
+  name: string;
+  description?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  category?: string;
+  fiscalCode?: string;
+  vatNumber?: string;
+  latitude?: number;
+  longitude?: number;
+  userId?: string;
+  isActive?: boolean;
+  isApproved?: boolean;
+}
 
 export const useShopState = () => {
   // Get shops list and loading state from database or context
@@ -116,8 +134,7 @@ export const useShopState = () => {
   const handleDeleteAllShops = useCallback(async () => {
     setIsDeleting(true);
     try {
-      // Call the delete all shops action
-      // Since there's no corresponding action, we'll just simulate success for now
+      // Simulate successful deletion for now
       setIsDeleteAllShopsOpen(false);
       toast.success("Tutti i negozi sono stati eliminati con successo");
       return true;
@@ -159,6 +176,22 @@ export const useShopState = () => {
     setIsDeleteAllShopsOpen(true);
   }, [setIsDeleteAllShopsOpen]);
   
+  const handleToggleStatus = useCallback(async (shopId: string, currentStatus: boolean) => {
+    try {
+      await shopActions.handleToggleStatus(shopId, currentStatus);
+    } catch (error) {
+      console.error("Error toggling shop status:", error);
+    }
+  }, [shopActions]);
+
+  const handleApproveShop = useCallback(async (shopId: string) => {
+    try {
+      await shopActions.handleApproveShop(shopId);
+    } catch (error) {
+      console.error("Error approving shop:", error);
+    }
+  }, [shopActions]);
+  
   return {
     selectedShop,
     isViewShopOpen,
@@ -186,8 +219,9 @@ export const useShopState = () => {
     isLocating,
     isLoading,
     handleDeleteButtonClick,
-    handleToggleStatus: shopActions.handleToggleStatus,
-    handleApproveShop: shopActions.handleApproveShop,
-    handleOpenDeleteAllDialog
+    handleToggleStatus,
+    handleApproveShop,
+    handleOpenDeleteAllDialog,
+    handleGetLocation
   };
 };

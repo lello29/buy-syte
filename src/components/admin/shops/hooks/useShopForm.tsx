@@ -4,9 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Shop, User, UserRole, ShopFormData } from "@/types";
+import { Shop } from "@/types";
 import { createShop, updateShop } from "@/services/shop";
 import { saveShopLocation } from "@/data/shop-utils/shop-location";
+import { ShopFormData } from "./useShopState";
 
 const shopSchema = z.object({
   name: z.string().min(2, "Il nome deve essere di almeno 2 caratteri"),
@@ -102,17 +103,13 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         // For new shops without a user ID, we'd typically create a shop owner user
         // This is simplified for the admin interface
         if (!userId) {
-          // In a real implementation, we would create a new user here
-          // and use its ID. For now, we're setting a placeholder message.
           console.log("Normalmente verrebbe creato un nuovo utente proprietario del negozio");
           
           // Temporary: we don't create a new user in the admin interface
-          // The actual user creation would happen elsewhere
-          const tempUser: Partial<User> = {
+          const tempUser = {
             name: `${data.name} Owner`,
             email: data.email || `${data.name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
-            role: 'shop' as UserRole,
-            // Don't include password here as it's not in the User type
+            role: 'shop',
             isActive: true,
           };
           
@@ -147,7 +144,6 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         // Add location if available
         if (data.latitude && data.longitude && newShop.id) {
           if (newShop.location) {
-            // Pass both shop ID and location to saveShopLocation
             await saveShopLocation(newShop.id, newShop.location);
           }
         }

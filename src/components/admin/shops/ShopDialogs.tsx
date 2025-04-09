@@ -28,8 +28,7 @@ const ShopDialogs = () => {
     handleCheckboxChange,
     handleSelectChange,
     handleCreateShop,
-    isDeleting,
-    shopsList,
+    handleGetLocation,
     isLocating
   } = useShopState();
 
@@ -54,7 +53,7 @@ const ShopDialogs = () => {
           onCheckboxChange={handleCheckboxChange}
           onSelectChange={handleSelectChange}
           onSaveChanges={() => handleSaveChanges(selectedShop)}
-          onGetLocation={isLocating !== undefined ? handleGetLocation : undefined}
+          onGetLocation={handleGetLocation}
           isLocating={isLocating}
         />
       )}
@@ -67,7 +66,7 @@ const ShopDialogs = () => {
           if (shopData) {
             return handleCreateShop(shopData);
           }
-          return Promise.resolve(false);
+          return Promise.resolve(null);
         }}
         onSelectChange={handleSelectChange}
       />
