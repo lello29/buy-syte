@@ -83,7 +83,8 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
           } : null
         };
         
-        const updated = await updateShop(updatedShop);
+        // Pass false as the second argument to updateShop
+        const updated = await updateShop(updatedShop, false);
         
         if (updated) {
           // If the shop has a location, save it separately
