@@ -143,15 +143,16 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
           } : null
         };
 
+        const created = await createShop(newShop);
+        
         // Add location if available
-        if (data.latitude && data.longitude && newShop.id) {
-          if (newShop.location) {
+        if (created && data.latitude && data.longitude && created.id) {
+          if (created.location) {
             // Pass the shop ID (string) instead of the entire shop object
-            await saveShopLocation(newShop.id, newShop.location);
+            await saveShopLocation(created.id, created.location);
           }
         }
 
-        const created = await createShop(newShop);
         if (created) {
           toast.success("Negozio creato con successo");
           form.reset();
