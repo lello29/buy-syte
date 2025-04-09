@@ -12,8 +12,8 @@ import { User } from '@/types';
 export default function UsersPage() {
   const {
     users,
-    loading: isLoading,
-    isDeleting: isSubmitting,
+    loading,
+    isDeleting,
     selectedUser,
     isViewDialogOpen,
     isEditDialogOpen,
@@ -23,19 +23,19 @@ export default function UsersPage() {
     setIsEditDialogOpen,
     setIsAddDialogOpen,
     setIsDeleteDialogOpen,
-    openViewDialog: handleViewUser,
-    openEditDialog: handleEditUser,
-    openAddDialog: handleAddUser,
-    openDeleteDialog: handleDeleteUser,
-    handleToggleUserStatus: handleToggleStatus,
+    openViewDialog,
+    openEditDialog,
+    openAddDialog,
+    openDeleteDialog,
+    handleToggleUserStatus,
     handleUserUpdate,
-    handleAddUser: handleAddUserImpl,
+    handleAddUser,
   } = useUsers();
 
   const isMobile = useIsMobile();
 
   // Handle loading state
-  if (isLoading) {
+  if (loading) {
     return <UserLoadingState />;
   }
 
@@ -44,7 +44,7 @@ export default function UsersPage() {
     if (selectedUser) {
       return handleUserUpdate(selectedUser.id, userData);
     } else {
-      return handleAddUserImpl(userData);
+      return handleAddUser(userData);
     }
   };
 
@@ -57,20 +57,20 @@ export default function UsersPage() {
       {isMobile ? (
         <MobileUsersList
           users={users}
-          onViewUser={(user: User) => handleViewUser(user)}
-          onEditUser={(user: User) => handleEditUser(user)}
-          onDeleteUser={(user: User) => handleDeleteUser(user)}
-          onAddUser={handleAddUser}
-          onToggleStatus={(userId: string, status: boolean) => handleToggleStatus(userId, status)}
+          onViewUser={openViewDialog}
+          onEditUser={openEditDialog}
+          onDeleteUser={openDeleteDialog}
+          onAddUser={openAddDialog}
+          onToggleStatus={handleToggleUserStatus}
         />
       ) : (
         <DesktopUsersView
           users={users}
-          onViewUser={(user: User) => handleViewUser(user)}
-          onEditUser={(user: User) => handleEditUser(user)}
-          onDeleteUser={(user: User) => handleDeleteUser(user)}
-          onAddUser={handleAddUser}
-          onToggleStatus={(userId: string, status: boolean) => handleToggleStatus(userId, status)}
+          onViewUser={openViewDialog}
+          onEditUser={openEditDialog}
+          onDeleteUser={openDeleteDialog}
+          onAddUser={openAddDialog}
+          onToggleStatus={handleToggleUserStatus}
         />
       )}
 
@@ -85,7 +85,7 @@ export default function UsersPage() {
         setIsAddDialogOpen={setIsAddDialogOpen}
         setIsDeleteDialogOpen={setIsDeleteDialogOpen}
         onSubmit={handleUserSubmit}
-        isSubmitting={isSubmitting}
+        isSubmitting={isDeleting}
       />
     </>
   );
