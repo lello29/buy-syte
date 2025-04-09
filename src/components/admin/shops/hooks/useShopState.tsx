@@ -77,8 +77,8 @@ export const useShopState = () => {
   
   const handleAddShop = useCallback(() => {
     console.log("handleAddShop chiamato in useShopState");
-    openAddShopDialog();
-  }, [openAddShopDialog]);
+    setIsAddShopOpen(true);
+  }, [setIsAddShopOpen]);
   
   const handleConfirmDeleteShop = useCallback(async () => {
     if (!selectedShop) return false;

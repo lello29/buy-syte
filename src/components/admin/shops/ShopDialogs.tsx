@@ -61,7 +61,7 @@ const ShopDialogs = () => {
         />
       )}
       
-      {/* Aggiungi Negozio - Semplificato */}
+      {/* Aggiungi Negozio */}
       <AddShopDialog 
         open={isAddShopOpen}
         onOpenChange={setIsAddShopOpen}
