@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Shop } from "@/types";
 import { createShop, updateShop } from "@/services/shop";
 import { saveShopLocation } from "@/data/shop-utils/shop-location";
-import { ShopFormData } from "./useShopState";
+import { ShopFormData } from "./types/shopTypes";
 
 const shopSchema = z.object({
   name: z.string().min(2, "Il nome deve essere di almeno 2 caratteri"),
@@ -42,8 +42,8 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
       category: shop.category || "",
       fiscalCode: shop.fiscalCode || "",
       vatNumber: shop.vatNumber || "",
-      latitude: shop.location?.latitude,
-      longitude: shop.location?.longitude,
+      latitude: shop.location?.latitude || undefined,
+      longitude: shop.location?.longitude || undefined,
       userId: shop.userId || "",
       isActive: shop.isActive !== undefined ? shop.isActive : true,
       isApproved: shop.isApproved !== undefined ? shop.isApproved : false

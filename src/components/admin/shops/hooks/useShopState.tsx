@@ -8,7 +8,7 @@ import { useShopCreation } from './useShopCreation';
 import { useShopDeletion } from './useShopDeletion';
 import { useShopHandlers } from './useShopHandlers';
 import { Shop } from '@/types';
-import { ShopFormData } from './types/shopTypes';
+import type { ShopFormData } from './types/shopTypes';
 
 export type { ShopFormData } from './types/shopTypes';
 
