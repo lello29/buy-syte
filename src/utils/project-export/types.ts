@@ -46,6 +46,7 @@ export interface ExportOptions {
   includeNginx: boolean;
   includeSetupScript: boolean;
   includeDocs: boolean;
+  includeSshConfig?: boolean;
 }
 
 /**
@@ -57,5 +58,6 @@ export const defaultExportOptions: ExportOptions = {
   includeDocker: true,
   includeNginx: true,
   includeSetupScript: true,
-  includeDocs: true
+  includeDocs: true,
+  includeSshConfig: true
 };

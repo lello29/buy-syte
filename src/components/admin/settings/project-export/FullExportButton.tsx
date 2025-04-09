@@ -16,7 +16,8 @@ export function FullExportButton() {
     includeDocker: true,
     includeNginx: true,
     includeSetupScript: true,
-    includeDocs: true
+    includeDocs: true,
+    includeSshConfig: true
   };
 
   const handleExportProject = async () => {
@@ -47,8 +48,8 @@ export function FullExportButton() {
       </Button>
       
       <p className="text-xs text-gray-500 mt-2">
-        Questa operazione esporterà l'intero progetto, inclusi database, configurazioni, codice sorgente e script di deploy.
-        Tutto il necessario verrà compresso in un file ZIP.
+        Questa operazione esporterà l'intero progetto, inclusi database, configurazioni, codice sorgente, 
+        script di deploy, configurazione SSH e tutto il necessario in un file ZIP.
       </p>
     </>
   );

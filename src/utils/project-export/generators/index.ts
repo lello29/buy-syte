@@ -6,3 +6,4 @@ export { generateNginxConfig } from './nginx-generator';
 export { generateSetupScript } from './setup-script-generator';
 export { generateDatabaseImportScript } from './database-script-generator';
 export { generateEnvExample } from './env-generator';
+export { generateSshConfig } from './ssh-config-generator';

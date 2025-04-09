@@ -6,7 +6,8 @@ import {
   generateNginxConfig, 
   generateSetupScript, 
   generateDatabaseImportScript,
-  generateEnvExample
+  generateEnvExample,
+  generateSshConfig
 } from './project-export/document-generators';
 
 /**
@@ -62,6 +63,12 @@ export class ProjectExporter {
    * @returns Contenuto del file .env.example
    */
   static generateEnvExample = generateEnvExample;
+
+  /**
+   * Genera configurazione SSH per il deployment
+   * @returns Configurazione SSH come stringa
+   */
+  static generateSshConfig = generateSshConfig;
 }
 
 // Re-export types

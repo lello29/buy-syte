@@ -6,5 +6,6 @@ export {
   generateNginxConfig,
   generateSetupScript,
   generateDatabaseImportScript,
-  generateEnvExample
+  generateEnvExample,
+  generateSshConfig
 } from './generators';

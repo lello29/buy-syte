@@ -1,7 +1,5 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Grid2X2 } from "lucide-react";
 import { ConfigExportButton } from "./ConfigExportButton";
 import { DatabaseExportButton } from "./DatabaseExportButton";
 import { DockerfileButton } from "./DockerfileButton";
@@ -9,6 +7,7 @@ import { EnvExampleButton } from "./EnvExampleButton";
 import { ImportScriptButton } from "./ImportScriptButton";
 import { DeployInstructionsButton } from "./DeployInstructionsButton";
 import { ExcelExportButton } from "./ExcelExportButton";
+import { SshConfigButton } from "./SshConfigButton";
 
 export function ExportButtonsGrid() {
   return (
@@ -20,6 +19,7 @@ export function ExportButtonsGrid() {
       <DockerfileButton />
       <ImportScriptButton />
       <DeployInstructionsButton />
+      <SshConfigButton />
     </div>
   );
 }
