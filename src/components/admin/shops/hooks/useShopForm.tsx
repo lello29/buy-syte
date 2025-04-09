@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,14 +75,16 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
     try {
       if (shop) {
         // Update existing shop
-        const updated = await updateShop({
+        const updatedShop: Shop = {
           ...shop,
           ...data,
           location: data.latitude && data.longitude ? {
             latitude: data.latitude,
             longitude: data.longitude
           } : null
-        });
+        };
+        
+        const updated = await updateShop(updatedShop);
         
         if (updated) {
           toast.success("Negozio aggiornato con successo");
@@ -112,23 +115,33 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         }
 
         // Create shop with available data
-        const newShop: Partial<Shop> = {
+        const newShop: Shop = {
+          id: `shop-${Date.now()}`,
           name: data.name,
-          description: data.description,
-          address: data.address,
-          phone: data.phone,
-          email: data.email,
-          category: data.category,
-          fiscalCode: data.fiscalCode,
-          vatNumber: data.vatNumber,
-          userId: userId,
-          isActive: data.isActive,
-          isApproved: data.isApproved,
+          description: data.description || "",
+          address: data.address || "",
+          phone: data.phone || "",
+          email: data.email || "",
+          category: data.category || "",
+          fiscalCode: data.fiscalCode || "",
+          vatNumber: data.vatNumber || "",
+          userId: userId || `user-${Date.now()}`,
+          isActive: data.isActive || true,
+          isApproved: data.isApproved || false,
+          products: [],
+          offers: [],
+          aiCredits: 100,
+          lastUpdated: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          location: data.latitude && data.longitude ? {
+            latitude: data.latitude,
+            longitude: data.longitude
+          } : null
         };
 
         // Add location if available
-        if (data.latitude && data.longitude) {
-          await saveShopLocation(newShop as Shop, {
+        if (data.latitude && data.longitude && newShop.id) {
+          await saveShopLocation(newShop, {
             latitude: data.latitude,
             longitude: data.longitude
           });

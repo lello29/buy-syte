@@ -4,7 +4,7 @@ import { Shop } from '@/types';
 import { toast } from 'sonner';
 import { fetchShops, migrateShops, deleteShop, deleteAllShops } from '@/services/shop';
 import { useShopDialogState } from './useShopDialogState';
-import { useShopForm } from './useShopForm';
+import { useShopLocation } from './useShopLocation';
 import { useShopActions } from './useShopActions';
 
 export const useShopState = () => {
@@ -12,18 +12,13 @@ export const useShopState = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [dataWasDeleted, setDataWasDeleted] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   
   // Get dialog state management
   const dialogState = useShopDialogState();
   
-  // Get shop form handling functionality
-  const formHandlers = useShopForm(
-    dialogState.selectedShop,
-    dialogState.setSelectedShop,
-    dialogState.setIsAddShopOpen,
-    dialogState.setIsEditShopOpen,
-    setShopsList
-  );
+  // Get shop location functionality
+  const locationHandlers = useShopLocation(dialogState.setSelectedShop);
   
   // Get shop actions with loading states
   const actions = useShopActions(
@@ -35,6 +30,101 @@ export const useShopState = () => {
     setShopsList,
     setIsDeleting
   );
+  
+  // Handlers for form changes
+  const handleShopChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    dialogState.setSelectedShop(prev => {
+      if (!prev) return prev;
+      
+      // Handle location fields separately
+      if (name === 'latitude' || name === 'longitude') {
+        const location = prev.location || { latitude: 0, longitude: 0 };
+        return {
+          ...prev,
+          location: {
+            ...location,
+            [name]: parseFloat(value) || 0
+          }
+        };
+      }
+      
+      return {
+        ...prev,
+        [name]: value
+      };
+    });
+  };
+  
+  // Handle checkbox changes (for boolean fields)
+  const handleCheckboxChange = (field: string, checked: boolean) => {
+    dialogState.setSelectedShop(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [field]: checked
+      };
+    });
+  };
+  
+  // Handle select changes
+  const handleSelectChange = (field: string, value: string) => {
+    dialogState.setSelectedShop(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
+  };
+  
+  // Save changes to a shop
+  const handleSaveChanges = async () => {
+    if (!dialogState.selectedShop) return;
+    
+    setIsDeleting(true); // Reuse this state for saving indicator
+    try {
+      // Call update shop service
+      const updated = await actions.handleUpdateShop(dialogState.selectedShop);
+      
+      if (updated) {
+        toast.success("Negozio aggiornato con successo");
+        dialogState.setIsEditShopOpen(false);
+        
+        // Update the shop in the list
+        setShopsList(prev => prev.map(shop => 
+          shop.id === dialogState.selectedShop?.id ? dialogState.selectedShop : shop
+        ));
+      }
+    } catch (error) {
+      console.error("Error saving shop changes:", error);
+      toast.error("Si è verificato un errore durante il salvataggio");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  
+  // Create a new shop
+  const handleCreateShop = async (shopData: Partial<Shop>) => {
+    setIsDeleting(true); // Reuse this state for saving indicator
+    try {
+      // Call create shop service
+      const createdShop = await actions.handleCreateShop(shopData);
+      
+      if (createdShop) {
+        toast.success("Negozio creato con successo");
+        dialogState.setIsAddShopOpen(false);
+        
+        // Add the new shop to the list
+        setShopsList(prev => [...prev, createdShop]);
+      }
+    } catch (error) {
+      console.error("Error creating shop:", error);
+      toast.error("Si è verificato un errore durante la creazione del negozio");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   
   // Prepare a handler for delete button clicks (opens the confirmation dialog)
   const handleDeleteButtonClick = useCallback((shopId: string) => {
@@ -117,6 +207,7 @@ export const useShopState = () => {
     setShopsList,
     isLoading,
     isDeleting,
+    isLocating: locationHandlers.isLocating,
     
     // Delete functions
     handleDeleteButtonClick,
@@ -128,9 +219,16 @@ export const useShopState = () => {
     ...dialogState,
     
     // Form handlers
-    ...formHandlers,
+    handleShopChange,
+    handleCheckboxChange,
+    handleSelectChange,
+    handleSaveChanges,
+    handleCreateShop,
     
     // Shop actions
     ...actions,
+    
+    // Location handlers
+    handleGetLocation: locationHandlers.handleGetLocation
   };
 };

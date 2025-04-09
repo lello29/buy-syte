@@ -2,7 +2,7 @@
 import React from 'react';
 import { useShopState } from './hooks/useShopState';
 import ViewShopDialog from './ViewShopDialog';
-import EditShopDialog from './EditShopDialog';
+import EditShopDialog from './dialogs/EditShopDialog';
 import DeleteShopDialog from './DeleteShopDialog';
 import AddShopDialog from './dialogs/AddShopDialog';
 import DeleteAllShopsDialog from './DeleteAllShopsDialog';
@@ -20,23 +20,16 @@ const ShopDialogs = () => {
     setIsAddShopOpen,
     setIsDeleteShopOpen,
     setIsDeleteAllShopsOpen,
-    newShop,
-    setNewShop,
-    newUser,
-    setNewUser,
-    createNewUser,
-    setCreateNewUser,
-    handleNewShopChange,
-    handleNewUserChange,
-    handleSelectChange,
     handleCreateShop,
     handleShopChange,
     handleCheckboxChange,
+    handleSelectChange,
     handleSaveChanges,
     handleConfirmDeleteShop,
     handleDeleteAllShops,
     isDeleting,
-    shopsList
+    shopsList,
+    isLocating
   } = useShopState();
 
   return (
@@ -60,6 +53,8 @@ const ShopDialogs = () => {
           onCheckboxChange={handleCheckboxChange}
           onSelectChange={handleSelectChange}
           onSaveChanges={handleSaveChanges}
+          onGetLocation={isLocating !== undefined ? undefined : undefined}
+          isLocating={isLocating}
         />
       )}
       
@@ -67,10 +62,8 @@ const ShopDialogs = () => {
       <AddShopDialog 
         open={isAddShopOpen}
         onOpenChange={setIsAddShopOpen}
-        newShop={newShop}
-        onInputChange={handleNewShopChange}
-        onSelectChange={handleSelectChange}
         onCreateShop={handleCreateShop}
+        onSelectChange={handleSelectChange}
       />
       
       {/* Elimina Negozio */}
@@ -79,7 +72,7 @@ const ShopDialogs = () => {
           open={isDeleteShopOpen}
           onOpenChange={setIsDeleteShopOpen}
           shopName={selectedShop.name}
-          onDelete={handleConfirmDeleteShop}  // Changed from onConfirmDelete to onDelete
+          onDelete={handleConfirmDeleteShop}
           isDeleting={isDeleting}
         />
       )}
