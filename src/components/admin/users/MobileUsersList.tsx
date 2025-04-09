@@ -9,8 +9,8 @@ interface MobileUsersListProps {
   onToggleStatus: (userId: string, isActive: boolean) => void;
   onDeleteUser: (userId: string) => void;
   onAddUser: () => void;
-  onEditUser: (user: User) => void;
-  onViewUser: (user: User) => void;
+  onEditUser: (userId: string) => void;
+  onViewUser: (userId: string) => void;
 }
 
 const MobileUsersList: React.FC<MobileUsersListProps> = ({ 
@@ -78,7 +78,7 @@ const MobileUsersList: React.FC<MobileUsersListProps> = ({
               <Button 
                 variant="ghost" 
                 className="flex-1 rounded-none h-12 text-blue-600 hover:bg-blue-50"
-                onClick={() => onEditUser(user)}
+                onClick={() => onEditUser(user.id)}
               >
                 <Edit className="h-5 w-5 mr-1" />
                 Modifica

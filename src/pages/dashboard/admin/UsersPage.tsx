@@ -88,8 +88,8 @@ export default function UsersPage() {
       {isMobile ? (
         <MobileUsersList
           users={users}
-          onViewUser={openViewDialog}
-          onEditUser={openEditDialog}
+          onViewUser={handleViewUserById}
+          onEditUser={handleEditUserById}
           onDeleteUser={handleOpenDeleteDialogById}
           onAddUser={openAddDialog}
           onToggleStatus={handleToggleUserStatus}
@@ -99,7 +99,7 @@ export default function UsersPage() {
           users={users}
           onViewUser={openViewDialog}
           onEditUser={openEditDialog}
-          onDeleteUser={handleOpenDeleteDialogById}
+          onDeleteUser={openDeleteDialog}
           onAddUser={openAddDialog}
           onToggleStatus={handleToggleUserStatus}
         />
