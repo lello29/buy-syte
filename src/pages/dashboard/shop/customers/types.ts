@@ -9,4 +9,9 @@ export interface Customer {
   lastPurchase?: string;
   notes?: string;
   address?: string;
+  
+  // Adding the missing properties that are referenced in components
+  orderCount?: number;
+  totalSpent?: number;
+  lastOrderDate?: string;
 }

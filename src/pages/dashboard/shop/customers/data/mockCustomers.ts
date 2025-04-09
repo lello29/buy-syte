@@ -9,7 +9,10 @@ export const mockCustomers: Customer[] = [
     phone: "+39 333 1234567",
     points: 120,
     orders: 5,
-    lastPurchase: "2023-04-01"
+    lastPurchase: "2023-04-01",
+    orderCount: 5,
+    totalSpent: 350.50,
+    lastOrderDate: "2023-04-01"
   },
   {
     id: "2",
@@ -18,7 +21,10 @@ export const mockCustomers: Customer[] = [
     phone: "+39 333 7654321",
     points: 80,
     orders: 3,
-    lastPurchase: "2023-03-15"
+    lastPurchase: "2023-03-15",
+    orderCount: 3,
+    totalSpent: 180.20,
+    lastOrderDate: "2023-03-15"
   },
   {
     id: "3",
@@ -27,6 +33,9 @@ export const mockCustomers: Customer[] = [
     phone: "+39 333 9876543",
     points: 50,
     orders: 2,
-    lastPurchase: "2023-02-20"
+    lastPurchase: "2023-02-20",
+    orderCount: 2,
+    totalSpent: 120.75,
+    lastOrderDate: "2023-02-20"
   }
 ];

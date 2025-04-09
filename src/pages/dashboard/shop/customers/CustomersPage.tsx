@@ -9,23 +9,45 @@ import ShopAuthCheck from "../components/ShopAuthCheck";
 import { useCustomerForm } from "./hooks/useCustomerForm";
 import { Customer } from "./types";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import { mockCustomers } from "./data/mockCustomers";
+import { Button } from "@/components/ui/button";
+import { DatabaseIcon } from "lucide-react";
 
 const CustomersPage: React.FC = () => {
   const isMobile = useIsMobile();
   const [initialCustomers, setInitialCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showMockDataButton, setShowMockDataButton] = useState(false);
   
-  // Load initial customers
+  // Load customers from database
   useEffect(() => {
     const loadCustomers = async () => {
       setIsLoading(true);
       try {
-        // This would normally fetch from the database
-        // For now, we'll just use an empty array until the database is set up
-        setInitialCustomers([]);
+        // Try to fetch customers from Supabase
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*');
+          
+        if (error) {
+          console.error("Error loading customers:", error);
+          setShowMockDataButton(true);
+          setInitialCustomers([]);
+        } else {
+          // If we have customers from database, use them
+          if (data && data.length > 0) {
+            setInitialCustomers(data as Customer[]);
+          } else {
+            // Database exists but is empty, show option to load mock data
+            setShowMockDataButton(true);
+            setInitialCustomers([]);
+          }
+        }
       } catch (error) {
         console.error("Error loading customers:", error);
-        toast.error("Errore nel caricamento dei clienti");
+        setShowMockDataButton(true);
+        setInitialCustomers([]);
       } finally {
         setIsLoading(false);
       }
@@ -33,6 +55,12 @@ const CustomersPage: React.FC = () => {
     
     loadCustomers();
   }, []);
+  
+  const loadMockData = () => {
+    setInitialCustomers(mockCustomers);
+    toast.success("Dati di esempio caricati con successo");
+    setShowMockDataButton(false);
+  };
   
   const {
     customers,
@@ -48,6 +76,23 @@ const CustomersPage: React.FC = () => {
       <div className="space-y-6">
         {!isMobile && (
           <CustomerHeader onAddClick={() => setIsAddDialogOpen(true)} />
+        )}
+
+        {showMockDataButton && (
+          <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6 mb-6">
+            <h3 className="text-lg font-semibold mb-2">Nessun cliente trovato</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Non sono stati trovati clienti nel database. Vuoi caricare dei dati di esempio per testare la funzionalità?
+            </p>
+            <Button 
+              onClick={loadMockData} 
+              variant="outline"
+              className="gap-2"
+            >
+              <DatabaseIcon className="h-4 w-4" />
+              Carica dati di esempio
+            </Button>
+          </div>
         )}
 
         {isMobile ? (
