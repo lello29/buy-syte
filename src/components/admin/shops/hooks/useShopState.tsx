@@ -54,7 +54,12 @@ export const useShopState = () => {
     }
   }, [dialogState.selectedShop, actions]);
   
-  // Function to delete all shops - migliorata per gestire lo stato correttamente
+  // Function to handle opening the delete all shops dialog
+  const handleOpenDeleteAllDialog = useCallback(() => {
+    dialogState.setIsDeleteAllShopsOpen(true);
+  }, [dialogState]);
+  
+  // Function to delete all shops
   const handleDeleteAllShops = useCallback(async () => {
     setIsDeleting(true);
     try {
@@ -65,6 +70,7 @@ export const useShopState = () => {
       if (success) {
         setShopsList([]);
         setDataWasDeleted(true); // Segna che i dati sono stati eliminati
+        dialogState.setIsDeleteAllShopsOpen(false); // Chiudi il dialogo dopo l'eliminazione
         toast.success("Tutti i negozi sono stati eliminati con successo");
       } else {
         toast.error("Si è verificato un errore durante l'eliminazione dei negozi");
@@ -75,7 +81,7 @@ export const useShopState = () => {
     } finally {
       setIsDeleting(false);
     }
-  }, []);
+  }, [dialogState]);
   
   // Load shops data
   useEffect(() => {
@@ -116,6 +122,7 @@ export const useShopState = () => {
     handleDeleteButtonClick,
     handleConfirmDeleteShop,
     handleDeleteAllShops,
+    handleOpenDeleteAllDialog,
     
     // Dialog state
     ...dialogState,

@@ -1,48 +1,93 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useShopState } from './hooks/useShopState';
+import ViewShopDialog from './ViewShopDialog';
+import EditShopDialog from './EditShopDialog';
 import DeleteShopDialog from './DeleteShopDialog';
+import AddShopDialog from './dialogs/AddShopDialog';
 import DeleteAllShopsDialog from './DeleteAllShopsDialog';
-import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
 
 const ShopDialogs = () => {
-  // Get all state and handlers from our hook
   const {
     selectedShop,
     isViewShopOpen,
-    setIsViewShopOpen,
     isEditShopOpen,
-    setIsEditShopOpen,
     isAddShopOpen,
-    setIsAddShopOpen,
     isDeleteShopOpen,
+    isDeleteAllShopsOpen,
+    setIsViewShopOpen,
+    setIsEditShopOpen,
+    setIsAddShopOpen,
     setIsDeleteShopOpen,
-    isDeleting,
+    setIsDeleteAllShopsOpen,
+    newShop,
+    setNewShop,
+    newUser,
+    setNewUser,
+    createNewUser,
+    setCreateNewUser,
+    handleNewShopChange,
+    handleNewUserChange,
+    handleSelectChange,
+    handleCreateShop,
+    handleShopChange,
+    handleCheckboxChange,
+    handleSaveChanges,
     handleConfirmDeleteShop,
     handleDeleteAllShops,
+    isDeleting,
     shopsList
   } = useShopState();
 
-  const [isDeleteAllDialogOpen, setIsDeleteAllDialogOpen] = useState(false);
-
   return (
     <>
-      {/* We'll add more dialogs in the future (View, Edit, Add) */}
+      {/* Visualizza Negozio */}
+      {selectedShop && (
+        <ViewShopDialog
+          open={isViewShopOpen}
+          onOpenChange={setIsViewShopOpen}
+          shop={selectedShop}
+        />
+      )}
       
-      {/* Delete Shop Dialog */}
-      <DeleteShopDialog
-        open={isDeleteShopOpen}
-        onOpenChange={setIsDeleteShopOpen}
-        onDelete={handleConfirmDeleteShop}
-        isDeleting={isDeleting}
-        shopName={selectedShop?.name}
+      {/* Modifica Negozio */}
+      {selectedShop && (
+        <EditShopDialog
+          open={isEditShopOpen}
+          onOpenChange={setIsEditShopOpen}
+          shop={selectedShop}
+          onShopChange={handleShopChange}
+          onCheckboxChange={handleCheckboxChange}
+          onSelectChange={handleSelectChange}
+          onSaveChanges={handleSaveChanges}
+        />
+      )}
+      
+      {/* Aggiungi Negozio */}
+      <AddShopDialog 
+        open={isAddShopOpen}
+        onOpenChange={setIsAddShopOpen}
+        newShop={newShop}
+        onInputChange={handleNewShopChange}
+        onSelectChange={handleSelectChange}
+        onCreateShop={handleCreateShop}
       />
-
-      {/* Delete All Shops Dialog */}
+      
+      {/* Elimina Negozio */}
+      {selectedShop && (
+        <DeleteShopDialog
+          open={isDeleteShopOpen}
+          onOpenChange={setIsDeleteShopOpen}
+          shopName={selectedShop.name}
+          onConfirmDelete={handleConfirmDeleteShop}
+          isDeleting={isDeleting}
+        />
+      )}
+      
+      {/* Elimina Tutti i Negozi */}
       <DeleteAllShopsDialog
-        open={isDeleteAllDialogOpen}
-        onOpenChange={setIsDeleteAllDialogOpen}
+        open={isDeleteAllShopsOpen}
+        onOpenChange={setIsDeleteAllShopsOpen}
         onDeleteAll={handleDeleteAllShops}
         isDeleting={isDeleting}
         shopsCount={shopsList.length}

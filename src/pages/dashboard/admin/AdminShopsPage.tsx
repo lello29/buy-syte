@@ -28,7 +28,7 @@ export default function AdminShopsPage() {
     handleDeleteButtonClick,
     handleToggleStatus,
     handleApproveShop,
-    handleDeleteAllShops
+    handleOpenDeleteAllDialog
   } = useShopState();
   
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function AdminShopsPage() {
   const DeleteAllButton = () => (
     <Button 
       variant="destructive"
-      onClick={handleDeleteAllShops}
+      onClick={handleOpenDeleteAllDialog}
       disabled={isDeleting || shopsList.length === 0}
       className="ml-2"
     >

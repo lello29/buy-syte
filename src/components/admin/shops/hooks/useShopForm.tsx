@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
-import { Shop } from '@/types';
+import { Shop, User } from '@/types';
 import { toast } from 'sonner';
 import { addShop, updateShop } from '@/services/shop';
+import { addUser } from '@/services/userService';
 
 export interface ShopFormData {
   name: string;
@@ -12,12 +13,24 @@ export interface ShopFormData {
   fiscalCode: string;
   vatNumber: string;
   category: string;
+  userId?: string;
+}
+
+export interface NewUserData {
+  name: string;
+  email: string;
+  role: string;
 }
 
 export interface UseShopFormReturn {
   newShop: ShopFormData;
   setNewShop: React.Dispatch<React.SetStateAction<ShopFormData>>;
+  newUser: NewUserData;
+  setNewUser: React.Dispatch<React.SetStateAction<NewUserData>>;
+  createNewUser: boolean;
+  setCreateNewUser: React.Dispatch<React.SetStateAction<boolean>>;
   handleNewShopChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleNewUserChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectChange: (field: string, value: string) => void;
   handleCreateShop: () => void;
   handleShopChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
@@ -41,22 +54,71 @@ export const useShopForm = (
     fiscalCode: '',
     vatNumber: '',
     category: '',
+    userId: '',
   });
+  
+  const [newUser, setNewUser] = useState<NewUserData>({
+    name: '',
+    email: '',
+    role: 'shop',
+  });
+  
+  const [createNewUser, setCreateNewUser] = useState(false);
   
   const handleNewShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewShop(prev => ({ ...prev, [name]: value }));
   }, []);
   
+  const handleNewUserChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewUser(prev => ({ ...prev, [name]: value }));
+  }, []);
+  
   const handleCreateShop = useCallback(async () => {
     if (!newShop.name || !newShop.email || !newShop.address) {
-      toast.error('Compila tutti i campi obbligatori');
+      toast.error('Compila tutti i campi obbligatori del negozio');
+      return;
+    }
+    
+    let userId = newShop.userId;
+    
+    if (createNewUser) {
+      if (!newUser.name || !newUser.email) {
+        toast.error('Compila tutti i campi obbligatori per il nuovo utente');
+        return;
+      }
+      
+      try {
+        const createdUser = await addUser({
+          name: newUser.name,
+          email: newUser.email,
+          role: 'shop',
+          isActive: true,
+          favorites: [],
+          loyaltyPoints: 0
+        });
+        
+        if (!createdUser) {
+          toast.error('Errore nella creazione del nuovo utente');
+          return;
+        }
+        
+        userId = createdUser.id;
+        toast.success(`Utente ${newUser.name} creato con successo`);
+      } catch (error) {
+        console.error("Errore nella creazione dell'utente:", error);
+        toast.error("Errore nella creazione dell'utente");
+        return;
+      }
+    } else if (!userId) {
+      toast.error('Seleziona un utente per il negozio');
       return;
     }
     
     try {
       const shopData: Omit<Shop, 'id' | 'lastUpdated'> = {
-        userId: '',
+        userId: userId || '',
         name: newShop.name,
         description: newShop.description,
         address: newShop.address,
@@ -86,14 +148,22 @@ export const useShopForm = (
           fiscalCode: '',
           vatNumber: '',
           category: '',
+          userId: '',
         });
+        setNewUser({
+          name: '',
+          email: '',
+          role: 'shop',
+        });
+        setCreateNewUser(false);
         setIsAddShopOpen(false);
+        toast.success("Negozio creato con successo");
       }
     } catch (error) {
-      console.error("Error creating shop:", error);
+      console.error("Errore nella creazione del negozio:", error);
       toast.error("Errore nella creazione del negozio");
     }
-  }, [newShop, setShopsList, setIsAddShopOpen]);
+  }, [newShop, newUser, createNewUser, setShopsList, setIsAddShopOpen]);
   
   const handleShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (!selectedShop) return;
@@ -145,7 +215,12 @@ export const useShopForm = (
   return {
     newShop,
     setNewShop,
+    newUser,
+    setNewUser,
+    createNewUser,
+    setCreateNewUser,
     handleNewShopChange,
+    handleNewUserChange,
     handleSelectChange,
     handleCreateShop,
     handleShopChange,
