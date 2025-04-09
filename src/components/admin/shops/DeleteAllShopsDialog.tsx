@@ -28,7 +28,14 @@ const DeleteAllShopsDialog: React.FC<DeleteAllShopsDialogProps> = ({
 }) => {
   const handleDelete = () => {
     console.log("Delete all button clicked, executing onDeleteAll callback");
+    
+    // Esegui la funzione di eliminazione
     onDeleteAll();
+    
+    // Chiudi il dialogo dopo l'operazione
+    if (!isDeleting) {
+      onOpenChange(false);
+    }
   };
 
   return (

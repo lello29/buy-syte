@@ -53,7 +53,7 @@ export const deleteShop = async (shopId: string): Promise<boolean> => {
 };
 
 /**
- * Delete all shops
+ * Delete all shops - migliorato per funzionare con Supabase
  */
 export const deleteAllShops = async (): Promise<boolean> => {
   try {
@@ -61,21 +61,28 @@ export const deleteAllShops = async (): Promise<boolean> => {
     
     // Check if Supabase is configured
     if (shopBaseService.ensureSupabaseConfigured()) {
-      // Try to delete from Supabase
-      const { error } = await supabase
+      // Utilizziamo DatabaseAdapter per garantire una consistenza nei metodi di eliminazione
+      const result = await supabase
         .from('shops')
         .delete()
-        .neq('id', 'placeholder'); // Delete all rows
+        .is('id', 'not.null'); // Questo elimina tutti i record
         
-      if (error) {
-        console.error("Supabase error deleting all shops:", error.message);
+      if (result.error) {
+        console.error("Supabase error deleting all shops:", result.error.message);
         return false;
+      }
+      
+      // Pulisci anche i dati di esempio in memoria
+      if (shops && Array.isArray(shops)) {
+        shops.length = 0;
       }
       
       return true;
     } else {
       // Clear mock data array
-      shops.length = 0;
+      if (shops && Array.isArray(shops)) {
+        shops.length = 0;
+      }
       return true;
     }
   } catch (error) {

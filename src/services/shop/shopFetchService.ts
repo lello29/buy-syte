@@ -1,4 +1,3 @@
-
 import { Shop } from "@/types";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -28,20 +27,15 @@ export const fetchShops = async (): Promise<Shop[]> => {
           }
           
           toast.error("Errore nel caricamento dei negozi");
-          return shopBaseService.getMockShops();
+          return []; // Ritorna un array vuoto invece dei dati di esempio
         }
         
-        // Check if we got data back
-        if (data && data.length > 0) {
-          return data.map(shop => shopBaseService.transformShopFromDB(shop));
-        } else {
-          console.log("No shops found in database, using mock data");
-          toast.warning("Nessun negozio trovato nel database. Clicca su 'Migra Negozi di Esempio'");
-          return shopBaseService.getMockShops();
-        }
+        // Ritorna i dati dal database, anche se sono vuoti (array vuoto)
+        console.log(`Found ${data?.length || 0} shops in the database`);
+        return data ? data.map(shop => shopBaseService.transformShopFromDB(shop)) : [];
       } catch (dbError) {
         console.error("Database error:", dbError);
-        return shopBaseService.getMockShops();
+        return []; // Ritorna un array vuoto invece dei dati di esempio
       }
     } else {
       // Supabase not configured, use mock data
@@ -51,7 +45,7 @@ export const fetchShops = async (): Promise<Shop[]> => {
   } catch (error) {
     console.error("Error fetching shops:", error);
     toast.error("Si è verificato un errore durante il caricamento dei negozi");
-    return shopBaseService.getMockShops();
+    return []; // Ritorna un array vuoto invece dei dati di esempio
   }
 };
 

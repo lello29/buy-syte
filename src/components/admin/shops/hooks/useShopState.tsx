@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { fetchShops, migrateShops, deleteShop } from '@/services/shop';
+import { fetchShops, migrateShops, deleteShop, deleteAllShops } from '@/services/shop';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopForm } from './useShopForm';
 import { useShopActions } from './useShopActions';
@@ -11,6 +11,7 @@ export const useShopState = () => {
   const [shopsList, setShopsList] = useState<Shop[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [dataWasDeleted, setDataWasDeleted] = useState(false);
   
   // Get dialog state management
   const dialogState = useShopDialogState();
@@ -53,26 +54,28 @@ export const useShopState = () => {
     }
   }, [dialogState.selectedShop, actions]);
   
-  // Function to delete all shops
+  // Function to delete all shops - migliorata per gestire lo stato correttamente
   const handleDeleteAllShops = useCallback(async () => {
     setIsDeleting(true);
     try {
       console.log("Deleting all shops...");
       
-      // Sequentially delete each shop to avoid overwhelming the database
-      for (const shop of shopsList) {
-        await deleteShop(shop.id);
-      }
+      const success = await deleteAllShops();
       
-      setShopsList([]);
-      toast.success("Tutti i negozi sono stati eliminati con successo");
+      if (success) {
+        setShopsList([]);
+        setDataWasDeleted(true); // Segna che i dati sono stati eliminati
+        toast.success("Tutti i negozi sono stati eliminati con successo");
+      } else {
+        toast.error("Si è verificato un errore durante l'eliminazione dei negozi");
+      }
     } catch (error) {
       console.error("Error deleting all shops:", error);
       toast.error("Si è verificato un errore durante l'eliminazione dei negozi");
     } finally {
       setIsDeleting(false);
     }
-  }, [shopsList]);
+  }, []);
   
   // Load shops data
   useEffect(() => {
@@ -81,7 +84,15 @@ export const useShopState = () => {
       try {
         console.log("Loading shops data...");
         const shopsData = await fetchShops();
-        setShopsList(shopsData || []);
+        
+        // Se i dati sono stati eliminati e non ci sono dati dal database,
+        // manteniamo l'array vuoto invece di caricare i dati di esempio
+        if (dataWasDeleted && shopsData.length === 0) {
+          console.log("Data was deleted, keeping empty array");
+          setShopsList([]);
+        } else {
+          setShopsList(shopsData || []);
+        }
       } catch (error) {
         console.error("Error loading shops:", error);
         toast.error("Si è verificato un errore durante il caricamento dei negozi");
@@ -92,7 +103,7 @@ export const useShopState = () => {
     };
     
     loadShops();
-  }, []);
+  }, [dataWasDeleted]);
   
   return {
     // Shops data
