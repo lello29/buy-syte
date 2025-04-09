@@ -88,7 +88,6 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         
         if (updated) {
           // If the shop has a location, save it separately
-          // Fix: Pass the shop ID (string) instead of the entire shop object
           if (updatedShop.location && updatedShop.id) {
             await saveShopLocation(updatedShop.id, updatedShop.location);
           }
@@ -147,7 +146,6 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
         
         // Add location if available
         if (created && created.id && created.location) {
-          // Fix: Pass the shop ID (string) instead of the entire shop object
           await saveShopLocation(created.id, created.location);
         }
 
