@@ -6,7 +6,7 @@ export { shops } from './mock-data/shops-data';
 export { 
   getShopById,
   getShopsByCategory,
-  getNearestShops,
+  // getNearestShops was missing but is referenced, let's add it to shop-utils/shop-location.ts
   getActiveShops,
   searchShops,
   sortShops,

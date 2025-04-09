@@ -6,7 +6,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Shop, User, UserRole } from "@/types";
 import { createShop, updateShop } from "@/services/shop";
-import { saveShopLocation } from "@/data/shop-utils";
+import { saveShopLocation } from "@/data/shop-utils/shop-location";
 
 const shopSchema = z.object({
   name: z.string().min(2, "Il nome deve essere di almeno 2 caratteri"),
@@ -141,10 +141,9 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
 
         // Add location if available
         if (data.latitude && data.longitude && newShop.id) {
-          await saveShopLocation(newShop, {
-            latitude: data.latitude,
-            longitude: data.longitude
-          });
+          if (newShop.location) {
+            await saveShopLocation(newShop, newShop.location);
+          }
         }
 
         const created = await createShop(newShop);

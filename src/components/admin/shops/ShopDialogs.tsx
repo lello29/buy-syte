@@ -20,13 +20,13 @@ const ShopDialogs = () => {
     setIsAddShopOpen,
     setIsDeleteShopOpen,
     setIsDeleteAllShopsOpen,
-    handleCreateShop,
-    handleShopChange,
-    handleCheckboxChange,
-    handleSelectChange,
     handleSaveChanges,
     handleConfirmDeleteShop,
     handleDeleteAllShops,
+    handleShopChange,
+    handleCheckboxChange,
+    handleSelectChange,
+    handleCreateShop,
     isDeleting,
     shopsList,
     isLocating
@@ -62,7 +62,7 @@ const ShopDialogs = () => {
       <AddShopDialog 
         open={isAddShopOpen}
         onOpenChange={setIsAddShopOpen}
-        onCreateShop={handleCreateShop}
+        onCreateShop={(shopData) => handleCreateShop(shopData)}
         onSelectChange={handleSelectChange}
       />
       

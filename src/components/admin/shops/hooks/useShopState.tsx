@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { fetchShops, migrateShops, deleteShop, deleteAllShops } from '@/services/shop';
+import { fetchShops, migrateShops, deleteShop, deleteAllShops, updateShop, createShop } from '@/services/shop';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopLocation } from './useShopLocation';
 import { useShopActions } from './useShopActions';
@@ -85,7 +85,7 @@ export const useShopState = () => {
     setIsDeleting(true); // Reuse this state for saving indicator
     try {
       // Call update shop service
-      const updated = await actions.handleUpdateShop(dialogState.selectedShop);
+      const updated = await updateShop(dialogState.selectedShop);
       
       if (updated) {
         toast.success("Negozio aggiornato con successo");
@@ -108,8 +108,30 @@ export const useShopState = () => {
   const handleCreateShop = async (shopData: Partial<Shop>) => {
     setIsDeleting(true); // Reuse this state for saving indicator
     try {
+      // Create a new shop object from the data
+      const newShop: Shop = {
+        id: `shop-${Date.now()}`,
+        name: shopData.name || "New Shop",
+        description: shopData.description || "",
+        address: shopData.address || "",
+        phone: shopData.phone || "",
+        email: shopData.email || "",
+        category: shopData.category || "",
+        userId: shopData.userId || `user-${Date.now()}`,
+        isActive: shopData.isActive !== undefined ? shopData.isActive : true,
+        isApproved: shopData.isApproved !== undefined ? shopData.isApproved : false,
+        products: [],
+        offers: [],
+        aiCredits: 100,
+        lastUpdated: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        fiscalCode: shopData.fiscalCode || "",
+        vatNumber: shopData.vatNumber || "",
+        location: shopData.location || null
+      };
+      
       // Call create shop service
-      const createdShop = await actions.handleCreateShop(shopData);
+      const createdShop = await createShop(newShop);
       
       if (createdShop) {
         toast.success("Negozio creato con successo");
@@ -118,9 +140,11 @@ export const useShopState = () => {
         // Add the new shop to the list
         setShopsList(prev => [...prev, createdShop]);
       }
+      return createdShop;
     } catch (error) {
       console.error("Error creating shop:", error);
       toast.error("Si è verificato un errore durante la creazione del negozio");
+      return null;
     } finally {
       setIsDeleting(false);
     }
