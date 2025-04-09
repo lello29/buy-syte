@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { User, UserRole } from "@/types";
 import { toast } from "sonner";
-import { fetchUsers, deleteUser, toggleUserStatus, updateUser, addUser, deleteAllUsers } from "@/services/userService";
+import { fetchUsers, deleteUser, toggleUserStatus, updateUser, addUser, deleteAllUsers } from "@/services/user";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export const useUsers = () => {
