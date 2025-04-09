@@ -1,142 +1,111 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
 
 /**
- * Adapter per operazioni del database che gestisce gli errori di tipo
- * e fornisce fallback per dati mock
+ * Adapter for database operations, supporting both mock data and Supabase
  */
 export class DatabaseAdapter {
   /**
-   * Esegue una query select con gestione degli errori
-   * @param table Nome della tabella
-   * @param mockData Dati mock da restituire in caso di errore
-   * @param columns Colonne da selezionare (default: *)
+   * Count records in a table
+   * @param tableName The name of the table
+   * @returns Count of records
    */
-  static async select<T>(table: string, mockData: T[], columns = '*'): Promise<T[]> {
+  static async count(tableName: string): Promise<number> {
     try {
-      // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
-      const { data, error } = await supabase
-        .from(table)
-        .select(columns);
-        
-      if (error) {
-        console.error(`Errore nel recupero dati da ${table}:`, error);
-        return mockData;
-      }
-      
-      return (data as T[]) || mockData;
-    } catch (error) {
-      console.error(`Eccezione durante il recupero dati da ${table}:`, error);
-      return mockData;
-    }
-  }
-  
-  /**
-   * Inserisce un record con gestione degli errori
-   * @param table Nome della tabella
-   * @param record Record da inserire
-   */
-  static async insert<T>(table: string, record: any): Promise<T | null> {
-    try {
-      // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
-      const { data, error } = await supabase
-        .from(table)
-        .insert(record)
-        .select()
-        .single();
-        
-      if (error) {
-        console.error(`Errore nell'inserimento in ${table}:`, error);
-        toast.error(`Errore durante l'inserimento in ${table}`);
-        return null;
-      }
-      
-      return data as T;
-    } catch (error) {
-      console.error(`Eccezione durante l'inserimento in ${table}:`, error);
-      toast.error(`Si è verificato un errore durante l'inserimento`);
-      return null;
-    }
-  }
-  
-  /**
-   * Aggiorna un record con gestione degli errori
-   * @param table Nome della tabella
-   * @param record Dati da aggiornare
-   * @param column Colonna per la condizione where
-   * @param value Valore per la condizione where
-   */
-  static async update<T>(table: string, record: any, column: string, value: any): Promise<boolean> {
-    try {
-      // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
-      const { error } = await supabase
-        .from(table)
-        .update(record)
-        .eq(column, value);
-        
-      if (error) {
-        console.error(`Errore nell'aggiornamento di ${table}:`, error);
-        toast.error(`Errore durante l'aggiornamento`);
-        return false;
-      }
-      
-      return true;
-    } catch (error) {
-      console.error(`Eccezione durante l'aggiornamento di ${table}:`, error);
-      toast.error(`Si è verificato un errore durante l'aggiornamento`);
-      return false;
-    }
-  }
-  
-  /**
-   * Elimina un record con gestione degli errori
-   * @param table Nome della tabella
-   * @param column Colonna per la condizione where
-   * @param value Valore per la condizione where
-   */
-  static async delete(table: string, column: string, value: any): Promise<boolean> {
-    try {
-      // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
-      const { error } = await supabase
-        .from(table)
-        .delete()
-        .eq(column, value);
-        
-      if (error) {
-        console.error(`Errore nell'eliminazione da ${table}:`, error);
-        toast.error(`Errore durante l'eliminazione`);
-        return false;
-      }
-      
-      return true;
-    } catch (error) {
-      console.error(`Eccezione durante l'eliminazione da ${table}:`, error);
-      toast.error(`Si è verificato un errore durante l'eliminazione`);
-      return false;
-    }
-  }
-  
-  /**
-   * Esegue una query count con gestione degli errori
-   * @param table Nome della tabella
-   */
-  static async count(table: string): Promise<number> {
-    try {
-      // @ts-ignore - Ignoriamo l'errore TypeScript relativo al tipo 'never'
-      const { count, error } = await supabase
-        .from(table)
-        .select('*', { count: 'exact', head: true });
-        
-      if (error) {
-        console.error(`Errore nel conteggio di ${table}:`, error);
+      if (!isSupabaseConfigured) {
+        console.log(`Supabase not configured, returning mock count for ${tableName}`);
         return 0;
       }
-      
+
+      const { count, error } = await supabase
+        .from(tableName)
+        .select('*', { count: 'exact', head: true });
+
+      if (error) {
+        console.error(`Error counting ${tableName}:`, error);
+        return 0;
+      }
+
       return count || 0;
     } catch (error) {
-      console.error(`Eccezione durante il conteggio di ${table}:`, error);
+      console.error(`Error in count operation for ${tableName}:`, error);
       return 0;
+    }
+  }
+
+  /**
+   * Select records from a table
+   * @param tableName The name of the table 
+   * @param fallbackData Fallback data if table doesn't exist
+   * @returns Array of records or fallback data
+   */
+  static async select<T>(tableName: string, fallbackData: T[] = []): Promise<T[]> {
+    try {
+      if (!isSupabaseConfigured) {
+        console.log(`Supabase not configured, returning fallback data for ${tableName}`);
+        return fallbackData;
+      }
+
+      const { data, error } = await supabase
+        .from(tableName)
+        .select('*');
+
+      if (error) {
+        console.error(`Error selecting from ${tableName}:`, error);
+        return fallbackData;
+      }
+
+      return (data as T[]) || fallbackData;
+    } catch (error) {
+      console.error(`Error in select operation for ${tableName}:`, error);
+      return fallbackData;
+    }
+  }
+
+  /**
+   * Delete all records from a table except those matching a condition
+   * @param tableName The name of the table
+   * @param excludeColumn Column to use for exclusion
+   * @param excludeValue Value to exclude
+   * @returns Success status
+   */
+  static async deleteAll(
+    tableName: string, 
+    excludeColumn?: string, 
+    excludeValue?: string | string[]
+  ): Promise<boolean> {
+    try {
+      if (!isSupabaseConfigured) {
+        console.log(`Supabase not configured, cannot delete from ${tableName}`);
+        toast.warning("Database non configurato, impossibile eliminare i dati");
+        return false;
+      }
+
+      let query = supabase.from(tableName).delete();
+      
+      // Apply exclusion if specified
+      if (excludeColumn && excludeValue) {
+        if (Array.isArray(excludeValue)) {
+          // Exclude multiple values
+          query = query.not(excludeColumn, 'in', `(${excludeValue.map(v => `'${v}'`).join(',')})`);
+        } else {
+          // Exclude a single value
+          query = query.not(excludeColumn, 'eq', excludeValue);
+        }
+      }
+
+      const { error } = await query;
+
+      if (error) {
+        console.error(`Error deleting from ${tableName}:`, error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error(`Error in deleteAll operation for ${tableName}:`, error);
+      return false;
     }
   }
 }

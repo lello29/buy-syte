@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { Database, Server, FileSpreadsheet, Loader2 } from "lucide-react";
+import { Database, Server, FileSpreadsheet, Loader2, Trash } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -15,11 +14,13 @@ import { SupabaseConnectionTest } from "./components/SupabaseConnectionTest";
 import { Link } from "react-router-dom";
 import { verifyRequiredTables } from "@/lib/supabase";
 import { toast } from "sonner";
+import { deleteAllDemoData } from "@/pages/api/delete-demo-data";
 
 export function DatabaseMigrationCard() {
   const [isMigrating, setIsMigrating] = useState(false);
   const [missingTables, setMissingTables] = useState<string[]>([]);
   const [isChecking, setIsChecking] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const checkTables = async () => {
@@ -42,7 +43,6 @@ export function DatabaseMigrationCard() {
     setIsMigrating(true);
     try {
       await migrateAllData();
-      // Ricontrolliamo le tabelle dopo la migrazione
       const { allTablesExist, missingTables } = await verifyRequiredTables();
       setMissingTables(missingTables);
       
@@ -56,6 +56,24 @@ export function DatabaseMigrationCard() {
       toast.error("Si è verificato un errore durante la migrazione");
     } finally {
       setIsMigrating(false);
+    }
+  };
+
+  const handleDeleteAllData = async () => {
+    setIsDeleting(true);
+    try {
+      const result = await deleteAllDemoData();
+      
+      if (result.success) {
+        toast.success("Tutti i dati demo sono stati eliminati con successo!");
+      } else {
+        toast.error(result.error || "Errore durante l'eliminazione dei dati");
+      }
+    } catch (error) {
+      console.error("Data deletion error:", error);
+      toast.error("Si è verificato un errore durante l'eliminazione dei dati demo");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -137,6 +155,23 @@ export function DatabaseMigrationCard() {
                 <FileSpreadsheet className="mr-2 h-4 w-4" />
                 Strumenti Import/Export
               </Link>
+            </Button>
+          </div>
+
+          <Separator />
+
+          <div className="bg-muted/50 p-4 rounded-lg">
+            <h3 className="font-medium mb-2">Eliminazione Dati Demo</h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Eliminazione dei dati di esempio per test e sviluppo
+            </p>
+            <Button 
+              onClick={handleDeleteAllData} 
+              className="w-full sm:w-auto"
+              disabled={isDeleting}
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              {isDeleting ? "Eliminazione in corso..." : "Elimina Dati Demo"}
             </Button>
           </div>
         </div>

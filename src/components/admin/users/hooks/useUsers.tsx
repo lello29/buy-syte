@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { User } from "@/types";
 import { toast } from "sonner";
-import { fetchUsers, deleteUser, toggleUserStatus, updateUser, addUser, deleteAllUsers } from "@/services/user";
+import { fetchUsers, deleteUser, toggleUserStatus, updateUser, addUser, deleteAllUsers } from "@/services/userService";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export const useUsers = () => {
@@ -72,21 +72,31 @@ export const useUsers = () => {
     try {
       setIsDeleting(true);
       
-      const adminUsers = users.filter(user => user.role === "admin");
-      const nonAdminUsers = users.filter(user => user.role !== "admin");
-      
-      if (nonAdminUsers.length === 0) {
-        toast.info("Non ci sono utenti non amministratori da eliminare");
-        setIsDeleting(false);
-        return;
+      if (isSupabaseConfigured) {
+        const success = await deleteAllUsers();
+        
+        if (success) {
+          const adminUsers = users.filter(user => user.role === "admin");
+          setUsers(adminUsers);
+          toast.success("Tutti gli utenti non amministratori sono stati eliminati con successo");
+        }
+      } else {
+        const adminUsers = users.filter(user => user.role === "admin");
+        const nonAdminUsers = users.filter(user => user.role !== "admin");
+        
+        if (nonAdminUsers.length === 0) {
+          toast.info("Non ci sono utenti non amministratori da eliminare");
+          setIsDeleting(false);
+          return;
+        }
+        
+        for (const user of nonAdminUsers) {
+          await deleteUser(user.id);
+        }
+        
+        setUsers(adminUsers);
+        toast.success("Tutti gli utenti non amministratori sono stati eliminati con successo");
       }
-      
-      for (const user of nonAdminUsers) {
-        await deleteUser(user.id);
-      }
-      
-      setUsers(adminUsers);
-      toast.success("Tutti gli utenti non amministratori sono stati eliminati con successo");
     } catch (error) {
       console.error("Error deleting all users:", error);
       toast.error("Errore durante l'eliminazione degli utenti");

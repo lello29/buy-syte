@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -80,6 +79,12 @@ const UsersPage = () => {
     </Button>
   );
 
+  const handleUserUpdatedWrapper = (user: any) => {
+    if (user && user.id) {
+      handleUserUpdate(user.id, user);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {isMobile ? (
@@ -123,11 +128,7 @@ const UsersPage = () => {
         setIsAddDialogOpen={setIsAddDialogOpen}
         setIsEditDialogOpen={setIsEditDialogOpen}
         onDeleteUser={handleDeleteUser}
-        onUserUpdated={(user) => {
-          if (user && user.id) {
-            handleUserUpdate(user.id, user);
-          }
-        }}
+        onUserUpdated={handleUserUpdatedWrapper}
         onAddUser={handleAddUser}
         onEditUser={openEditDialog}
         onDeleteUserDialog={openDeleteDialog}

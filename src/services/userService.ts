@@ -1,9 +1,11 @@
 
 import { User } from "@/types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { users as mockUsers } from "@/data/users";
 import { toast } from "sonner";
 
+/**
+ * Fetches users from the database
+ */
 export const fetchUsers = async (): Promise<User[]> => {
   try {
     if (isSupabaseConfigured) {
@@ -15,15 +17,8 @@ export const fetchUsers = async (): Promise<User[]> => {
           
         if (error) {
           console.error("Error fetching users:", error.message);
-          // If the table doesn't exist yet, just use mock data without showing error toast
-          if (error.message.includes("does not exist") || error.code === '42P01') {
-            console.log("Users table does not exist yet, using mock data");
-            toast.warning("Tabella utenti non trovata. Migra i dati dal pannello Impostazioni prima di procedere.");
-            return mockUsers;
-          }
-          
           toast.error("Errore nel caricamento degli utenti");
-          return mockUsers;
+          return [];
         }
         
         if (data && data.length > 0) {
@@ -41,26 +36,28 @@ export const fetchUsers = async (): Promise<User[]> => {
             vatNumber: user.vat_number
           }));
         } else {
-          // Se non ci sono utenti nel database, probabilmente dobbiamo fare la migrazione
-          toast.warning("Nessun utente trovato nel database. Migra i dati dal pannello Impostazioni.");
-          return mockUsers;
+          toast.warning("Nessun utente trovato nel database.");
+          return [];
         }
       } catch (dbError) {
         console.error("Database error:", dbError);
-        // Silent fallback to mock data for database issues
-        return mockUsers;
+        toast.error("Errore di connessione al database");
+        return [];
       }
     }
     
-    console.log("No users found or Supabase not configured correctly, using mock data");
-    return mockUsers;
+    toast.warning("Database non configurato correttamente");
+    return [];
   } catch (error) {
     console.error("Error fetching users:", error);
     toast.error("Si è verificato un errore durante il caricamento degli utenti");
-    return mockUsers;
+    return [];
   }
 };
 
+/**
+ * Toggles a user's active status
+ */
 export const toggleUserStatus = async (userId: string, isActive: boolean): Promise<boolean> => {
   try {
     if (isSupabaseConfigured) {
@@ -77,6 +74,9 @@ export const toggleUserStatus = async (userId: string, isActive: boolean): Promi
         toast.error("Errore nell'aggiornamento dello stato dell'utente");
         return false;
       }
+    } else {
+      toast.warning("Database non configurato, impossibile aggiornare l'utente");
+      return false;
     }
     
     toast.success(`Stato dell'utente aggiornato con successo`);
@@ -88,6 +88,9 @@ export const toggleUserStatus = async (userId: string, isActive: boolean): Promi
   }
 };
 
+/**
+ * Deletes a user by ID
+ */
 export const deleteUser = async (userId: string): Promise<boolean> => {
   try {
     if (isSupabaseConfigured) {
@@ -101,6 +104,9 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
         toast.error("Errore nell'eliminazione dell'utente");
         return false;
       }
+    } else {
+      toast.warning("Database non configurato, impossibile eliminare l'utente");
+      return false;
     }
     
     toast.success(`Utente eliminato con successo`);
@@ -112,18 +118,95 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
   }
 };
 
-export const addUser = async (userData: { name: string; email: string }): Promise<User | null> => {
+/**
+ * Deletes all non-admin users
+ */
+export const deleteAllUsers = async (): Promise<boolean> => {
+  try {
+    if (isSupabaseConfigured) {
+      const { error } = await supabase
+        .from('users')
+        .delete()
+        .not('role', 'eq', 'admin');
+        
+      if (error) {
+        console.error("Error deleting all users:", error.message);
+        toast.error("Errore nell'eliminazione di tutti gli utenti");
+        return false;
+      }
+    } else {
+      toast.warning("Database non configurato, impossibile eliminare gli utenti");
+      return false;
+    }
+    
+    toast.success("Tutti gli utenti non amministratori sono stati eliminati con successo");
+    return true;
+  } catch (error) {
+    console.error("Error deleting all users:", error);
+    toast.error("Si è verificato un errore durante l'eliminazione di tutti gli utenti");
+    return false;
+  }
+};
+
+/**
+ * Updates a user's information
+ */
+export const updateUser = async (userId: string, userData: Partial<User>): Promise<User | null> => {
+  try {
+    const updateData: Record<string, any> = {
+      name: userData.name,
+      email: userData.email,
+      role: userData.role,
+      fiscal_code: userData.fiscalCode,
+      vat_number: userData.vatNumber,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (isSupabaseConfigured) {
+      const { error } = await supabase
+        .from('users')
+        .update(updateData)
+        .eq('id', userId);
+        
+      if (error) {
+        console.error("Error updating user:", error.message);
+        toast.error("Errore nell'aggiornamento dell'utente");
+        return null;
+      }
+    } else {
+      toast.warning("Database non configurato, impossibile aggiornare l'utente");
+      return null;
+    }
+    
+    return { 
+      ...userData,
+      id: userId,
+      updatedAt: new Date().toISOString()
+    } as User;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    toast.error("Si è verificato un errore durante l'aggiornamento dell'utente");
+    return null;
+  }
+};
+
+/**
+ * Adds a new user
+ */
+export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updatedAt">): Promise<User | null> => {
   try {
     const newUserObj: User = {
       id: `user-${Date.now()}`,
-      name: userData.name,
-      email: userData.email,
-      role: "user",
+      name: userData.name || "",
+      email: userData.email || "",
+      role: userData.role || "user",
       favorites: [],
       loyaltyPoints: 0,
       isActive: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      fiscalCode: userData.fiscalCode,
+      vatNumber: userData.vatNumber
     };
     
     if (isSupabaseConfigured) {
@@ -137,7 +220,9 @@ export const addUser = async (userData: { name: string; email: string }): Promis
           loyalty_points: newUserObj.loyaltyPoints,
           is_active: newUserObj.isActive,
           created_at: newUserObj.createdAt,
-          updated_at: newUserObj.updatedAt
+          updated_at: newUserObj.updatedAt,
+          fiscal_code: userData.fiscalCode,
+          vat_number: userData.vatNumber
         })
         .select();
         
@@ -150,6 +235,9 @@ export const addUser = async (userData: { name: string; email: string }): Promis
       if (data && data.length > 0) {
         newUserObj.id = data[0].id;
       }
+    } else {
+      toast.warning("Database non configurato, impossibile aggiungere l'utente");
+      return null;
     }
     
     toast.success("Utente aggiunto con successo");
