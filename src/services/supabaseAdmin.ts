@@ -35,7 +35,7 @@ export const supabaseAdmin = {
       
       console.log(`Admin insert successful for ${table}:`, result);
       return result[0];
-    } catch (error: any) { // Add type annotation here
+    } catch (error) {
       console.error(`Admin insert exception for ${table}:`, error);
       toast.error("Si è verificato un errore durante l'inserimento dei dati");
       return null;
@@ -69,7 +69,7 @@ export const supabaseAdmin = {
       
       console.log(`Admin delete successful for ${table}`);
       return true;
-    } catch (error: any) { // Add type annotation here
+    } catch (error) {
       console.error(`Admin delete exception for ${table}:`, error);
       toast.error("Si è verificato un errore durante l'eliminazione dei dati");
       return false;
