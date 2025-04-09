@@ -1,5 +1,5 @@
 
-import { User } from "@/types";
+import { User, UserRole } from "@/types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
 import { supabaseAdmin } from "./supabaseAdmin";
@@ -198,7 +198,7 @@ export const addUser = async (userData: Omit<User, "id" | "createdAt" | "updated
       id: `user-${Date.now()}`,
       name: userData.name || "",
       email: userData.email || "",
-      role: userData.role || "user",
+      role: userData.role,
       favorites: [],
       loyaltyPoints: 0,
       isActive: true,

@@ -1,5 +1,6 @@
+
 import { useState, useEffect, useCallback } from "react";
-import { User } from "@/types";
+import { User, UserRole } from "@/types";
 import { toast } from "sonner";
 import { fetchUsers, deleteUser, toggleUserStatus, updateUser, addUser, deleteAllUsers } from "@/services/userService";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
@@ -141,7 +142,7 @@ export const useUsers = () => {
       const newUserData = {
         name: userData.name,
         email: userData.email,
-        role: userData.role || 'user',
+        role: userData.role as UserRole || 'user' as UserRole,
         isActive: true,
         favorites: [],
         loyaltyPoints: 0,
