@@ -1,6 +1,5 @@
 
 import { Shop } from "@/types";
-import { shops as mockShops } from "@/data/mock-data/shops-data";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -13,18 +12,19 @@ export const shopBaseService = {
    */
   ensureSupabaseConfigured: (): boolean => {
     if (!isSupabaseConfigured) {
-      console.warn("Supabase non è configurato correttamente. Saranno utilizzati dati mock.");
+      console.warn("Supabase non è configurato correttamente");
+      toast.warning("Connessione al database non configurata");
       return false;
     }
     return true;
   },
 
   /**
-   * Returns mock shop data for testing
+   * Returns empty shop data for testing
    */
   getMockShops: (): Shop[] => {
-    console.log("Usando dati mock per i negozi");
-    return mockShops;
+    console.log("Nessun dato disponibile. Configura il database per i dati reali.");
+    return [];
   },
   
   /**

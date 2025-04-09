@@ -2,12 +2,11 @@
 export interface Customer {
   id: string;
   name: string;
-  email?: string;
-  phone?: string; // Added this property
-  address?: string;
-  orderCount?: number;
-  totalSpent?: number;
-  lastOrderDate?: string;
+  email: string;
+  phone?: string;
+  points: number;
+  orders: number;
+  lastPurchase?: string;
   notes?: string;
-  createdAt: string;
+  address?: string;
 }

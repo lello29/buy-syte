@@ -7,7 +7,6 @@ import { Shop } from '@/types';
 import { toast } from 'sonner';
 import { fetchShops, createShop, deleteAllShops } from '@/services/shop';
 
-// Define ShopFormData type here
 export interface ShopFormData {
   id?: string;
   name: string;
@@ -26,13 +25,11 @@ export interface ShopFormData {
 }
 
 export const useShopState = () => {
-  // Get shops list and loading state from database or context
   const [shopsList, setShopsList] = useState<Shop[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   
-  // Dialog state management
   const {
     selectedShop,
     setSelectedShop,
@@ -48,10 +45,8 @@ export const useShopState = () => {
     setIsDeleteAllShopsOpen,
   } = useShopDialogState();
   
-  // Shop location utilities
   const { handleGetLocation, isLocating } = useShopLocation();
   
-  // Shop actions
   const shopActions = useShopActions(
     setSelectedShop,
     setIsViewShopOpen,
@@ -62,7 +57,6 @@ export const useShopState = () => {
     setIsDeleting
   );
   
-  // Fetch shops on component mount
   useEffect(() => {
     const loadShops = async () => {
       setIsLoading(true);
@@ -81,30 +75,25 @@ export const useShopState = () => {
     loadShops();
   }, []);
   
-  // Handle viewing a shop 
   const handleViewShop = useCallback((shop: Shop) => {
     setSelectedShop(shop);
     setIsViewShopOpen(true);
   }, [setSelectedShop, setIsViewShopOpen]);
   
-  // Handle editing a shop
   const handleEditShop = useCallback((shop: Shop) => {
     setSelectedShop(shop);
     setIsEditShopOpen(true);
   }, [setSelectedShop, setIsEditShopOpen]);
   
-  // Handle adding a new shop
   const handleAddShop = useCallback(() => {
     console.log("handleAddShop called in useShopState");
     setIsAddShopOpen(true);
   }, [setIsAddShopOpen]);
   
-  // Handle saving changes to a shop
   const handleSaveChanges = useCallback(async (shopData: ShopFormData) => {
     if (!selectedShop) return false;
     
     try {
-      // Call the shop update action
       await shopActions.handleEditShop(selectedShop);
       setIsEditShopOpen(false);
       toast.success("Negozio aggiornato con successo");
@@ -116,13 +105,11 @@ export const useShopState = () => {
     }
   }, [selectedShop, shopActions, setIsEditShopOpen]);
   
-  // Handle creating a new shop
   const handleCreateShop = useCallback(async (shopData: Partial<Shop>) => {
     try {
       setIsCreating(true);
       console.log("Creating shop with data:", shopData);
       
-      // Form basic shop data with required fields for Shop type
       const newShopData: Omit<Shop, 'id' | 'lastUpdated'> = {
         name: shopData.name || 'Nuovo negozio',
         description: shopData.description || '',
@@ -137,17 +124,14 @@ export const useShopState = () => {
         userId: shopData.userId || '',
         createdAt: new Date().toISOString(),
         aiCredits: 10,
-        // Add required fields for Shop type
         location: null,
         products: [],
         offers: []
       };
       
-      // Create the shop in the database
       const createdShop = await createShop(newShopData);
       
       if (createdShop) {
-        // Update the shops list
         setShopsList(prev => [...prev, createdShop]);
         toast.success("Negozio creato con successo");
         setIsAddShopOpen(false);
@@ -165,13 +149,11 @@ export const useShopState = () => {
     }
   }, [setIsAddShopOpen, setShopsList]);
   
-  // Handle deleting a shop
   const handleConfirmDeleteShop = useCallback(async () => {
     if (!selectedShop) return false;
     
     setIsDeleting(true);
     try {
-      // Call the shop delete action
       const result = await shopActions.handleDeleteShop(selectedShop.id);
       setIsDeleteShopOpen(false);
       toast.success(`Negozio "${selectedShop.name}" eliminato con successo`);
@@ -185,11 +167,9 @@ export const useShopState = () => {
     }
   }, [selectedShop, shopActions, setIsDeleteShopOpen]);
   
-  // Handle deleting all shops
   const handleDeleteAllShops = useCallback(async () => {
     setIsDeleting(true);
     try {
-      // Use deleteAllShops directly from the import, not from shopActions
       const result = await deleteAllShops();
       setIsDeleteAllShopsOpen(false);
       if (result) {
@@ -208,26 +188,19 @@ export const useShopState = () => {
     }
   }, [setIsDeleteAllShopsOpen, setShopsList]);
   
-  // Handle shop form changes
   const handleShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // This function would update a form state
     console.log("Shop field changed:", e.target.name, e.target.value);
   }, []);
   
-  // Handle checkbox changes
   const handleCheckboxChange = useCallback((field: string, checked: boolean) => {
-    // This function would update a form state
     console.log("Checkbox changed:", field, checked);
   }, []);
   
-  // Handle select changes
   const handleSelectChange = useCallback((value: string, name: string) => {
-    // This function would update a form state
     console.log("Select changed:", name, value);
   }, []);
   
   const handleDeleteButtonClick = useCallback((shopId: string) => {
-    // Find the shop by ID and set it as the selected shop
     const shop = shopsList.find(shop => shop.id === shopId);
     if (shop) {
       setSelectedShop(shop);
@@ -248,7 +221,7 @@ export const useShopState = () => {
       console.error("Error toggling shop status:", error);
     }
   }, [shopActions]);
-
+  
   const handleApproveShop = useCallback(async (shopId: string) => {
     try {
       await shopActions.handleApproveShop(shopId);

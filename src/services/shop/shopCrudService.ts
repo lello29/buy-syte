@@ -3,7 +3,6 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Shop } from "@/types";
 import { shopBaseService } from "./shopBaseService";
-import { shops } from "@/data/mock-data/shops-data";
 import { supabaseAdmin } from "../supabaseAdmin";
 
 /**
@@ -19,28 +18,14 @@ export const deleteShop = async (shopId: string): Promise<boolean> => {
       const success = await supabaseAdmin.delete('shops', 'id', shopId);
       
       if (!success) {
-        // Fall back to mock data
-        console.log("Falling back to mock data for deletion");
-        const index = shops.findIndex(s => s.id === shopId);
-        if (index !== -1) {
-          shops.splice(index, 1);
-          toast.success("Negozio eliminato con successo (modalità mock)");
-          return true;
-        }
+        toast.error("Errore durante l'eliminazione del negozio");
         return false;
       }
       
       toast.success("Negozio eliminato con successo");
       return true;
     } else {
-      // Use mock data
-      console.log("Using mock data for deletion");
-      const index = shops.findIndex(s => s.id === shopId);
-      if (index !== -1) {
-        shops.splice(index, 1);
-        toast.success("Negozio eliminato con successo");
-        return true;
-      }
+      toast.error("Database non configurato");
       return false;
     }
   } catch (error) {
@@ -50,7 +35,7 @@ export const deleteShop = async (shopId: string): Promise<boolean> => {
 };
 
 /**
- * Delete all shops - migliorato per funzionare con Supabase
+ * Delete all shops
  */
 export const deleteAllShops = async (): Promise<boolean> => {
   try {
@@ -65,18 +50,10 @@ export const deleteAllShops = async (): Promise<boolean> => {
         return false;
       }
       
-      // Pulisci anche i dati di esempio in memoria
-      if (shops && Array.isArray(shops)) {
-        shops.length = 0;
-      }
-      
       return true;
     } else {
-      // Clear mock data array
-      if (shops && Array.isArray(shops)) {
-        shops.length = 0;
-      }
-      return true;
+      toast.error("Database non configurato");
+      return false;
     }
   } catch (error) {
     shopBaseService.handleError("l'eliminazione di tutti i negozi", error);
@@ -114,32 +91,16 @@ export const createShop = async (shop: Omit<Shop, 'id' | 'lastUpdated'>): Promis
       const createdShop = await supabaseAdmin.insert('shops', shopData);
       
       if (!createdShop) {
-        // Fallback to mock data creation
-        const mockShop: Shop = {
-          id: crypto.randomUUID(),
-          ...shop,
-          lastUpdated: new Date().toISOString()
-        };
-        
-        shops.push(mockShop);
-        toast.success("Negozio creato con successo (modalità mock)");
-        return mockShop;
+        toast.error("Errore durante la creazione del negozio");
+        return null;
       }
       
       toast.success("Negozio creato con successo");
       return shopBaseService.transformShopFromDB(createdShop);
+    } else {
+      toast.error("Database non configurato");
+      return null;
     }
-    
-    // Use mock data if Supabase is not configured
-    const mockShop: Shop = {
-      id: crypto.randomUUID(),
-      ...shop,
-      lastUpdated: new Date().toISOString()
-    };
-    
-    shops.push(mockShop);
-    toast.success("Negozio creato con successo (modalità mock)");
-    return mockShop;
   } catch (error) {
     shopBaseService.handleError("la creazione del negozio", error);
     return null;
@@ -205,44 +166,16 @@ export const updateShop = async (shopId: string, updatedData: Partial<Shop>): Pr
         
       if (error) {
         console.error("Error updating shop:", error.message);
-        // Fallback to mock data
-        const shopIndex = shops.findIndex(s => s.id === shopId);
-        if (shopIndex === -1) {
-          console.error("Shop not found in mock data:", shopId);
-          return null;
-        }
-        
-        const updatedMockShop = {
-          ...shops[shopIndex],
-          ...updatedData,
-          lastUpdated: new Date().toISOString()
-        };
-        
-        shops[shopIndex] = updatedMockShop;
-        toast.success("Negozio aggiornato con successo (modalità mock)");
-        return updatedMockShop;
+        toast.error("Errore durante l'aggiornamento del negozio");
+        return null;
       }
       
       toast.success("Negozio aggiornato con successo");
       return shopBaseService.transformShopFromDB(updatedShop);
-    }
-    
-    // Use mock data if Supabase is not configured
-    const shopIndex = shops.findIndex(s => s.id === shopId);
-    if (shopIndex === -1) {
-      console.error("Shop not found in mock data:", shopId);
+    } else {
+      toast.error("Database non configurato");
       return null;
     }
-    
-    const updatedShop = {
-      ...shops[shopIndex],
-      ...updatedData,
-      lastUpdated: new Date().toISOString()
-    };
-    
-    shops[shopIndex] = updatedShop;
-    toast.success("Negozio aggiornato con successo (modalità mock)");
-    return updatedShop;
   } catch (error) {
     shopBaseService.handleError("l'aggiornamento del negozio", error);
     return null;

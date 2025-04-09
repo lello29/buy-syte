@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { shopBaseService } from "./shopBaseService";
 
 /**
- * Fetches shops from the database or returns mock data
+ * Fetches shops from the database
  */
 export const fetchShops = async (): Promise<Shop[]> => {
   try {
@@ -22,13 +22,13 @@ export const fetchShops = async (): Promise<Shop[]> => {
           
           // More friendly error for missing tables
           if (error.message.includes("does not exist") || error.code === '42P01') {
-            console.log("Shops table does not exist yet, using mock data");
+            console.log("Shops table does not exist yet");
             toast.warning("Tabella negozi non trovata. Clicca su 'Migra Negozi di Esempio'");
-            return shopBaseService.getMockShops();
+            return [];
           }
           
           toast.error("Errore nel caricamento dei negozi");
-          return []; // Empty array instead of mock data
+          return []; // Empty array
         }
         
         // Return data from database, even if empty
@@ -36,17 +36,19 @@ export const fetchShops = async (): Promise<Shop[]> => {
         return data ? data.map(shop => shopBaseService.transformShopFromDB(shop)) : [];
       } catch (dbError) {
         console.error("Database error:", dbError);
-        return []; // Empty array instead of mock data
+        toast.error("Errore di connessione al database");
+        return []; // Empty array
       }
     } else {
-      // Supabase not configured, use mock data
-      console.log("Supabase not configured, using mock data");
-      return shopBaseService.getMockShops();
+      // Supabase not configured
+      console.log("Supabase not configured, no shops available");
+      toast.error("Database non configurato");
+      return [];
     }
   } catch (error) {
     console.error("Error fetching shops:", error);
     toast.error("Si è verificato un errore durante il caricamento dei negozi");
-    return []; // Empty array instead of mock data
+    return []; // Empty array
   }
 };
 
@@ -65,10 +67,7 @@ export const fetchShopById = async (shopId: string): Promise<Shop | null> => {
       if (error) {
         console.error("Error fetching shop:", error.message);
         toast.error("Errore nel caricamento del negozio");
-        
-        // Try fallback to mock data
-        const mockShop = shopBaseService.getMockShops().find(s => s.id === shopId);
-        return mockShop || null;
+        return null;
       }
       
       if (!data) {
@@ -79,13 +78,7 @@ export const fetchShopById = async (shopId: string): Promise<Shop | null> => {
       return shopBaseService.transformShopFromDB(data);
     }
     
-    // If Supabase is not configured, search in mock data
-    const mockShop = shopBaseService.getMockShops().find(shop => shop.id === shopId);
-    if (mockShop) {
-      return mockShop;
-    }
-    
-    toast.error("Negozio non trovato");
+    toast.error("Database non configurato");
     return null;
   } catch (error) {
     console.error("Error fetching shop by ID:", error);
