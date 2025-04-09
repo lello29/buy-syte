@@ -20,7 +20,7 @@ export class ProjectExporter {
   static generateProjectConfig = generateProjectConfig;
 
   /**
-   * Esporta il progetto completo
+   * Esporta il progetto completo come file ZIP
    * @param options Opzioni di esportazione personalizzate
    */
   static exportProject = exportProject;

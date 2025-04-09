@@ -21,7 +21,7 @@ export function ProjectExportCard() {
           Esportazione Progetto
         </CardTitle>
         <CardDescription>
-          Strumenti per l'esportazione e il deployment del progetto
+          Strumenti per l'esportazione e il deployment completo del progetto
         </CardDescription>
       </CardHeader>
       <CardContent>

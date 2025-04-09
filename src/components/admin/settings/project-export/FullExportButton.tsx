@@ -47,8 +47,8 @@ export function FullExportButton() {
       </Button>
       
       <p className="text-xs text-gray-500 mt-2">
-        Questa operazione esporterà l'intero progetto, inclusi database, configurazioni e script di deploy.
-        Tutti i file necessari verranno scaricati automaticamente.
+        Questa operazione esporterà l'intero progetto, inclusi database, configurazioni, codice sorgente e script di deploy.
+        Tutto il necessario verrà compresso in un file ZIP.
       </p>
     </>
   );
