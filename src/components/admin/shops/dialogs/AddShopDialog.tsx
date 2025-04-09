@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -54,7 +53,6 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
     try {
       const result = await onCreateShop(formData);
       if (result) {
-        // Reset form
         setFormData({
           name: '',
           description: '',
@@ -65,7 +63,7 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
           fiscalCode: '',
           vatNumber: ''
         });
-        onOpenChange(false); // Close dialog
+        onOpenChange(false);
       }
     } catch (error) {
       console.error("Error submitting shop:", error);
