@@ -36,25 +36,9 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
   });
 
   useEffect(() => {
-    console.log("AddShopDialog useEffect - open state changed to:", open);
+    console.log("AddShopDialog - open stato:", open);
     
-    // Migliorato il debug con timing
-    if (open) {
-      console.log("AddShopDialog è APERTO - timestamp:", new Date().toISOString());
-      document.body.classList.add('dialog-open');
-      
-      // Verifica se il dialogo è realmente visibile nel DOM
-      setTimeout(() => {
-        const dialogElement = document.querySelector('[role="dialog"]');
-        console.log("AddShopDialog - DOM element presente:", !!dialogElement);
-        if (!dialogElement) {
-          console.warn("ERRORE: Dialogo non trovato nel DOM anche se 'open' è true!");
-        }
-      }, 100);
-    } else {
-      console.log("AddShopDialog è CHIUSO - timestamp:", new Date().toISOString());
-      document.body.classList.remove('dialog-open');
-      
+    if (!open) {
       // Reset form when dialog closes
       setFormData({
         name: '',
@@ -91,16 +75,6 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
       const result = await onCreateShop(formData);
       console.log("AddShopDialog onCreateShop result:", result);
       if (result) {
-        setFormData({
-          name: '',
-          description: '',
-          address: '',
-          phone: '',
-          email: '',
-          category: 'general',
-          fiscalCode: '',
-          vatNumber: ''
-        });
         onOpenChange(false);
       }
     } catch (error) {
@@ -109,14 +83,12 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
       setIsSubmitting(false);
     }
   };
-  
-  console.log("AddShopDialog rendered, open:", open);
 
   return (
-    <Dialog open={open} onOpenChange={(newValue) => {
-      console.log("Dialog onOpenChange triggered with value:", newValue);
-      onOpenChange(newValue);
-    }}>
+    <Dialog 
+      open={open} 
+      onOpenChange={onOpenChange}
+    >
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Aggiungi Nuovo Negozio</DialogTitle>

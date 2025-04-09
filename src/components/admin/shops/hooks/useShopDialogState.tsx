@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Shop } from '@/types';
 
 export const useShopDialogState = () => {
@@ -10,31 +10,17 @@ export const useShopDialogState = () => {
   const [isDeleteShopOpen, setIsDeleteShopOpen] = useState(false);
   const [isDeleteAllShopsOpen, setIsDeleteAllShopsOpen] = useState(false);
 
-  // Migliorato il logging per debug
-  const setIsAddShopOpenWithLogging = useCallback((value: boolean) => {
-    console.log("setIsAddShopOpen chiamato con valore:", value);
-    console.log("Stato precedente isAddShopOpen:", isAddShopOpen);
-    setIsAddShopOpen(value);
-    
-    // Log asincrono per verificare se il cambiamento è stato applicato
-    setTimeout(() => {
-      console.log("Verifica cambio stato isAddShopOpen dopo setTimeout:", isAddShopOpen);
-    }, 0);
-  }, [isAddShopOpen]);
+  // Funzione semplificata per aprire il dialog di aggiunta negozio
+  const openAddShopDialog = useCallback(() => {
+    console.log("openAddShopDialog chiamato - aprendo il dialog");
+    setIsAddShopOpen(true);
+  }, []);
 
-  // Migliorato il logging per tutti i cambiamenti di stato
-  useEffect(() => {
-    console.log("Dialog state changed - isAddShopOpen:", isAddShopOpen);
-    
-    if (isAddShopOpen) {
-      console.log("IMPORTANTE: AddShopDialog dovrebbe essere visibile ora!");
-      // Verifica gli elementi DOM per vedere se il dialogo è stato renderizzato
-      setTimeout(() => {
-        const dialogElement = document.querySelector('[role="dialog"]');
-        console.log("Dialog DOM element trovato:", !!dialogElement);
-      }, 100);
-    }
-  }, [isAddShopOpen]);
+  // Funzione semplificata per chiudere il dialog di aggiunta negozio
+  const closeAddShopDialog = useCallback(() => {
+    console.log("closeAddShopDialog chiamato - chiudendo il dialog");
+    setIsAddShopOpen(false);
+  }, []);
 
   return {
     selectedShop,
@@ -46,8 +32,10 @@ export const useShopDialogState = () => {
     isDeleteAllShopsOpen,
     setIsViewShopOpen,
     setIsEditShopOpen,
-    setIsAddShopOpen: setIsAddShopOpenWithLogging,
+    setIsAddShopOpen,
     setIsDeleteShopOpen,
     setIsDeleteAllShopsOpen,
+    openAddShopDialog,
+    closeAddShopDialog
   };
 };

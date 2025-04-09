@@ -1,8 +1,8 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopActions } from './useShopActions';
 import { useShopLocation } from './useShopLocation';
-import { useShopForm } from './useShopForm';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
 import { fetchShops, createShop, deleteAllShops } from '@/services/shop';
@@ -43,6 +43,7 @@ export const useShopState = () => {
     setIsAddShopOpen,
     setIsDeleteShopOpen,
     setIsDeleteAllShopsOpen,
+    openAddShopDialog
   } = useShopDialogState();
   
   const { handleGetLocation, isLocating } = useShopLocation();
@@ -86,19 +87,11 @@ export const useShopState = () => {
     setIsEditShopOpen(true);
   }, [setSelectedShop, setIsEditShopOpen]);
   
+  // Semplificata la funzione handleAddShop per utilizzare openAddShopDialog
   const handleAddShop = useCallback(() => {
-    console.log("handleAddShop called in useShopState - current isAddShopOpen:", isAddShopOpen);
-    try {
-      setIsAddShopOpen(true);
-      console.log("handleAddShop called in useShopState - after setting isAddShopOpen to true");
-      setTimeout(() => {
-        console.log("Checking if dialog opened:", isAddShopOpen);
-      }, 100);
-    } catch (error) {
-      console.error("Error in handleAddShop:", error);
-      toast.error("Errore nell'apertura del dialog");
-    }
-  }, [setIsAddShopOpen, isAddShopOpen]);
+    console.log("handleAddShop chiamato in useShopState");
+    openAddShopDialog();
+  }, [openAddShopDialog]);
   
   const handleSaveChanges = useCallback(async (shopData: ShopFormData) => {
     if (!selectedShop) return false;
@@ -144,7 +137,6 @@ export const useShopState = () => {
       if (createdShop) {
         setShopsList(prev => [...prev, createdShop]);
         toast.success("Negozio creato con successo");
-        setIsAddShopOpen(false);
         return createdShop;
       } else {
         toast.error("Errore durante la creazione del negozio");
@@ -157,7 +149,7 @@ export const useShopState = () => {
     } finally {
       setIsCreating(false);
     }
-  }, [setIsAddShopOpen, setShopsList]);
+  }, [setShopsList]);
   
   const handleConfirmDeleteShop = useCallback(async () => {
     if (!selectedShop) return false;
