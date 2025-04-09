@@ -1,14 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { SHOP_CATEGORIES } from '../constants/shopCategories';
 import { Shop } from '@/types';
-import { Loader2 } from 'lucide-react';
+
+// Import the smaller components
+import ShopBasicInfoFields from './shop-form/ShopBasicInfoFields';
+import ShopCategoryField from './shop-form/ShopCategoryField';
+import ShopContactFields from './shop-form/ShopContactFields';
+import ShopTaxFields from './shop-form/ShopTaxFields';
+import ShopFormActions from './shop-form/ShopFormActions';
 
 interface AddShopDialogProps {
   open: boolean;
@@ -99,129 +99,41 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
         
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="grid grid-cols-1 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome Negozio *</Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Nome del negozio"
-                required
-              />
-            </div>
+            {/* Basic Info Fields */}
+            <ShopBasicInfoFields 
+              name={formData.name}
+              description={formData.description}
+              address={formData.address}
+              handleChange={handleChange}
+            />
             
-            <div className="space-y-2">
-              <Label htmlFor="description">Descrizione</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Breve descrizione del negozio"
-                rows={3}
-              />
-            </div>
+            {/* Category Field */}
+            <ShopCategoryField 
+              category={formData.category}
+              handleCategoryChange={handleCategoryChange}
+            />
             
-            <div className="space-y-2">
-              <Label htmlFor="category">Categoria</Label>
-              <Select 
-                value={formData.category} 
-                onValueChange={handleCategoryChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleziona categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SHOP_CATEGORIES.map(category => (
-                    <SelectItem key={category} value={category.toLowerCase()}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Contact Fields */}
+            <ShopContactFields 
+              phone={formData.phone}
+              email={formData.email}
+              handleChange={handleChange}
+            />
             
-            <div className="space-y-2">
-              <Label htmlFor="address">Indirizzo</Label>
-              <Input
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="Indirizzo completo"
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="phone">Telefono</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Numero di telefono"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Email di contatto"
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fiscalCode">Codice Fiscale</Label>
-                <Input
-                  id="fiscalCode"
-                  name="fiscalCode"
-                  value={formData.fiscalCode}
-                  onChange={handleChange}
-                  placeholder="Codice fiscale"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="vatNumber">Partita IVA</Label>
-                <Input
-                  id="vatNumber"
-                  name="vatNumber"
-                  value={formData.vatNumber}
-                  onChange={handleChange}
-                  placeholder="Partita IVA"
-                />
-              </div>
-            </div>
+            {/* Tax Fields */}
+            <ShopTaxFields 
+              fiscalCode={formData.fiscalCode}
+              vatNumber={formData.vatNumber}
+              handleChange={handleChange}
+            />
           </div>
           
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isSubmitting}
-            >
-              Annulla
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Salvataggio...
-                </>
-              ) : (
-                'Crea Negozio'
-              )}
-            </Button>
+            <ShopFormActions 
+              isSubmitting={isSubmitting} 
+              onCancel={() => onOpenChange(false)}
+              isCreating={true}
+            />
           </DialogFooter>
         </form>
       </DialogContent>
