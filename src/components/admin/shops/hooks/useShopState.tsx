@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopActions } from './useShopActions';
@@ -6,7 +5,7 @@ import { useShopLocation } from './useShopLocation';
 import { useShopForm } from './useShopForm';
 import { Shop } from '@/types';
 import { toast } from 'sonner';
-import { fetchShops, createShop } from '@/services/shop';
+import { fetchShops, createShop, deleteAllShops } from '@/services/shop';
 
 // Define ShopFormData type here
 export interface ShopFormData {
@@ -123,7 +122,7 @@ export const useShopState = () => {
       setIsCreating(true);
       console.log("Creating shop with data:", shopData);
       
-      // Form basic shop data
+      // Form basic shop data with required fields for Shop type
       const newShopData: Omit<Shop, 'id' | 'lastUpdated'> = {
         name: shopData.name || 'Nuovo negozio',
         description: shopData.description || '',
@@ -137,7 +136,11 @@ export const useShopState = () => {
         vatNumber: shopData.vatNumber || '',
         userId: shopData.userId || '',
         createdAt: new Date().toISOString(),
-        aiCredits: 10
+        aiCredits: 10,
+        // Add required fields for Shop type
+        location: null,
+        products: [],
+        offers: []
       };
       
       // Create the shop in the database
@@ -186,8 +189,8 @@ export const useShopState = () => {
   const handleDeleteAllShops = useCallback(async () => {
     setIsDeleting(true);
     try {
-      // Simulate successful deletion for now
-      const result = await shopActions.handleDeleteAllShops();
+      // Use deleteAllShops directly from the import, not from shopActions
+      const result = await deleteAllShops();
       setIsDeleteAllShopsOpen(false);
       if (result) {
         toast.success("Tutti i negozi sono stati eliminati con successo");
@@ -203,7 +206,7 @@ export const useShopState = () => {
     } finally {
       setIsDeleting(false);
     }
-  }, [setIsDeleteAllShopsOpen, shopActions, setShopsList]);
+  }, [setIsDeleteAllShopsOpen, setShopsList]);
   
   // Handle shop form changes
   const handleShopChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

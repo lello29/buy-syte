@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { shopCategories } from '../constants/shopCategories';
+import { SHOP_CATEGORIES } from '../constants/shopCategories';
 import { Shop } from '@/types';
 import { Loader2 } from 'lucide-react';
 
@@ -122,9 +122,9 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
                   <SelectValue placeholder="Seleziona categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  {shopCategories.map(category => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.label}
+                  {SHOP_CATEGORIES.map(category => (
+                    <SelectItem key={category} value={category.toLowerCase()}>
+                      {category}
                     </SelectItem>
                   ))}
                 </SelectContent>
