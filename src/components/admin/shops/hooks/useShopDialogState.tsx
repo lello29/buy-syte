@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Shop } from '@/types';
 
 export const useShopDialogState = () => {
@@ -15,6 +15,11 @@ export const useShopDialogState = () => {
     console.log("setIsAddShopOpen called with value:", value);
     setIsAddShopOpen(value);
   }, []);
+
+  // Add effect to log state changes
+  useEffect(() => {
+    console.log("Dialog state changed - isAddShopOpen:", isAddShopOpen);
+  }, [isAddShopOpen]);
 
   return {
     selectedShop,

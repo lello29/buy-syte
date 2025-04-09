@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { useShopDialogState } from './useShopDialogState';
 import { useShopActions } from './useShopActions';
@@ -89,9 +88,17 @@ export const useShopState = () => {
   
   const handleAddShop = useCallback(() => {
     console.log("handleAddShop called in useShopState - current isAddShopOpen:", isAddShopOpen);
-    setIsAddShopOpen(true);
-    console.log("handleAddShop called in useShopState - after setting isAddShopOpen to true");
-  }, [setIsAddShopOpen]);
+    try {
+      setIsAddShopOpen(true);
+      console.log("handleAddShop called in useShopState - after setting isAddShopOpen to true");
+      setTimeout(() => {
+        console.log("Checking if dialog opened:", isAddShopOpen);
+      }, 100);
+    } catch (error) {
+      console.error("Error in handleAddShop:", error);
+      toast.error("Errore nell'apertura del dialog");
+    }
+  }, [setIsAddShopOpen, isAddShopOpen]);
   
   const handleSaveChanges = useCallback(async (shopData: ShopFormData) => {
     if (!selectedShop) return false;

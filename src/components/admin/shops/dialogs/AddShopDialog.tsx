@@ -95,8 +95,23 @@ const AddShopDialog: React.FC<AddShopDialogProps> = ({
   
   console.log("AddShopDialog rendered, open:", open);
 
+  // Verifico se il dialog è effettivamente aperto
+  useEffect(() => {
+    if (open) {
+      console.log("AddShopDialog is open");
+      // Aggiunge una classe per rendere visivamente distinguibile
+      document.body.classList.add('dialog-open');
+    } else {
+      console.log("AddShopDialog is closed");
+      document.body.classList.remove('dialog-open');
+    }
+  }, [open]);
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(newValue) => {
+      console.log("Dialog onOpenChange triggered with value:", newValue);
+      onOpenChange(newValue);
+    }}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Aggiungi Nuovo Negozio</DialogTitle>

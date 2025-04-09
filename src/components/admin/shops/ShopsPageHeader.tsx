@@ -18,7 +18,8 @@ const ShopsPageHeader: React.FC<ShopsPageHeaderProps> = ({
 }) => {
   console.log("ShopsPageHeader - handleAddShop is function:", typeof handleAddShop === 'function');
   
-  const handleAddButtonClick = () => {
+  const handleAddButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     console.log("Add Shop button clicked - Before calling handleAddShop");
     if (typeof handleAddShop === 'function') {
       handleAddShop();
@@ -55,6 +56,7 @@ const ShopsPageHeader: React.FC<ShopsPageHeaderProps> = ({
         <Button 
           onClick={handleAddButtonClick} 
           className="whitespace-nowrap"
+          id="add-shop-button"
         >
           <PlusCircle className="h-4 w-4 mr-2" />
           {!isMobile && "Aggiungi Negozio"}

@@ -96,15 +96,28 @@ export default function AdminShopsPage() {
   
   console.log("handleAddShop function exists:", typeof handleAddShop === 'function');
   
+  const wrappedHandleAddShop = () => {
+    console.log("AdminShopsPage - wrappedHandleAddShop called");
+    if (typeof handleAddShop === 'function') {
+      try {
+        handleAddShop();
+        console.log("AdminShopsPage - handleAddShop executed successfully");
+      } catch (error) {
+        console.error("Error in handleAddShop:", error);
+        toast.error("Errore nell'apertura del dialog");
+      }
+    } else {
+      console.error("handleAddShop is not a function");
+      toast.error("Funzione non disponibile");
+    }
+  };
+  
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <ShopsPageHeader 
-            handleAddShop={() => {
-              console.log("AdminShopsPage - handleAddShop wrapper called");
-              handleAddShop(); 
-            }}
+            handleAddShop={wrappedHandleAddShop}
             isMobile={isMobile !== null ? isMobile : false}
           />
           <DeleteAllButton />
@@ -124,7 +137,7 @@ export default function AdminShopsPage() {
             onEditShop={handleEditShop}
             onToggleStatus={handleToggleStatus}
             onDeleteShop={handleDeleteButtonClick}
-            onAddShop={handleAddShop}
+            onAddShop={wrappedHandleAddShop}
             onApproveShop={handleApproveShop}
           />
         ) : (
