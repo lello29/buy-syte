@@ -123,7 +123,11 @@ const UsersPage = () => {
         setIsAddDialogOpen={setIsAddDialogOpen}
         setIsEditDialogOpen={setIsEditDialogOpen}
         onDeleteUser={handleDeleteUser}
-        onUserUpdated={handleUserUpdate}
+        onUserUpdated={(user) => {
+          if (user && user.id) {
+            handleUserUpdate(user.id, user);
+          }
+        }}
         onAddUser={handleAddUser}
         onEditUser={openEditDialog}
         onDeleteUserDialog={openDeleteDialog}
