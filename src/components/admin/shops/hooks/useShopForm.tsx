@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Shop, User, UserRole } from "@/types";
+import { Shop, User, UserRole, ShopFormData } from "@/types";
 import { createShop, updateShop } from "@/services/shop";
 import { saveShopLocation } from "@/data/shop-utils/shop-location";
 
@@ -23,8 +23,6 @@ const shopSchema = z.object({
   isActive: z.boolean().optional().default(true),
   isApproved: z.boolean().optional().default(false)
 });
-
-export type ShopFormData = z.infer<typeof shopSchema>;
 
 export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,17 +82,19 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
           } : null
         };
         
-        const updated = await updateShop(updatedShop);
+        const updated = await updateShop(updatedShop, false);
         
-        if (updated && updated.id) {
+        if (updated) {
           // If the shop has a location, save it separately
-          if (updated.location && updated.id) {
-            await saveShopLocation(updated.id, updated.location);
+          if (updatedShop.location && updatedShop.id) {
+            await saveShopLocation(updatedShop.id, updatedShop.location);
           }
           
           toast.success("Negozio aggiornato con successo");
           if (onSuccess) onSuccess();
+          return true;
         }
+        return false;
       } else {
         // Create new shop and user if needed
         let userId = data.userId;
@@ -157,11 +157,14 @@ export const useShopForm = (shop?: Shop, onSuccess?: () => void) => {
           toast.success("Negozio creato con successo");
           form.reset();
           if (onSuccess) onSuccess();
+          return true;
         }
+        return false;
       }
     } catch (error) {
       console.error("Error submitting shop:", error);
       toast.error("Si è verificato un errore durante il salvataggio del negozio");
+      return false;
     } finally {
       setIsSubmitting(false);
     }

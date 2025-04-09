@@ -3,9 +3,7 @@ import { useState } from 'react';
 import { Shop } from '@/types';
 import { toast } from "sonner";
 
-export const useShopLocation = (
-  setSelectedShop: React.Dispatch<React.SetStateAction<Shop | null>>
-) => {
+export const useShopLocation = () => {
   const [isLocating, setIsLocating] = useState(false);
 
   const handleGetLocation = () => {
@@ -15,14 +13,6 @@ export const useShopLocation = (
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          
-          setSelectedShop(prev => {
-            if (!prev) return prev;
-            return {
-              ...prev,
-              location: { latitude, longitude }
-            };
-          });
           
           toast.success('Posizione rilevata con successo');
           setIsLocating(false);

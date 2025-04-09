@@ -6,6 +6,7 @@ import EditShopDialog from './dialogs/EditShopDialog';
 import DeleteShopDialog from './DeleteShopDialog';
 import AddShopDialog from './dialogs/AddShopDialog';
 import DeleteAllShopsDialog from './DeleteAllShopsDialog';
+import { Shop } from '@/types';
 
 const ShopDialogs = () => {
   const {
@@ -52,8 +53,8 @@ const ShopDialogs = () => {
           onShopChange={handleShopChange}
           onCheckboxChange={handleCheckboxChange}
           onSelectChange={handleSelectChange}
-          onSaveChanges={handleSaveChanges}
-          onGetLocation={isLocating !== undefined ? undefined : undefined}
+          onSaveChanges={() => handleSaveChanges(selectedShop)}
+          onGetLocation={isLocating !== undefined ? handleGetLocation : undefined}
           isLocating={isLocating}
         />
       )}

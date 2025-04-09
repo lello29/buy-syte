@@ -5,7 +5,7 @@ import DesktopUsersView from '@/components/admin/users/DesktopUsersView';
 import MobileUsersList from '@/components/admin/users/MobileUsersList';
 import UserDialogs from '@/components/admin/users/UserDialogs';
 import UserLoadingState from '@/components/admin/users/UserLoadingState';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { User } from '@/types';
 

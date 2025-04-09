@@ -61,7 +61,7 @@ const UserDialogs: React.FC<UserDialogsProps> = ({
           open={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}
           user={selectedUser}
-          onSave={onSubmit}
+          onSubmit={onSubmit}
           isLoading={isSubmitting}
         />
       )}
@@ -69,7 +69,7 @@ const UserDialogs: React.FC<UserDialogsProps> = ({
       <AddUserDialog
         open={isAddDialogOpen}
         onOpenChange={setIsAddDialogOpen}
-        onSave={onSubmit}
+        onSubmit={onSubmit}
         isLoading={isSubmitting}
       />
       
@@ -81,7 +81,9 @@ const UserDialogs: React.FC<UserDialogsProps> = ({
           onConfirmDelete={(userId: string) => {
             // This adapter function converts the userId parameter to match the expected function signature
             if (selectedUser && selectedUser.id === userId) {
-              return onSubmit({ id: userId, action: 'delete' }) as Promise<void>;
+              return onSubmit({ id: userId, action: 'delete' }).then(() => {
+                // Return void to match the Promise<void> return type
+              });
             }
             return Promise.resolve();
           }}

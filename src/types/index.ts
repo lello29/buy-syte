@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   name: string;
@@ -140,4 +139,22 @@ export interface Category {
   name: string;
   description?: string;
   slug: string;
+}
+
+// Add ShopFormData type
+export interface ShopFormData {
+  name: string;
+  description?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  category?: string;
+  fiscalCode?: string;
+  vatNumber?: string;
+  latitude?: number;
+  longitude?: number;
+  userId?: string;
+  isActive?: boolean;
+  isApproved?: boolean;
+  aiCredits?: number;
 }
