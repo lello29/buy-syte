@@ -12,11 +12,13 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { DatabaseMigrationCard } from "./DatabaseMigrationCard";
+import { DatabaseSecurityCard } from "./DatabaseSecurityCard";
 
 export function DatabaseCard() {
   return (
     <>
       <DatabaseMigrationCard />
+      <DatabaseSecurityCard />
       
       <Card className="shadow-sm mt-6">
         <CardHeader className="pb-3">

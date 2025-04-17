@@ -1,3 +1,4 @@
+
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -77,6 +78,43 @@ export class DatabaseExporter {
       return null;
     }
   }
+
+  /**
+   * Esporta le RLS policies per ogni tabella
+   * @returns Oggetto con le policies per ogni tabella
+   */
+  static async exportRlsPolicies(): Promise<Record<string, any[]> | null> {
+    try {
+      if (!isSupabaseConfigured) {
+        return null;
+      }
+
+      const { data, error } = await supabase.rpc('get_rls_policies');
+      
+      if (error) {
+        console.error("Errore durante l'esportazione delle RLS policies:", error);
+        return null;
+      }
+
+      // Organizziamo le policies per tabella
+      const policiesByTable: Record<string, any[]> = {};
+      
+      if (data && Array.isArray(data)) {
+        data.forEach(policy => {
+          const tableName = policy.table_name;
+          if (!policiesByTable[tableName]) {
+            policiesByTable[tableName] = [];
+          }
+          policiesByTable[tableName].push(policy);
+        });
+      }
+      
+      return policiesByTable;
+    } catch (error) {
+      console.error("Errore durante l'esportazione delle RLS policies:", error);
+      return null;
+    }
+  }
 }
 
 /**
@@ -118,6 +156,40 @@ export class DatabaseImporter {
     } catch (error) {
       console.error("Errore durante l'importazione dei dati:", error);
       toast.error("Si è verificato un errore durante l'importazione dei dati");
+      return false;
+    }
+  }
+
+  /**
+   * Importa uno schema SQL
+   * @param sqlSchema Schema SQL da importare
+   * @returns True se l'importazione è andata a buon fine
+   */
+  static async importSchema(sqlSchema: string): Promise<boolean> {
+    try {
+      if (!isSupabaseConfigured || !sqlSchema) {
+        return false;
+      }
+
+      // Split dello schema in singoli comandi
+      const commands = sqlSchema.split(';').filter(cmd => cmd.trim().length > 0);
+      
+      for (const command of commands) {
+        const { error } = await supabase.rpc('execute_sql', { 
+          sql_command: command.trim() + ';' 
+        });
+        
+        if (error) {
+          console.error(`Errore esecuzione comando SQL:`, error);
+          continue;
+        }
+      }
+      
+      toast.success("Schema importato con successo");
+      return true;
+    } catch (error) {
+      console.error("Errore durante l'importazione dello schema:", error);
+      toast.error("Si è verificato un errore durante l'importazione dello schema");
       return false;
     }
   }
