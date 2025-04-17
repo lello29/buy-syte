@@ -1,4 +1,3 @@
-
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -125,17 +124,18 @@ export class DatabaseImporter {
 }
 
 /**
- * Funzione per salvare i dati esportati in un file JSON
+ * Funzione per salvare i dati esportati in un file
  * @param data Dati da salvare
  * @param filename Nome del file
+ * @param fileType Tipo MIME del file (opzionale, default: 'application/json')
  */
-export function saveExportedDataToFile(data: any, filename: string): void {
+export function saveExportedDataToFile(data: any, filename: string, fileType: string = 'application/json'): void {
   try {
-    // Converti i dati in formato JSON
-    const jsonData = JSON.stringify(data, null, 2);
+    // Converti i dati in formato stringa se non lo sono già
+    const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
     
     // Crea un blob con i dati
-    const blob = new Blob([jsonData], { type: 'application/json' });
+    const blob = new Blob([content], { type: fileType });
     
     // Crea un URL per il blob
     const url = URL.createObjectURL(blob);

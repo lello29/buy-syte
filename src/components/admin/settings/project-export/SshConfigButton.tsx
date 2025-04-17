@@ -10,7 +10,7 @@ export function SshConfigButton() {
   const exportSshConfig = () => {
     try {
       const sshConfig = generateSshConfig();
-      saveExportedDataToFile(sshConfig, "ssh_config", "text/plain");
+      saveExportedDataToFile(sshConfig, "ssh_config");
       toast.success("Configurazione SSH esportata con successo!");
     } catch (error) {
       console.error("Errore durante l'esportazione della configurazione SSH:", error);
