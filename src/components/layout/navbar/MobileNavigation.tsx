@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, LogIn, UserPlus, Home, Store, Tag, UserCircle, BarChart3 } from "lucide-react";
+import { LogOut, LogIn, UserPlus, Home, Store, UserCircle, BarChart3 } from "lucide-react";
 import MobileNavbarUserMenu from "./MobileNavbarUserMenu";
 import { toast } from "@/hooks/use-toast";
 
@@ -81,14 +81,7 @@ const MobileNavigation = ({
                 <Store className="h-4 w-4 mr-2" />
                 Negozi
               </Link>
-              <Link 
-                to="/offers" 
-                className="text-gray-600 hover:text-primary py-2 flex items-center"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <Tag className="h-4 w-4 mr-2" />
-                Offerte
-              </Link>
+              {/* Rimosso il link alle offerte */}
             </>
           )}
           

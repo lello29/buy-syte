@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, User } from "lucide-react";
+import { toast } from "sonner";
 
 const NavbarUserMenu = () => {
   const { currentUser } = useAuth();
@@ -22,6 +23,10 @@ const NavbarUserMenu = () => {
   if (!currentUser) return null;
 
   const menuItems = getMenuItems(currentUser);
+
+  const handleDisabledClick = (label: string) => {
+    toast.error(`La funzionalità "${label}" non è ancora disponibile`);
+  };
 
   return (
     <DropdownMenu>
@@ -36,11 +41,26 @@ const NavbarUserMenu = () => {
         <DropdownMenuLabel>Il mio account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {menuItems.map((item, index) => (
-          <DropdownMenuItem key={index} asChild>
-            <Link to={item.path} className="flex w-full cursor-pointer items-center">
-              <item.icon className="h-4 w-4 mr-2" />
-              {item.label}
-            </Link>
+          <DropdownMenuItem 
+            key={index} 
+            asChild={!item.disabled}
+            disabled={item.disabled}
+            className={item.disabled ? "cursor-not-allowed opacity-50" : ""}
+          >
+            {item.disabled ? (
+              <div 
+                className="flex w-full items-center cursor-not-allowed"
+                onClick={() => handleDisabledClick(item.label)}
+              >
+                <item.icon className="h-4 w-4 mr-2" />
+                {item.label}
+              </div>
+            ) : (
+              <Link to={item.path} className="flex w-full cursor-pointer items-center">
+                <item.icon className="h-4 w-4 mr-2" />
+                {item.label}
+              </Link>
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

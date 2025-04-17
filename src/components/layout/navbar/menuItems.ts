@@ -9,6 +9,7 @@ export interface MenuItem {
   icon: typeof UserIcon;
   label: string;
   path: string;
+  disabled?: boolean;
 }
 
 export const getMenuItems = (currentUser: User): MenuItem[] => {
@@ -36,8 +37,8 @@ export const getMenuItems = (currentUser: User): MenuItem[] => {
       return [
         { icon: UserIcon, label: "Profilo", path: "/dashboard" },
         { icon: Briefcase, label: "Incarichi", path: "/dashboard/tasks" },
-        { icon: Users, label: "Disponibilità", path: "/dashboard/availability" },
-        { icon: ShoppingCart, label: "Recensioni", path: "/dashboard/reviews" },
+        { icon: Users, label: "Disponibilità", path: "/dashboard/availability", disabled: true },
+        { icon: ShoppingCart, label: "Recensioni", path: "/dashboard/reviews", disabled: true },
       ];
     case "admin":
       return [
